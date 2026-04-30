@@ -6,7 +6,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    const { issuerName, issuerState, documents } = await req.json();
+    const { issuerName, issuerState } = await req.json();
 
     const response = await client.messages.create({
       model: "claude-3-5-sonnet-20241022",
@@ -14,38 +14,7 @@ export async function POST(req: NextRequest) {
       tools: [{ type: "web_search_20250305", name: "web_search" }] as any,
       messages: [{
         role: "user",
-        content: `You are a municipal credit analyst. Search the web for financial information about "${issuerName}" in ${issuerState || "the United States"} and generate a comprehensive credit report.
-
-Search for their most recent ACFR, budget, bond issuances, credit ratings, and financial data.
-
-Generate a JSON object with these fields:
-{
-  "issuer_name": "full official name",
-  "state": "2-letter state",
-  "type": "City/County/School District/etc",
-  "rating": "credit rating or NR",
-  "sentiment": "Positive|Neutral|Negative",
-  "sentiment_score": number 0-100,
-  "executive_summary": "2-3 paragraph executive summary with key findings",
-  "financials": {
-    "total_revenue": number or null,
-    "total_expenditures": number or null,
-    "fund_balance": number or null,
-    "fund_balance_ratio": "percentage string",
-    "operating_margin": "percentage string",
-    "debt_outstanding": number or null,
-    "debt_to_revenue": "ratio string"
-  },
-  "revenue_trend": [{"year": "FYxxxx", "amount": number}],
-  "expenditure_trend": [{"year": "FYxxxx", "amount": number}],
-  "risks": [{"title": "risk title", "severity": "high|medium|low", "description": "explanation"}],
-  "strengths": ["strength 1", "strength 2"],
-  "capital_plan_summary": "1-2 paragraphs about CIP if found",
-  "forward_outlook": "1-2 paragraphs about future projections",
-  "sources": ["source 1", "source 2"]
-}
-
-Return ONLY the JSON object. No markdown, no backticks, no explanation.`
+        content: `You are a municipal credit analyst. Search the web for financial information about "${issuerName}" in ${issuerState || "the United States"} and generate a credit report. Search for their most recent ACFR, budget, bond issuances, credit ratings, and financial data. Generate a JSON object with: issuer_name, state, type, rating, sentiment (Positive|Neutral|Negative), sentiment_score (0-100), executive_summary (2-3 paragraphs), financials (total_revenue, total_expenditures, fund_balance, fund_balance_ratio, operating_margin, debt_outstanding, debt_to_revenue), risks (array of {title, severity high|medium|low, description}), strengths (array of strings), capital_plan_summary, forward_outlook, sources (array). Return ONLY the JSON object, no markdown, no backticks.`
       }],
     });
 
@@ -58,7 +27,7 @@ Return ONLY the JSON object. No markdown, no backticks, no explanation.`
     try {
       const match = text.match(/\{[\s\S]*\}/);
       if (match) report = JSON.parse(match[0]);
-    } catch { /* parse error */ }
+    } catch {}
 
     if (!report) {
       return NextResponse.json({ error: "Failed to generate report" }, { status: 500 });
@@ -69,7 +38,7 @@ Return ONLY the JSON object. No markdown, no backticks, no explanation.`
 
     let savedId = null;
     if (user) {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("reports")
         .insert({
           user_id: user.id,
@@ -83,9 +52,7 @@ Return ONLY the JSON object. No markdown, no backticks, no explanation.`
         })
         .select("id")
         .single();
-
       if (data) savedId = data.id;
-      if (error) console.error("Save error:", error);
     }
 
     return NextResponse.json({ report, savedId });
