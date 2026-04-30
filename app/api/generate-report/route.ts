@@ -8,11 +8,10 @@ export async function POST(req: NextRequest) {
   try {
     const { issuerName, issuerState, documents } = await req.json();
 
-    // Generate the credit report using AI with web search
     const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 4000,
-      tools: [{ type: "web_search_20250305", name: "web_search" }],
+      tools: [{ type: "web_search_20250305", name: "web_search" }] as any,
       messages: [{
         role: "user",
         content: `You are a municipal credit analyst. Search the web for financial information about "${issuerName}" in ${issuerState || "the United States"} and generate a comprehensive credit report.
@@ -55,7 +54,7 @@ Return ONLY the JSON object. No markdown, no backticks, no explanation.`
       if (block.type === "text") text += block.text;
     }
 
-    let report = null;
+    let report: any = null;
     try {
       const match = text.match(/\{[\s\S]*\}/);
       if (match) report = JSON.parse(match[0]);
@@ -65,7 +64,6 @@ Return ONLY the JSON object. No markdown, no backticks, no explanation.`
       return NextResponse.json({ error: "Failed to generate report" }, { status: 500 });
     }
 
-    // If user is logged in, save to database
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
