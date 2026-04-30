@@ -1,0 +1,176 @@
+import Link from "next/link";
+
+export default function HomePage() {
+  return (
+    <>
+      <section style={{ padding: "5rem 0 3rem", textAlign: "center", position: "relative" }}>
+        <div className="container">
+          <div style={{ maxWidth: 920, margin: "0 auto" }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: ".45rem",
+              background: "var(--accent-bg)", color: "var(--accent-soft)",
+              border: "1px solid rgba(99,102,241,.2)", fontSize: ".78rem",
+              fontWeight: 600, padding: ".38rem .85rem", borderRadius: 100,
+              marginBottom: "1.6rem"
+            }}>
+              <span style={{ width: 6, height: 6, background: "var(--accent)", borderRadius: "50%", boxShadow: "0 0 8px var(--accent)" }} />
+              AI-powered credit analysis for 22,400+ municipal issuers
+            </div>
+
+            <div style={{
+              fontFamily: "var(--mono)", fontSize: "clamp(.8rem, 1.2vw, .95rem)",
+              fontWeight: 600, textTransform: "uppercase", letterSpacing: ".2em",
+              color: "var(--text3)", marginBottom: "1rem",
+            }}>
+              Municipal Credit Analysis Reports
+            </div>
+
+            <h1 style={{
+              fontFamily: "var(--sans)", fontSize: "clamp(2.8rem,6vw,5.4rem)",
+              fontWeight: 800, letterSpacing: "-.045em", lineHeight: .95,
+              marginBottom: "1.5rem",
+            }}>
+              Make{" "}
+              <span style={{
+                fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400,
+                background: "linear-gradient(135deg, var(--accent-soft) 0%, #a78bfa 50%, var(--good) 100%)",
+                WebkitBackgroundClip: "text", backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}>informed decisions.</span>
+            </h1>
+
+            <p style={{
+              fontSize: "1.2rem", color: "var(--text2)", maxWidth: "58ch",
+              margin: "0 auto 2.5rem", lineHeight: 1.6
+            }}>
+              Search any issuer. Upload financial statements. Get a complete AI-powered credit report with
+              five-year analysis, forward projections, and risk flags — <strong style={{ color: "var(--text)" }}>completely free.</strong>
+            </p>
+
+            <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", marginBottom: ".8rem" }}>
+              <Link href="/builder" className="btn btn-accent btn-lg">Start analyzing — it&apos;s free →</Link>
+              <Link href="/pricing" className="btn btn-out btn-lg">See plans</Link>
+            </div>
+
+            <p style={{ fontSize: ".82rem", color: "var(--text3)", marginTop: "1.2rem" }}>
+              <strong style={{ color: "var(--text2)" }}>100% free to use.</strong> No account required.
+              1.3M bonds · 22,400 issuers · Create an account to save your reports.
+            </p>
+          </div>
+
+          {/* Stats row */}
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(4,1fr)",
+            borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)",
+            margin: "3rem 0 0",
+          }}>
+            {[
+              ["1.3M", "Bonds Indexed"],
+              ["22.4K", "Issuers"],
+              ["< 5 min", "Report Generation"],
+              ["50", "States Covered"],
+            ].map(([num, label]) => (
+              <div key={label} style={{
+                padding: "1.8rem 1.2rem", textAlign: "center",
+                borderRight: "1px solid var(--line)", position: "relative",
+              }}>
+                <div style={{
+                  position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+                  width: 30, height: 1,
+                  background: "var(--accent)", boxShadow: "0 0 8px var(--accent)",
+                }} />
+                <div style={{
+                  fontSize: "2.4rem", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1, marginBottom: ".3rem",
+                  background: "linear-gradient(180deg, var(--text) 0%, var(--text2) 100%)",
+                  WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent",
+                }}>{num}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".1em" }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="block">
+        <div className="container">
+          <div className="block-head">
+            <div className="block-eyebrow">How it works</div>
+            <h2>Upload. Analyze. <em>Report.</em></h2>
+            <p>Three steps from raw PDFs to a structured credit report with citations, charts, and risk flags — generated by AI, grounded in your documents.</p>
+          </div>
+
+          {[
+            {
+              tag: "Step 1: Search or Upload",
+              title: <>Find any issuer — or drag, drop, and let AI <em>read everything.</em></>,
+              desc: "Type an issuer name and MuniReports searches EMMA, state comptroller sites, and the issuer's own website to find their ACFR, budget, CIP, and Official Statement. Or upload your own files directly.",
+              items: ["Search 22,400 issuers — auto-discovers public documents", "Pulls from EMMA, state archives, and city websites", "Or drag-and-drop your own PDFs, XLSX, CSV", "Auto-detects document type & extracts tables"],
+            },
+            {
+              tag: "Step 2: AI Analysis",
+              title: <>Five-year history. Forward projections. <em>Risk flags.</em></>,
+              desc: "Once documents are parsed, MuniReports builds a complete financial picture: standardized 5-year statements, three-scenario forecast, CIP analysis, and a five-pillar credit sentiment score.",
+              items: ["5-year revenue, expenditure & fund balance trends", "3-scenario forecast (baseline, optimistic, cautious)", "Capital plan with project roster & funding sources", "Sensitivity analysis on key inputs"],
+            },
+            {
+              tag: "Step 3: Credit Report",
+              title: <>A full credit report. <em>Every claim cited.</em></>,
+              desc: "MuniReports generates a multi-section report: executive summary, financial analysis, capital plan review, debt profile, forward projections, and risk assessment. Every statement cites the exact source page.",
+              items: ["12–25 page report with executive summary", "Charts auto-generated from parsed data", "Every claim has an ACFR/OS page citation", "Export PDF · Share live link · Print-ready"],
+            },
+          ].map((f, i) => (
+            <div key={i} style={{
+              display: "grid", gridTemplateColumns: "1fr 1fr",
+              gap: "4rem", alignItems: "center", marginBottom: "5rem"
+            }}>
+              <div>
+                <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>{f.tag}</div>
+                <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>{f.title}</h3>
+                <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>{f.desc}</p>
+                <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
+                  {f.items.map((item) => (
+                    <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
+                      <span style={{ color: "var(--accent)", fontWeight: 600 }}>✓</span> {item}
+                    </li>
+                  ))}
+                </ul>
+                <Link href="/builder" className="btn btn-out">Try it now →</Link>
+              </div>
+              <div style={{
+                background: "var(--panel)", border: "1px solid var(--line)",
+                borderRadius: "var(--radius-lg)", padding: "1.4rem",
+                boxShadow: "0 15px 35px -18px rgba(22,20,18,.12)",
+                minHeight: 200, display: "flex", alignItems: "center",
+                justifyContent: "center", color: "var(--text3)", fontSize: ".9rem"
+              }}>
+                [Live demo available in Report Builder]
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <div style={{
+        background: "linear-gradient(135deg, var(--panel) 0%, var(--bg2) 100%)",
+        border: "1px solid var(--line)",
+        padding: "5rem 2rem",
+        textAlign: "center", borderRadius: 20, maxWidth: 1200, margin: "4rem auto",
+        position: "relative", overflow: "hidden"
+      }}>
+        <div style={{ position: "absolute", top: -200, right: -200, width: 500, height: 500, background: "radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 70%)", pointerEvents: "none" }} />
+        <h2 style={{ fontSize: "clamp(1.9rem,4vw,3.2rem)", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05, marginBottom: "1rem", position: "relative" }}>
+          Free credit reports. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400, color: "var(--accent-soft)" }}>Right now.</em>
+        </h2>
+        <p style={{ fontSize: "1.05rem", color: "var(--text2)", maxWidth: "48ch", margin: "0 auto 2rem", position: "relative" }}>
+          No account. No credit card. Search any issuer or upload your docs and have a full credit report in minutes.
+        </p>
+        <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", position: "relative" }}>
+          <Link href="/builder" className="btn btn-accent btn-lg">Start analyzing — free →</Link>
+          <Link href="/pricing" className="btn btn-out btn-lg">See plans</Link>
+        </div>
+      </div>
+    </>
+  );
+}
