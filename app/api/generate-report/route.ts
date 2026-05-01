@@ -14,67 +14,15 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 4096,
+        max_tokens: 3000,
         messages: [{
           role: "user",
-          content: `You are a senior municipal credit analyst producing a comprehensive credit report similar to Moody's format. Using your knowledge, generate a detailed credit analysis for "${issuerName}" in ${issuerState || "the United States"}.
+          content: `Municipal credit analyst: generate a credit report JSON for "${issuerName}" in ${issuerState || "US"}.
 
-Return a JSON object with ALL of these fields populated with realistic data based on your knowledge:
+Return ONLY this JSON (no markdown):
+{"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":82,"executive_summary":"2-3 paragraphs","scorecard":{"economy":{"score":"Aa1","factors":[{"name":"Tax Base","value":"$XXB","score":"Aa1"},{"name":"Per Capita Income","value":"$XX,XXX","score":"Aa2"}]},"finances":{"score":"Aa2","factors":[{"name":"Fund Balance Ratio","value":"XX%","score":"Aa2"},{"name":"Operating Margin","value":"X.X%","score":"Aa3"}]},"management":{"score":"Aa2","factors":[{"name":"Governance","value":"Strong","score":"Aa1"},{"name":"Budget History","value":"X surpluses","score":"Aaa"}]},"debt_profile":{"score":"A1","factors":[{"name":"Debt/Revenue","value":"X.XX","score":"A1"},{"name":"Pension Funded","value":"XX%","score":"A2"}]}},"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","pension_funded_ratio":"XX%","days_cash_on_hand":0},"revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],"expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],"revenue_composition":[{"category":"Property Tax","amount":0,"pct":"XX%"},{"category":"Sales Tax","amount":0,"pct":"XX%"},{"category":"Charges","amount":0,"pct":"XX%"},{"category":"Other","amount":0,"pct":"XX%"}],"expenditure_composition":[{"category":"Public Safety","amount":0,"pct":"XX%"},{"category":"General Gov","amount":0,"pct":"XX%"},{"category":"Public Works","amount":0,"pct":"XX%"},{"category":"Debt Service","amount":0,"pct":"XX%"},{"category":"Other","amount":0,"pct":"XX%"}],"debt_schedule":[{"year":"FY2026","principal":0,"interest":0,"total":0},{"year":"FY2027","principal":0,"interest":0,"total":0},{"year":"FY2028","principal":0,"interest":0,"total":0}],"peer_comparison":[{"name":"peer1","population":0,"rating":"AA+","fund_balance_ratio":"XX%","debt_per_capita":"$X,XXX","operating_margin":"X%"},{"name":"peer2","population":0,"rating":"AAA","fund_balance_ratio":"XX%","debt_per_capita":"$X,XXX","operating_margin":"X%"}],"risks":[{"title":"","severity":"medium","description":""}],"strengths":["",""],"capital_plan_summary":"1 paragraph","forward_outlook":"1 paragraph","sources":["ACFR","Budget","EMMA"]}
 
-{
-  "issuer_name": "full official name",
-  "state": "2-letter",
-  "type": "City/County/School District/etc",
-  "population": number,
-  "rating": "credit rating",
-  "rating_outlook": "Stable/Positive/Negative",
-  "sentiment": "Positive|Neutral|Negative",
-  "sentiment_score": number 0-100,
-  "executive_summary": "3-4 paragraph detailed executive summary",
-
-  "scorecard": {
-    "economy": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Tax Base Size", "value": "$XX billion", "score": "Aaa"}, {"name": "Full Value Per Capita", "value": "$XXX,XXX", "score": "Aa"}, {"name": "Median Family Income", "value": "$XX,XXX", "score": "Aa"}, {"name": "Economic Diversification", "value": "description", "score": "Aaa"}] },
-    "finances": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Fund Balance as % of Revenue", "value": "XX.X%", "score": "Aa"}, {"name": "5-Year Revenue Trend", "value": "+X.X% CAGR", "score": "Aa"}, {"name": "Cash Balance as % of Revenue", "value": "XX.X%", "score": "A"}, {"name": "Operating Margin", "value": "X.X%", "score": "Aa"}] },
-    "management": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Institutional Framework", "value": "description", "score": "Aa"}, {"name": "Operating History", "value": "X consecutive surpluses", "score": "Aaa"}, {"name": "Budget Flexibility", "value": "description", "score": "Aa"}] },
-    "debt_profile": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Debt to Revenue", "value": "X.XX", "score": "A"}, {"name": "Debt to Full Value", "value": "X.X%", "score": "Aa"}, {"name": "Debt per Capita", "value": "$X,XXX", "score": "A"}, {"name": "Pensions & OPEB", "value": "X.X% of revenue", "score": "A"}] }
-  },
-
-  "financials": {
-    "total_revenue": number,
-    "total_expenditures": number,
-    "fund_balance": number,
-    "fund_balance_ratio": "XX.X%",
-    "operating_margin": "X.X%",
-    "debt_outstanding": number,
-    "debt_to_revenue": "X.XX",
-    "debt_per_capita": "$X,XXX",
-    "pension_funded_ratio": "XX.X%",
-    "days_cash_on_hand": number,
-    "tax_collection_rate": "XX.X%",
-    "top_10_taxpayers_pct": "XX.X%"
-  },
-
-  "revenue_trend": [{"year": "FY20XX", "amount": number}, ...for 5 years],
-  "expenditure_trend": [{"year": "FY20XX", "amount": number}, ...for 5 years],
-
-  "revenue_composition": [{"category": "Property Tax", "amount": number, "pct": "XX.X%"}, {"category": "Sales Tax", "amount": number, "pct": "XX.X%"}, {"category": "Charges for Services", "amount": number, "pct": "XX.X%"}, {"category": "Intergovernmental", "amount": number, "pct": "XX.X%"}, {"category": "Other", "amount": number, "pct": "XX.X%"}],
-
-  "expenditure_composition": [{"category": "Public Safety", "amount": number, "pct": "XX.X%"}, {"category": "General Government", "amount": number, "pct": "XX.X%"}, {"category": "Public Works", "amount": number, "pct": "XX.X%"}, {"category": "Culture & Recreation", "amount": number, "pct": "XX.X%"}, {"category": "Debt Service", "amount": number, "pct": "XX.X%"}, {"category": "Other", "amount": number, "pct": "XX.X%"}],
-
-  "debt_schedule": [{"year": "FY20XX", "principal": number, "interest": number, "total": number}, ...for 5 years],
-
-  "peer_comparison": [{"name": "peer city name", "population": number, "rating": "rating", "fund_balance_ratio": "XX.X%", "debt_per_capita": "$X,XXX", "operating_margin": "X.X%"}, ...for 4-5 peers],
-
-  "risks": [{"title": "risk", "severity": "high|medium|low", "description": "detail"}],
-  "strengths": ["strength 1", "strength 2", "strength 3", "strength 4"],
-  "esg_profile": {"environmental": "description", "social": "description", "governance": "description"},
-  "capital_plan_summary": "2-3 paragraphs about CIP",
-  "forward_outlook": "2-3 paragraphs",
-  "management_discussion": "1-2 paragraphs about governance and management quality",
-  "sources": ["source 1", "source 2", "source 3"]
-}
-
-Return ONLY the JSON object. No markdown, no backticks. Populate every field with realistic data.`
+Fill ALL values with realistic data for this issuer. Return ONLY valid JSON.`
         }],
       }),
     });
@@ -82,7 +30,7 @@ Return ONLY the JSON object. No markdown, no backticks. Populate every field wit
     const data = await response.json();
 
     if (data.error) {
-      console.error("Anthropic API error:", data.error);
+      console.error("API error:", data.error);
       return NextResponse.json({ error: data.error.message }, { status: 500 });
     }
 
@@ -100,7 +48,7 @@ Return ONLY the JSON object. No markdown, no backticks. Populate every field wit
     } catch {}
 
     if (!report) {
-      return NextResponse.json({ error: "Failed to generate report" }, { status: 500 });
+      return NextResponse.json({ error: "Failed to parse report" }, { status: 500 });
     }
 
     const supabase = await createClient();
@@ -127,7 +75,7 @@ Return ONLY the JSON object. No markdown, no backticks. Populate every field wit
 
     return NextResponse.json({ report, savedId });
   } catch (error) {
-    console.error("Report generation error:", error);
+    console.error("Report error:", error);
     return NextResponse.json({ error: "Report generation failed" }, { status: 500 });
   }
 }
