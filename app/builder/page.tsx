@@ -389,6 +389,48 @@ export default function BuilderPage() {
                   <span style={{ fontSize: "1.1rem" }}>📈</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Revenue & Expenditure Trends</h3>
                 </div>
+
+                {/* SVG Bar Chart */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
+                  <svg viewBox="0 0 500 220" style={{ width: "100%", height: "auto" }}>
+                    {/* Grid lines */}
+                    {[0,1,2,3,4].map(i => (
+                      <line key={i} x1="50" y1={25 + i * 40} x2="490" y2={25 + i * 40} stroke="var(--line)" strokeWidth="0.5" />
+                    ))}
+                    {/* Bars */}
+                    {(() => {
+                      const rev = report.revenue_trend || [];
+                      const exp = report.expenditure_trend || [];
+                      const allAmounts = [...rev, ...exp].map((d: any) => d.amount).filter((a: any) => typeof a === "number");
+                      const maxVal = Math.max(...allAmounts, 1);
+                      const barW = Math.min(20, 300 / rev.length / 2.5);
+                      const gap = 460 / rev.length;
+                      return rev.map((r: any, i: number) => {
+                        const x = 60 + i * gap;
+                        const revH = (r.amount / maxVal) * 150;
+                        const expItem = exp[i];
+                        const expH = expItem ? (expItem.amount / maxVal) * 150 : 0;
+                        return (
+                          <g key={i}>
+                            <rect x={x} y={185 - revH} width={barW} height={revH} fill="#1e3a5f" rx="2" opacity="0.9" />
+                            {expH > 0 && <rect x={x + barW + 3} y={185 - expH} width={barW} height={expH} fill="#7c3aed" rx="2" opacity="0.7" />}
+                            <text x={x + barW} y="200" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{r.year?.replace("FY","'")}</text>
+                            <text x={x + barW/2} y={180 - revH} fill="var(--text2)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">
+                              {typeof r.amount === "number" ? `$${(r.amount/1000000).toFixed(0)}M` : ""}
+                            </text>
+                          </g>
+                        );
+                      });
+                    })()}
+                    {/* Legend */}
+                    <rect x="60" y="210" width="10" height="5" fill="#1e3a5f" rx="1" />
+                    <text x="75" y="215" fill="var(--text2)" fontSize="8" fontFamily="var(--mono)">Revenue</text>
+                    <rect x="140" y="210" width="10" height="5" fill="#7c3aed" rx="1" />
+                    <text x="155" y="215" fill="var(--text2)" fontSize="8" fontFamily="var(--mono)">Expenditures</text>
+                  </svg>
+                </div>
+
+                {/* Data table */}
                 <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
                   <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.revenue_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>
                     <div></div>
@@ -417,6 +459,55 @@ export default function BuilderPage() {
                 </div>
               </div>
             )}
+
+            {/* ── SECTION 3b: SENTIMENT GAUGE + FINANCIAL HEALTH ── */}
+            <div style={{ marginTop: "2.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <span style={{ fontSize: "1.1rem" }}>🎯</span>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Health Dashboard</h3>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                {/* Sentiment Gauge */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.5rem", textAlign: "center" }}>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".8rem" }}>AI Credit Sentiment Score</div>
+                  <svg viewBox="0 0 200 120" style={{ width: "180px", height: "auto", margin: "0 auto", display: "block" }}>
+                    {/* Background arc */}
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--line)" strokeWidth="12" strokeLinecap="round" />
+                    {/* Score arc */}
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none"
+                      stroke={report.sentiment === "Positive" ? "#059669" : report.sentiment === "Negative" ? "#dc2626" : "#d97706"}
+                      strokeWidth="12" strokeLinecap="round"
+                      strokeDasharray={`${(report.sentiment_score || 50) / 100 * 251} 251`}
+                    />
+                    <text x="100" y="85" textAnchor="middle" fontSize="28" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">{report.sentiment_score || "—"}</text>
+                    <text x="100" y="102" textAnchor="middle" fontSize="10" fill="var(--text3)" fontFamily="var(--mono)">/ 100</text>
+                  </svg>
+                  <div style={{ marginTop: ".5rem", fontSize: "1.1rem", fontWeight: 700, color: report.sentiment === "Positive" ? "var(--good)" : report.sentiment === "Negative" ? "var(--bad)" : "var(--warn)" }}>
+                    {report.sentiment}
+                  </div>
+                </div>
+
+                {/* Financial Health Bars */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.5rem" }}>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "1rem" }}>Key Financial Indicators</div>
+                  {[
+                    { label: "Fund Balance", value: report.financials?.fund_balance_ratio, pct: parseFloat(String(report.financials?.fund_balance_ratio || "0")) * (String(report.financials?.fund_balance_ratio || "").includes("%") ? 1 : 100), color: "#059669" },
+                    { label: "Operating Margin", value: report.financials?.operating_margin, pct: Math.abs(parseFloat(String(report.financials?.operating_margin || "0"))) * (String(report.financials?.operating_margin || "").includes("%") ? 1 : 100), color: "#1e3a5f" },
+                    { label: "Debt Coverage", value: report.financials?.debt_to_revenue, pct: Math.min(100, (1 / parseFloat(String(report.financials?.debt_to_revenue || "1"))) * 100), color: "#7c3aed" },
+                  ].map((ind, i) => (
+                    <div key={i} style={{ marginBottom: "1rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".3rem" }}>
+                        <span style={{ fontSize: ".85rem", color: "var(--text2)" }}>{ind.label}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 600 }}>{ind.value || "N/A"}</span>
+                      </div>
+                      <div style={{ height: 8, background: "var(--line)", borderRadius: 4, overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${Math.min(100, Math.max(5, ind.pct))}%`, background: ind.color, borderRadius: 4, transition: "width 0.5s" }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {/* ── SECTION 4: STRENGTHS ── */}
             {report.strengths?.length > 0 && (
