@@ -288,94 +288,238 @@ export default function BuilderPage() {
               📊 Credit Report · {report.issuer_name}
             </div>
             <div style={{ display: "flex", gap: ".4rem" }}>
+              <button className="btn btn-out btn-sm" onClick={() => window.print()}>📄 Print / PDF</button>
               <button className="btn btn-out btn-sm" onClick={() => { setReport(null); setSelectedIssuer(null); setQuery(""); }}>
                 ← New report
               </button>
             </div>
           </div>
-          <div style={{ padding: "2rem 2.2rem", maxWidth: 800 }}>
-            <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 600, marginBottom: ".5rem" }}>
-              Executive Summary
+          <div style={{ padding: "2.5rem 2.5rem", maxWidth: 900, margin: "0 auto" }}>
+
+            {/* ── HEADER ── */}
+            <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent-soft)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>
+              Municipal Credit Analysis Report
             </div>
-            <h2 style={{ fontFamily: "var(--serif)", fontSize: "2rem", fontWeight: 500, marginBottom: ".4rem" }}>
+            <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.2rem", fontWeight: 400, marginBottom: ".4rem", lineHeight: 1.1 }}>
               {report.issuer_name}
             </h2>
-            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>
+            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1.05rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1.2rem", borderBottom: "1px solid var(--line)" }}>
               {report.type} · {report.state} · Rating: {report.rating}
             </div>
 
-            {/* Sentiment + KPIs */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".8rem", margin: "1.5rem 0", padding: "1.2rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Sentiment</div>
-                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: report.sentiment === "Positive" ? "var(--good)" : report.sentiment === "Negative" ? "var(--bad)" : "var(--warn)" }}>
+            {/* ── SENTIMENT + TOP KPIs ── */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: ".6rem", margin: "1.5rem 0", padding: "1.4rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)" }}>
+              <div style={{ textAlign: "center", borderRight: "1px solid var(--line)", paddingRight: ".6rem" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>AI Sentiment</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700, color: report.sentiment === "Positive" ? "var(--good)" : report.sentiment === "Negative" ? "var(--bad)" : "var(--warn)" }}>
                   {report.sentiment}
                 </div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>Score: {report.sentiment_score}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>Score: {report.sentiment_score}/100</div>
               </div>
-              {report.financials?.fund_balance_ratio && (
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Fund Balance</div>
-                  <div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{report.financials.fund_balance_ratio}</div>
-                </div>
-              )}
-              {report.financials?.operating_margin && (
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Op. Margin</div>
-                  <div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{report.financials.operating_margin}</div>
-                </div>
-              )}
-              {report.financials?.debt_to_revenue && (
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Debt/Revenue</div>
-                  <div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{report.financials.debt_to_revenue}</div>
-                </div>
-              )}
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Fund Balance</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.fund_balance_ratio || "N/A"}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>of expenditures</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Op. Margin</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.operating_margin || "N/A"}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>net revenue</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Debt/Revenue</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.debt_to_revenue || "N/A"}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>leverage ratio</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Rating</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--accent-soft)" }}>{report.rating || "NR"}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>credit rating</div>
+              </div>
             </div>
 
-            {/* Summary text */}
-            <div style={{ fontSize: ".95rem", lineHeight: 1.7, color: "var(--text)", marginBottom: "1.5rem", whiteSpace: "pre-wrap" }}>
-              {report.executive_summary}
+            {/* ── SECTION 1: EXECUTIVE SUMMARY ── */}
+            <div style={{ marginTop: "2.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <span style={{ fontSize: "1.1rem" }}>📋</span>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-.01em" }}>Executive Summary</h3>
+              </div>
+              <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap" }}>
+                {report.executive_summary}
+              </div>
             </div>
 
-            {/* Risks */}
-            {report.risks?.length > 0 && (
-              <>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: ".8rem", marginTop: "2rem" }}>Risk Assessment</h3>
-                {report.risks.map((risk: any, i: number) => (
-                  <div key={i} style={{
-                    margin: ".6rem 0", padding: "1rem",
-                    borderLeft: `3px solid ${risk.severity === "high" ? "var(--bad)" : "var(--warn)"}`,
-                    background: risk.severity === "high" ? "var(--bad-bg)" : "var(--warn-bg)",
-                    borderRadius: "0 var(--radius) var(--radius) 0",
-                  }}>
-                    <h5 style={{ fontSize: ".88rem", fontWeight: 600, color: risk.severity === "high" ? "var(--bad)" : "var(--warn)", marginBottom: ".3rem" }}>
-                      {risk.severity === "high" ? "🚩" : "⚠️"} {risk.title}
-                    </h5>
-                    <p style={{ fontSize: ".88rem", color: "var(--text2)", margin: 0 }}>{risk.description}</p>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {/* Forward outlook */}
-            {report.forward_outlook && (
-              <>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: ".8rem", marginTop: "2rem" }}>Forward Outlook</h3>
-                <p style={{ fontSize: ".95rem", lineHeight: 1.7, color: "var(--text)" }}>{report.forward_outlook}</p>
-              </>
-            )}
-
-            {/* Sources */}
-            {report.sources?.length > 0 && (
-              <div style={{ marginTop: "2rem", paddingTop: "1.2rem", borderTop: "1px solid var(--line)" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>
-                  Sources: {report.sources.map((s: string, i: number) => (
-                    <span key={i} style={{ display: "inline-block", margin: ".1rem .15rem", padding: ".15rem .45rem", background: "var(--bg)", border: "1px solid var(--line-soft)", borderRadius: 3 }}>{s}</span>
+            {/* ── SECTION 2: DETAILED FINANCIALS ── */}
+            {report.financials && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>💰</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Financial Overview</h3>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                  {[
+                    ["Total Revenue", report.financials.total_revenue, true],
+                    ["Total Expenditures", report.financials.total_expenditures, true],
+                    ["Fund Balance", report.financials.fund_balance, true],
+                    ["Debt Outstanding", report.financials.debt_outstanding, true],
+                    ["Fund Balance Ratio", report.financials.fund_balance_ratio, false],
+                    ["Operating Margin", report.financials.operating_margin, false],
+                    ["Debt-to-Revenue", report.financials.debt_to_revenue, false],
+                  ].filter(([, val]) => val != null).map(([label, value, isCurrency], i) => (
+                    <div key={i} style={{
+                      padding: "1rem 1.2rem",
+                      borderBottom: "1px solid var(--line)",
+                      borderRight: i % 2 === 0 ? "1px solid var(--line)" : "none",
+                      display: "flex", justifyContent: "space-between", alignItems: "center",
+                    }}>
+                      <span style={{ fontSize: ".9rem", color: "var(--text2)" }}>{label as string}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 600 }}>
+                        {isCurrency && typeof value === "number" ? `$${(value as number / 1000000).toFixed(1)}M` : String(value)}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>
             )}
+
+            {/* ── SECTION 3: REVENUE & EXPENDITURE TRENDS ── */}
+            {report.revenue_trend?.length > 0 && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>📈</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Revenue & Expenditure Trends</h3>
+                </div>
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.revenue_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>
+                    <div></div>
+                    {report.revenue_trend.map((r: any, i: number) => (
+                      <div key={i} style={{ textAlign: "right" }}>{r.year}</div>
+                    ))}
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.revenue_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem", borderBottom: "1px solid var(--line)" }}>
+                    <div style={{ fontSize: ".88rem", color: "var(--text2)" }}>Revenue</div>
+                    {report.revenue_trend.map((r: any, i: number) => (
+                      <div key={i} style={{ textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
+                        {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
+                      </div>
+                    ))}
+                  </div>
+                  {report.expenditure_trend?.length > 0 && (
+                    <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.expenditure_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem" }}>
+                      <div style={{ fontSize: ".88rem", color: "var(--text2)" }}>Expenses</div>
+                      {report.expenditure_trend.map((r: any, i: number) => (
+                        <div key={i} style={{ textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
+                          {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 4: STRENGTHS ── */}
+            {report.strengths?.length > 0 && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>✅</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Strengths</h3>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
+                  {report.strengths.map((s: string, i: number) => (
+                    <div key={i} style={{
+                      padding: ".9rem 1rem", background: "var(--good-bg)", border: "1px solid rgba(52,211,153,.2)",
+                      borderRadius: "var(--radius)", display: "flex", gap: ".6rem", alignItems: "flex-start",
+                      fontSize: ".9rem", color: "var(--text)",
+                    }}>
+                      <span style={{ color: "var(--good)", fontWeight: 700, flexShrink: 0 }}>✓</span>
+                      {s}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 5: RISK ASSESSMENT ── */}
+            {report.risks?.length > 0 && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>⚠️</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Risk Assessment</h3>
+                </div>
+                {report.risks.map((risk: any, i: number) => (
+                  <div key={i} style={{
+                    margin: ".6rem 0", padding: "1.1rem 1.2rem",
+                    borderLeft: `3px solid ${risk.severity === "high" ? "var(--bad)" : risk.severity === "medium" ? "var(--warn)" : "var(--text3)"}`,
+                    background: risk.severity === "high" ? "var(--bad-bg)" : risk.severity === "medium" ? "var(--warn-bg)" : "var(--bg)",
+                    borderRadius: "0 var(--radius) var(--radius) 0",
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".3rem" }}>
+                      <h5 style={{ fontSize: ".92rem", fontWeight: 600, color: risk.severity === "high" ? "var(--bad)" : risk.severity === "medium" ? "var(--warn)" : "var(--text2)" }}>
+                        {risk.severity === "high" ? "🚩" : risk.severity === "medium" ? "⚠️" : "ℹ️"} {risk.title}
+                      </h5>
+                      <span style={{
+                        fontFamily: "var(--mono)", fontSize: ".68rem", textTransform: "uppercase", letterSpacing: ".08em",
+                        padding: ".2rem .5rem", borderRadius: 4, fontWeight: 600,
+                        background: risk.severity === "high" ? "var(--bad)" : risk.severity === "medium" ? "var(--warn)" : "var(--text3)",
+                        color: risk.severity === "medium" ? "var(--bg)" : "#fff",
+                      }}>{risk.severity}</span>
+                    </div>
+                    <p style={{ fontSize: ".88rem", color: "var(--text2)", margin: 0, lineHeight: 1.6 }}>{risk.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── SECTION 6: CAPITAL IMPROVEMENT PLAN ── */}
+            {report.capital_plan_summary && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏗️</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Capital Improvement Plan</h3>
+                </div>
+                <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap" }}>
+                  {report.capital_plan_summary}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 7: FORWARD OUTLOOK ── */}
+            {report.forward_outlook && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🔮</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Forward Outlook</h3>
+                </div>
+                <div style={{ padding: "1.2rem 1.4rem", background: "var(--accent-bg)", border: "1px solid rgba(99,102,241,.2)", borderRadius: "var(--radius)", fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap" }}>
+                  {report.forward_outlook}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 8: SOURCES ── */}
+            {report.sources?.length > 0 && (
+              <div style={{ marginTop: "2.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--line)" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", marginBottom: ".5rem", textTransform: "uppercase", letterSpacing: ".08em" }}>
+                  Sources & References
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem" }}>
+                  {report.sources.map((s: string, i: number) => (
+                    <span key={i} style={{ display: "inline-block", padding: ".25rem .6rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 4, fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text2)" }}>{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── FOOTER ── */}
+            <div style={{ marginTop: "2.5rem", paddingTop: "1.2rem", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>
+                Generated by MuniReports AI · {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+              </div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>
+                munireports.com
+              </div>
+            </div>
           </div>
         </div>
       )}
