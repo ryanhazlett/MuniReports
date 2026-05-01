@@ -1,7 +1,7 @@
 {
   "functions": {
     "app/api/generate-report/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 120
     },
     "app/api/search-issuers/route.ts": {
       "maxDuration": 30
