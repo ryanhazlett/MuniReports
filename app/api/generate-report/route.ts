@@ -1,26 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/utils/supabase/server";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
     const { issuerName, issuerState } = await req.json();
 
-    const response = await client.messages.create({
-      model: "claude-3-5-sonnet-20241022",
-      max_tokens: 4000,
-      tools: [{ type: "web_search_20250305", name: "web_search" }] as any,
-      messages: [{
-        role: "user",
-        content: `You are a municipal credit analyst. Search the web for financial information about "${issuerName}" in ${issuerState || "the United States"} and generate a credit report. Search for their most recent ACFR, budget, bond issuances, credit ratings, and financial data. Generate a JSON object with: issuer_name, state, type, rating, sentiment (Positive|Neutral|Negative), sentiment_score (0-100), executive_summary (2-3 paragraphs), financials (total_revenue, total_expenditures, fund_balance, fund_balance_ratio, operating_margin, debt_outstanding, debt_to_revenue), risks (array of {title, severity high|medium|low, description}), strengths (array of strings), capital_plan_summary, forward_outlook, sources (array). Return ONLY the JSON object, no markdown, no backticks.`
-      }],
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ANTHROPIC_API_KEY || "",
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6-20250415",
+        max_tokens: 4000,
+        messages: [{
+          role: "user",
+          content: `You are a municipal credit analyst. Using your knowledge, generate a comprehensive credit report for "${issuerName}" in ${issuerState || "the United States"}. Generate a JSON object with: issuer_name, state, type, rating, sentiment (Positive|Neutral|Negative), sentiment_score (0-100), executive_summary (2-3 paragraphs), financials (total_revenue, total_expenditures, fund_balance, fund_balance_ratio, operating_margin, debt_outstanding, debt_to_revenue), risks (array of {title, severity high|medium|low, description}), strengths (array of strings), capital_plan_summary, forward_outlook, sources (array). Return ONLY the JSON object, no markdown, no backticks.`
+        }],
+      }),
     });
 
+    const data = await response.json();
+
+    if (data.error) {
+      console.error("Anthropic API error:", data.error);
+      return NextResponse.json({ error: data.error.message }, { status: 500 });
+    }
+
     let text = "";
-    for (const block of response.content) {
-      if (block.type === "text") text += block.text;
+    if (data.content) {
+      for (const block of data.content) {
+        if (block.type === "text") text += block.text;
+      }
     }
 
     let report: any = null;
@@ -38,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     let savedId = null;
     if (user) {
-      const { data } = await supabase
+      const { data: saveData } = await supabase
         .from("reports")
         .insert({
           user_id: user.id,
@@ -52,7 +65,7 @@ export async function POST(req: NextRequest) {
         })
         .select("id")
         .single();
-      if (data) savedId = data.id;
+      if (saveData) savedId = saveData.id;
     }
 
     return NextResponse.json({ report, savedId });
