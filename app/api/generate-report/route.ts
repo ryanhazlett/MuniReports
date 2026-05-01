@@ -14,10 +14,67 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 4000,
+        max_tokens: 4096,
         messages: [{
           role: "user",
-          content: `You are a municipal credit analyst. Using your knowledge, generate a comprehensive credit report for "${issuerName}" in ${issuerState || "the United States"}. Generate a JSON object with: issuer_name, state, type, rating, sentiment (Positive|Neutral|Negative), sentiment_score (0-100), executive_summary (2-3 paragraphs), financials (total_revenue, total_expenditures, fund_balance, fund_balance_ratio, operating_margin, debt_outstanding, debt_to_revenue), risks (array of {title, severity high|medium|low, description}), strengths (array of strings), capital_plan_summary, forward_outlook, sources (array). Return ONLY the JSON object, no markdown, no backticks.`
+          content: `You are a senior municipal credit analyst producing a comprehensive credit report similar to Moody's format. Using your knowledge, generate a detailed credit analysis for "${issuerName}" in ${issuerState || "the United States"}.
+
+Return a JSON object with ALL of these fields populated with realistic data based on your knowledge:
+
+{
+  "issuer_name": "full official name",
+  "state": "2-letter",
+  "type": "City/County/School District/etc",
+  "population": number,
+  "rating": "credit rating",
+  "rating_outlook": "Stable/Positive/Negative",
+  "sentiment": "Positive|Neutral|Negative",
+  "sentiment_score": number 0-100,
+  "executive_summary": "3-4 paragraph detailed executive summary",
+
+  "scorecard": {
+    "economy": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Tax Base Size", "value": "$XX billion", "score": "Aaa"}, {"name": "Full Value Per Capita", "value": "$XXX,XXX", "score": "Aa"}, {"name": "Median Family Income", "value": "$XX,XXX", "score": "Aa"}, {"name": "Economic Diversification", "value": "description", "score": "Aaa"}] },
+    "finances": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Fund Balance as % of Revenue", "value": "XX.X%", "score": "Aa"}, {"name": "5-Year Revenue Trend", "value": "+X.X% CAGR", "score": "Aa"}, {"name": "Cash Balance as % of Revenue", "value": "XX.X%", "score": "A"}, {"name": "Operating Margin", "value": "X.X%", "score": "Aa"}] },
+    "management": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Institutional Framework", "value": "description", "score": "Aa"}, {"name": "Operating History", "value": "X consecutive surpluses", "score": "Aaa"}, {"name": "Budget Flexibility", "value": "description", "score": "Aa"}] },
+    "debt_profile": { "score": "Aaa/Aa/A/Baa/Ba", "factors": [{"name": "Debt to Revenue", "value": "X.XX", "score": "A"}, {"name": "Debt to Full Value", "value": "X.X%", "score": "Aa"}, {"name": "Debt per Capita", "value": "$X,XXX", "score": "A"}, {"name": "Pensions & OPEB", "value": "X.X% of revenue", "score": "A"}] }
+  },
+
+  "financials": {
+    "total_revenue": number,
+    "total_expenditures": number,
+    "fund_balance": number,
+    "fund_balance_ratio": "XX.X%",
+    "operating_margin": "X.X%",
+    "debt_outstanding": number,
+    "debt_to_revenue": "X.XX",
+    "debt_per_capita": "$X,XXX",
+    "pension_funded_ratio": "XX.X%",
+    "days_cash_on_hand": number,
+    "tax_collection_rate": "XX.X%",
+    "top_10_taxpayers_pct": "XX.X%"
+  },
+
+  "revenue_trend": [{"year": "FY20XX", "amount": number}, ...for 5 years],
+  "expenditure_trend": [{"year": "FY20XX", "amount": number}, ...for 5 years],
+
+  "revenue_composition": [{"category": "Property Tax", "amount": number, "pct": "XX.X%"}, {"category": "Sales Tax", "amount": number, "pct": "XX.X%"}, {"category": "Charges for Services", "amount": number, "pct": "XX.X%"}, {"category": "Intergovernmental", "amount": number, "pct": "XX.X%"}, {"category": "Other", "amount": number, "pct": "XX.X%"}],
+
+  "expenditure_composition": [{"category": "Public Safety", "amount": number, "pct": "XX.X%"}, {"category": "General Government", "amount": number, "pct": "XX.X%"}, {"category": "Public Works", "amount": number, "pct": "XX.X%"}, {"category": "Culture & Recreation", "amount": number, "pct": "XX.X%"}, {"category": "Debt Service", "amount": number, "pct": "XX.X%"}, {"category": "Other", "amount": number, "pct": "XX.X%"}],
+
+  "debt_schedule": [{"year": "FY20XX", "principal": number, "interest": number, "total": number}, ...for 5 years],
+
+  "peer_comparison": [{"name": "peer city name", "population": number, "rating": "rating", "fund_balance_ratio": "XX.X%", "debt_per_capita": "$X,XXX", "operating_margin": "X.X%"}, ...for 4-5 peers],
+
+  "risks": [{"title": "risk", "severity": "high|medium|low", "description": "detail"}],
+  "strengths": ["strength 1", "strength 2", "strength 3", "strength 4"],
+  "esg_profile": {"environmental": "description", "social": "description", "governance": "description"},
+  "capital_plan_summary": "2-3 paragraphs about CIP",
+  "forward_outlook": "2-3 paragraphs",
+  "management_discussion": "1-2 paragraphs about governance and management quality",
+  "sources": ["source 1", "source 2", "source 3"]
+}
+
+Return ONLY the JSON object. No markdown, no backticks. Populate every field with realistic data.`
         }],
       }),
     });

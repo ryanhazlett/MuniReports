@@ -509,7 +509,242 @@ export default function BuilderPage() {
               </div>
             </div>
 
-            {/* ── SECTION 4: STRENGTHS ── */}
+            {/* ── SECTION 4: MOODY'S-STYLE CREDIT SCORECARD ── */}
+            {report.scorecard && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>📊</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Scorecard</h3>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  {(["economy", "finances", "management", "debt_profile"] as const).map((pillar) => {
+                    const data = (report.scorecard as any)?.[pillar];
+                    if (!data) return null;
+                    const labels: any = { economy: "Economy & Tax Base", finances: "Financial Performance", management: "Management & Governance", debt_profile: "Debt & Pensions" };
+                    const icons: any = { economy: "🏙️", finances: "💵", management: "🏛️", debt_profile: "📉" };
+                    return (
+                      <div key={pillar} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                        <div style={{ padding: ".8rem 1rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg2)" }}>
+                          <div style={{ fontWeight: 600, fontSize: ".9rem", display: "flex", alignItems: "center", gap: ".4rem" }}>{icons[pillar]} {labels[pillar]}</div>
+                          <span style={{ fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 700, color: "var(--accent)", background: "var(--accent-bg)", padding: ".2rem .6rem", borderRadius: 4 }}>{data.score}</span>
+                        </div>
+                        {data.factors?.map((f: any, j: number) => (
+                          <div key={j} style={{ padding: ".6rem 1rem", borderBottom: "1px solid var(--line-soft)", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: ".85rem" }}>
+                            <span style={{ color: "var(--text2)" }}>{f.name}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
+                              <span style={{ fontFamily: "var(--mono)", fontSize: ".82rem" }}>{f.value}</span>
+                              <span style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", background: "var(--accent-bg)", padding: ".1rem .35rem", borderRadius: 3 }}>{f.score}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 5: REVENUE & EXPENDITURE COMPOSITION ── */}
+            {(report.revenue_composition?.length > 0 || report.expenditure_composition?.length > 0) && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🍩</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Revenue & Expenditure Composition</h3>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  {/* Revenue donut */}
+                  {report.revenue_composition?.length > 0 && (
+                    <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".8rem" }}>Revenue Sources</div>
+                      <svg viewBox="0 0 200 200" style={{ width: 160, height: 160, display: "block", margin: "0 auto .8rem" }}>
+                        {(() => {
+                          const colors = ["#1e3a5f", "#2b5278", "#7c3aed", "#059669", "#d97706", "#9ca3af"];
+                          let offset = 0;
+                          return report.revenue_composition.map((item: any, i: number) => {
+                            const pct = parseFloat(String(item.pct)) || 0;
+                            const dashLen = (pct / 100) * 314;
+                            const el = <circle key={i} cx="100" cy="100" r="50" fill="none" stroke={colors[i % colors.length]} strokeWidth="30" strokeDasharray={`${dashLen} ${314 - dashLen}`} strokeDashoffset={-offset} transform="rotate(-90 100 100)" />;
+                            offset += dashLen;
+                            return el;
+                          });
+                        })()}
+                        <circle cx="100" cy="100" r="35" fill="var(--panel)" />
+                        <text x="100" y="96" textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">Revenue</text>
+                        <text x="100" y="110" textAnchor="middle" fontSize="8" fill="var(--text3)" fontFamily="var(--mono)">{report.financials?.total_revenue ? `$${(report.financials.total_revenue/1e6).toFixed(0)}M` : ""}</text>
+                      </svg>
+                      {report.revenue_composition.map((item: any, i: number) => {
+                        const colors = ["#1e3a5f", "#2b5278", "#7c3aed", "#059669", "#d97706", "#9ca3af"];
+                        return (
+                          <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".3rem 0", fontSize: ".82rem" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: ".4rem", color: "var(--text2)" }}>
+                              <span style={{ width: 8, height: 8, borderRadius: 2, background: colors[i % colors.length], flexShrink: 0 }} />
+                              {item.category}
+                            </div>
+                            <span style={{ fontFamily: "var(--mono)", fontWeight: 500 }}>{item.pct}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {/* Expenditure donut */}
+                  {report.expenditure_composition?.length > 0 && (
+                    <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".8rem" }}>Expenditure Breakdown</div>
+                      <svg viewBox="0 0 200 200" style={{ width: 160, height: 160, display: "block", margin: "0 auto .8rem" }}>
+                        {(() => {
+                          const colors = ["#dc2626", "#1e3a5f", "#7c3aed", "#059669", "#d97706", "#9ca3af"];
+                          let offset = 0;
+                          return report.expenditure_composition.map((item: any, i: number) => {
+                            const pct = parseFloat(String(item.pct)) || 0;
+                            const dashLen = (pct / 100) * 314;
+                            const el = <circle key={i} cx="100" cy="100" r="50" fill="none" stroke={colors[i % colors.length]} strokeWidth="30" strokeDasharray={`${dashLen} ${314 - dashLen}`} strokeDashoffset={-offset} transform="rotate(-90 100 100)" />;
+                            offset += dashLen;
+                            return el;
+                          });
+                        })()}
+                        <circle cx="100" cy="100" r="35" fill="var(--panel)" />
+                        <text x="100" y="96" textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">Expenses</text>
+                        <text x="100" y="110" textAnchor="middle" fontSize="8" fill="var(--text3)" fontFamily="var(--mono)">{report.financials?.total_expenditures ? `$${(report.financials.total_expenditures/1e6).toFixed(0)}M` : ""}</text>
+                      </svg>
+                      {report.expenditure_composition.map((item: any, i: number) => {
+                        const colors = ["#dc2626", "#1e3a5f", "#7c3aed", "#059669", "#d97706", "#9ca3af"];
+                        return (
+                          <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".3rem 0", fontSize: ".82rem" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: ".4rem", color: "var(--text2)" }}>
+                              <span style={{ width: 8, height: 8, borderRadius: 2, background: colors[i % colors.length], flexShrink: 0 }} />
+                              {item.category}
+                            </div>
+                            <span style={{ fontFamily: "var(--mono)", fontWeight: 500 }}>{item.pct}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 6: DEBT SERVICE SCHEDULE ── */}
+            {report.debt_schedule?.length > 0 && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>📉</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Debt Service Schedule</h3>
+                </div>
+                {/* Stacked bar chart */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: ".8rem" }}>
+                  <svg viewBox="0 0 500 180" style={{ width: "100%", height: "auto" }}>
+                    {[0,1,2,3].map(i => <line key={i} x1="50" y1={20+i*40} x2="490" y2={20+i*40} stroke="var(--line)" strokeWidth="0.5" />)}
+                    {(() => {
+                      const maxTotal = Math.max(...report.debt_schedule.map((d: any) => d.total || 0), 1);
+                      const gap = 440 / report.debt_schedule.length;
+                      return report.debt_schedule.map((d: any, i: number) => {
+                        const x = 60 + i * gap;
+                        const pH = (d.principal / maxTotal) * 120;
+                        const iH = (d.interest / maxTotal) * 120;
+                        return (
+                          <g key={i}>
+                            <rect x={x} y={155 - pH - iH} width={gap * 0.6} height={pH} fill="#1e3a5f" rx="2" />
+                            <rect x={x} y={155 - iH} width={gap * 0.6} height={iH} fill="#7c3aed" rx="2" opacity="0.6" />
+                            <text x={x + gap * 0.3} y="170" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{d.year?.replace("FY","'")}</text>
+                          </g>
+                        );
+                      });
+                    })()}
+                    <rect x="60" y="175" width="10" height="4" fill="#1e3a5f" rx="1" />
+                    <text x="75" y="179" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Principal</text>
+                    <rect x="130" y="175" width="10" height="4" fill="#7c3aed" rx="1" opacity="0.6" />
+                    <text x="145" y="179" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Interest</text>
+                  </svg>
+                </div>
+                {/* Table */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase" }}>
+                    <div>Year</div><div style={{ textAlign: "right" }}>Principal</div><div style={{ textAlign: "right" }}>Interest</div><div style={{ textAlign: "right" }}>Total</div>
+                  </div>
+                  {report.debt_schedule.map((d: any, i: number) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: ".6rem 1rem", borderBottom: "1px solid var(--line-soft)", fontFamily: "var(--mono)", fontSize: ".85rem" }}>
+                      <div>{d.year}</div>
+                      <div style={{ textAlign: "right" }}>${(d.principal/1e6).toFixed(1)}M</div>
+                      <div style={{ textAlign: "right" }}>${(d.interest/1e6).toFixed(1)}M</div>
+                      <div style={{ textAlign: "right", fontWeight: 600 }}>${(d.total/1e6).toFixed(1)}M</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 7: PEER COMPARISON ── */}
+            {report.peer_comparison?.length > 0 && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏆</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Peer Comparison</h3>
+                </div>
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase" }}>
+                    <div>Municipality</div><div style={{textAlign:"right"}}>Pop.</div><div style={{textAlign:"right"}}>Rating</div><div style={{textAlign:"right"}}>Fund Bal.</div><div style={{textAlign:"right"}}>Debt/Cap.</div><div style={{textAlign:"right"}}>Op. Margin</div>
+                  </div>
+                  {/* Subject issuer row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line)", background: "var(--accent-bg)", fontSize: ".85rem" }}>
+                    <div style={{ fontWeight: 700, color: "var(--accent)" }}>{report.issuer_name} ←</div>
+                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.population ? (report.population/1000).toFixed(0) + "K" : "—"}</div>
+                    <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{report.rating}</div>
+                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.fund_balance_ratio || "—"}</div>
+                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.debt_per_capita || "—"}</div>
+                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.operating_margin || "—"}</div>
+                  </div>
+                  {report.peer_comparison.map((p: any, i: number) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line-soft)", fontSize: ".85rem" }}>
+                      <div style={{ fontWeight: 500 }}>{p.name}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.population ? (p.population/1000).toFixed(0) + "K" : "—"}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{p.rating}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.fund_balance_ratio || "—"}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.debt_per_capita || "—"}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.operating_margin || "—"}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── SECTION 8: ESG PROFILE ── */}
+            {report.esg_profile && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🌱</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>ESG Credit Profile</h3>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem" }}>
+                  {[
+                    { label: "Environmental", icon: "🌍", text: report.esg_profile.environmental, color: "#059669" },
+                    { label: "Social", icon: "👥", text: report.esg_profile.social, color: "#7c3aed" },
+                    { label: "Governance", icon: "🏛️", text: report.esg_profile.governance, color: "#1e3a5f" },
+                  ].map((esg, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: ".4rem", marginBottom: ".6rem" }}>
+                        <span>{esg.icon}</span>
+                        <span style={{ fontWeight: 600, fontSize: ".9rem" }}>{esg.label}</span>
+                      </div>
+                      <p style={{ fontSize: ".85rem", color: "var(--text2)", lineHeight: 1.6, margin: 0 }}>{esg.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── MANAGEMENT DISCUSSION ── */}
+            {report.management_discussion && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏛️</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Management & Governance</h3>
+                </div>
+                <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap" }}>
+                  {report.management_discussion}
+                </div>
+              </div>
+            )}
             {report.strengths?.length > 0 && (
               <div style={{ marginTop: "2.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
