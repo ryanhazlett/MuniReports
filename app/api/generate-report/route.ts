@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
         tools: [{"type": "web_search_20250305", "name": "web_search"}],
         messages: [{
           role: "user",
-          content: `Search the web for the most recent financial data for "${issuerName}" in ${issuerState || "US"}. Look for their latest ACFR, budget, and bond ratings. Then generate a credit report as JSON. Return ONLY valid JSON, no markdown:
+          content: `Search the web for the most recent financial data for "${issuerName}" in ${issuerState || "US"}. Find their latest ACFR, adopted budget, and credit ratings. Then return ONLY a valid JSON credit report, no markdown:
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":82,
-"executive_summary":"2 paragraphs with specific recent data",
+"executive_summary":"2 paragraphs citing specific recent fiscal year data you found",
 "economy":{"description":"1 paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment Growth","value":"X.X%","trend":"up"},{"name":"Population Growth","value":"X.X%","trend":"up"},{"name":"Housing Starts","value":"X,XXX","trend":"flat"}]},
 "financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","pension_funded_ratio":"XX%","days_cash_on_hand":0},
 "revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
