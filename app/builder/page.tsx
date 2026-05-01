@@ -280,7 +280,7 @@ export default function BuilderPage() {
           borderRadius: "var(--radius-lg)", overflow: "hidden",
           boxShadow: "0 20px 50px -20px rgba(22,20,18,.15)",
         }}>
-          <div style={{
+          <div className="no-print" style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
             padding: ".75rem 1.2rem", background: "var(--bg2)", borderBottom: "1px solid var(--line)",
           }}>
@@ -295,6 +295,18 @@ export default function BuilderPage() {
             </div>
           </div>
           <div style={{ padding: "2.5rem 2.5rem", maxWidth: 900, margin: "0 auto" }}>
+
+            {/* Print-only header */}
+            <div className="report-print-header">
+              <div>
+                <div style={{ fontWeight: 700, fontSize: "1.2rem" }}>MuniReports</div>
+                <div style={{ fontSize: ".8rem", color: "#666" }}>Municipal Credit Analysis Report</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: ".8rem", color: "#666" }}>{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
+                <div style={{ fontSize: ".8rem", color: "#666" }}>munireports.com</div>
+              </div>
+            </div>
 
             {/* ── HEADER ── */}
             <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent-soft)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>

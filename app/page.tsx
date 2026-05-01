@@ -271,6 +271,213 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ========= SAMPLE REPORT ========= */}
+      <section className="block" style={{ background: "var(--bg2)" }}>
+        <div className="container">
+          <div className="block-head">
+            <div className="block-eyebrow">Sample Report</div>
+            <h2>See what you&apos;ll get — <em>in seconds.</em></h2>
+            <p>Here&apos;s a real AI-generated credit report. Every report follows this structure, with data sourced from public financial records.</p>
+          </div>
+
+          <div style={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--card-shadow)", maxWidth: 920, margin: "0 auto" }}>
+            {/* Report bar */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: ".75rem 1.2rem", background: "var(--bg2)", borderBottom: "1px solid var(--line)" }}>
+              <div style={{ fontSize: ".88rem", fontWeight: 600 }}>📊 Credit Report · City of Austin, TX</div>
+              <Link href="/builder" className="btn btn-accent btn-sm">Generate your own →</Link>
+            </div>
+
+            <div style={{ padding: "2rem 2.2rem", maxWidth: 860, margin: "0 auto" }}>
+              {/* Header */}
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>Municipal Credit Analysis Report</div>
+              <h3 style={{ fontFamily: "var(--serif)", fontSize: "1.8rem", fontWeight: 400, marginBottom: ".3rem" }}>City of Austin, Texas</h3>
+              <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: ".95rem", color: "var(--text2)", marginBottom: "1.2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>General Obligation / Municipal Utility · TX · Rating: AAA / Aaa · Outlook: Stable</div>
+
+              {/* KPIs */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: ".5rem", margin: "1rem 0 1.5rem", padding: "1.2rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
+                {[
+                  { label: "AI Sentiment", value: "Positive", sub: "Score: 82/100", color: "var(--good)" },
+                  { label: "Fund Balance", value: "18.4%", sub: "of expenditures", color: "var(--text)" },
+                  { label: "Op. Margin", value: "4.3%", sub: "net revenue", color: "var(--text)" },
+                  { label: "Debt/Revenue", value: "1.62×", sub: "leverage ratio", color: "var(--text)" },
+                  { label: "Rating", value: "AAA", sub: "S&P / Aaa Moody's", color: "var(--accent)" },
+                ].map((k, i) => (
+                  <div key={i} style={{ textAlign: "center" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".3rem" }}>{k.label}</div>
+                    <div style={{ fontSize: "1.15rem", fontWeight: 700, color: k.color }}>{k.value}</div>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>{k.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Executive Summary */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
+                  <span>📋</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Executive Summary</h4>
+                </div>
+                <p style={{ fontSize: ".9rem", lineHeight: 1.7, color: "var(--text2)" }}>
+                  The City of Austin, Texas maintains an exceptionally strong credit profile underpinned by a diversified and rapidly expanding economic base, robust population growth, and prudent financial management. As the state capital and home to the University of Texas at Austin, the city benefits from a high concentration of technology, government, education, and healthcare employers that provide considerable revenue stability across economic cycles.
+                </p>
+                <p style={{ fontSize: ".9rem", lineHeight: 1.7, color: "var(--text2)", marginTop: ".6rem" }}>
+                  Austin&apos;s general fund reserves remain well above the GFOA recommended threshold, and the city has consistently demonstrated the fiscal discipline necessary to maintain structural budget balance. However, rapid growth is straining infrastructure capacity, and the city faces rising pension obligations that warrant monitoring.
+                </p>
+              </div>
+
+              {/* Charts row: Revenue bar chart + Sentiment gauge */}
+              <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "1rem", marginBottom: "1.8rem" }}>
+                {/* Revenue vs Expenditure chart */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                  <div style={{ fontSize: ".85rem", fontWeight: 600, marginBottom: ".15rem" }}>Revenue vs. Expenditures</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", marginBottom: ".8rem" }}>FY2020 – FY2025 · $M</div>
+                  <svg viewBox="0 0 400 160" style={{ width: "100%", height: "auto" }}>
+                    {[0,1,2,3].map(i => <line key={i} x1="40" y1={15+i*35} x2="390" y2={15+i*35} stroke="var(--line)" strokeWidth="0.5" />)}
+                    {[
+                      { x: 55, r: 92, e: 88, l: "'20" },
+                      { x: 115, r: 100, e: 95, l: "'21" },
+                      { x: 175, r: 112, e: 107, l: "'22" },
+                      { x: 235, r: 120, e: 114, l: "'23" },
+                      { x: 295, r: 128, e: 121, l: "'24" },
+                      { x: 355, r: 135, e: 128, l: "'25" },
+                    ].map((b, i) => (
+                      <g key={i}>
+                        <rect x={b.x} y={140-b.r} width="14" height={b.r} fill="#1e3a5f" rx="2" />
+                        <rect x={b.x+17} y={140-b.e} width="14" height={b.e} fill="#7c3aed" rx="2" opacity="0.6" />
+                        <text x={b.x+15} y="153" fill="var(--text3)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">{b.l}</text>
+                      </g>
+                    ))}
+                    <rect x="50" y="158" width="8" height="4" fill="#1e3a5f" rx="1" /><text x="62" y="162" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Revenue</text>
+                    <rect x="110" y="158" width="8" height="4" fill="#7c3aed" rx="1" opacity="0.6" /><text x="122" y="162" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Expenditures</text>
+                  </svg>
+                </div>
+                {/* Sentiment gauge */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".5rem" }}>AI Credit Score</div>
+                  <svg viewBox="0 0 200 120" style={{ width: 150, height: "auto", display: "block", margin: "0 auto" }}>
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--line)" strokeWidth="12" strokeLinecap="round" />
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#059669" strokeWidth="12" strokeLinecap="round" strokeDasharray="205.7 251" />
+                    <text x="100" y="85" textAnchor="middle" fontSize="28" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">82</text>
+                    <text x="100" y="102" textAnchor="middle" fontSize="10" fill="var(--text3)" fontFamily="var(--mono)">/ 100</text>
+                  </svg>
+                  <div style={{ fontWeight: 700, color: "var(--good)", fontSize: "1rem" }}>Positive</div>
+                </div>
+              </div>
+
+              {/* Credit Scorecard */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
+                  <span>📊</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Credit Scorecard</h4>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
+                  {[
+                    { title: "🏙️ Economy & Tax Base", score: "Aaa", items: [["Tax Base Size", "$198.4B", "Aaa"], ["Full Value Per Capita", "$197,200", "Aa1"], ["Median Family Income", "$89,600", "Aa2"]] },
+                    { title: "💵 Financial Performance", score: "Aa1", items: [["Fund Balance / Revenue", "18.4%", "Aa2"], ["5-Year Revenue CAGR", "+6.8%", "Aa1"], ["Operating Margin", "4.3%", "Aa3"]] },
+                    { title: "🏛️ Management", score: "Aa2", items: [["Institutional Framework", "Strong", "Aa1"], ["Operating History", "8 consec. surpluses", "Aaa"], ["Budget Flexibility", "Moderate", "Aa3"]] },
+                    { title: "📉 Debt & Pensions", score: "Aa3", items: [["Debt to Revenue", "1.62×", "Aa3"], ["Debt Per Capita", "$4,820", "A1"], ["Pension Funded Ratio", "73.2%", "A2"]] },
+                  ].map((card, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                      <div style={{ padding: ".6rem .8rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg2)" }}>
+                        <span style={{ fontWeight: 600, fontSize: ".85rem" }}>{card.title}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: ".8rem", fontWeight: 700, color: "var(--accent)", background: "var(--accent-bg)", padding: ".15rem .45rem", borderRadius: 3 }}>{card.score}</span>
+                      </div>
+                      {card.items.map(([name, val, score], j) => (
+                        <div key={j} style={{ padding: ".45rem .8rem", borderBottom: "1px solid var(--line-soft)", display: "flex", justifyContent: "space-between", fontSize: ".82rem" }}>
+                          <span style={{ color: "var(--text2)" }}>{name}</span>
+                          <div style={{ display: "flex", gap: ".4rem", alignItems: "center" }}>
+                            <span style={{ fontFamily: "var(--mono)", fontSize: ".8rem" }}>{val}</span>
+                            <span style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--accent)", background: "var(--accent-bg)", padding: ".08rem .3rem", borderRadius: 2 }}>{score}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Revenue & Expenditure Composition */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.8rem" }}>
+                {[
+                  { title: "Revenue Sources", total: "$4.8B", items: [["Property Tax", "38.2%", "#1e3a5f"], ["Sales Tax", "22.1%", "#2b5278"], ["Charges for Services", "18.4%", "#7c3aed"], ["Utility Revenue", "12.8%", "#059669"], ["Other", "8.5%", "#d97706"]] },
+                  { title: "Expenditure Breakdown", total: "$4.6B", items: [["Public Safety", "34.1%", "#dc2626"], ["General Government", "18.6%", "#1e3a5f"], ["Utilities & Public Works", "21.2%", "#7c3aed"], ["Culture & Recreation", "8.4%", "#059669"], ["Debt Service", "10.2%", "#d97706"], ["Other", "7.5%", "#9ca3af"]] },
+                ].map((chart, ci) => (
+                  <div key={ci} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>{chart.title}</div>
+                    <svg viewBox="0 0 200 200" style={{ width: 130, height: 130, display: "block", margin: "0 auto .6rem" }}>
+                      {(() => { let off = 0; return chart.items.map(([, pct, color], i) => { const p = parseFloat(pct); const d = (p/100)*314; const el = <circle key={i} cx="100" cy="100" r="50" fill="none" stroke={color} strokeWidth="28" strokeDasharray={`${d} ${314-d}`} strokeDashoffset={-off} transform="rotate(-90 100 100)" />; off += d; return el; }); })()}
+                      <circle cx="100" cy="100" r="36" fill="var(--panel)" />
+                      <text x="100" y="104" textAnchor="middle" fontSize="10" fontWeight="600" fill="var(--text)" fontFamily="var(--mono)">{chart.total}</text>
+                    </svg>
+                    {chart.items.map(([name, pct, color], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".25rem 0", fontSize: ".78rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: ".35rem", color: "var(--text2)" }}>
+                          <span style={{ width: 7, height: 7, borderRadius: 2, background: color, flexShrink: 0 }} />{name}
+                        </div>
+                        <span style={{ fontFamily: "var(--mono)", fontWeight: 500 }}>{pct}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+
+              {/* Peer Comparison */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
+                  <span>🏆</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Peer Comparison</h4>
+                </div>
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", fontSize: ".82rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.5fr .7fr .5fr .7fr .7fr .7fr", padding: ".6rem .8rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>
+                    <div>Municipality</div><div style={{textAlign:"right"}}>Pop.</div><div style={{textAlign:"right"}}>Rating</div><div style={{textAlign:"right"}}>Fund Bal.</div><div style={{textAlign:"right"}}>Debt/Cap</div><div style={{textAlign:"right"}}>Margin</div>
+                  </div>
+                  {[
+                    { name: "Austin, TX ←", pop: "979K", rat: "AAA", fb: "18.4%", dc: "$4,820", mg: "4.3%", hl: true },
+                    { name: "San Antonio, TX", pop: "1.4M", rat: "AAA", fb: "21.2%", dc: "$3,940", mg: "5.1%", hl: false },
+                    { name: "Dallas, TX", pop: "1.3M", rat: "AA+", fb: "16.8%", dc: "$5,120", mg: "3.8%", hl: false },
+                    { name: "Denver, CO", pop: "713K", rat: "AAA", fb: "19.6%", dc: "$4,280", mg: "4.7%", hl: false },
+                    { name: "Nashville, TN", pop: "684K", rat: "AA+", fb: "15.4%", dc: "$5,680", mg: "3.2%", hl: false },
+                  ].map((row, i) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.5fr .7fr .5fr .7fr .7fr .7fr", padding: ".55rem .8rem", borderBottom: "1px solid var(--line-soft)", background: row.hl ? "var(--accent-bg)" : "transparent" }}>
+                      <div style={{ fontWeight: row.hl ? 700 : 500, color: row.hl ? "var(--accent)" : "var(--text)" }}>{row.name}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.pop}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{row.rat}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.fb}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.dc}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.mg}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Risk flags */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
+                  <span>⚠️</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Risk Assessment</h4>
+                </div>
+                {[
+                  { icon: "🚩", title: "Infrastructure Strain from Rapid Growth", sev: "high", desc: "Population grew 21% over 5 years, straining water, wastewater, and transportation capacity. CIP commits $7.8B through FY2030 but unfunded needs remain significant." },
+                  { icon: "⚠️", title: "Pension Funded Ratio Declining", sev: "medium", desc: "COAERS pension funded ratio declined from 78.1% to 73.2% over three years. The city's annual pension contribution now represents 14.2% of general fund revenue." },
+                  { icon: "⚠️", title: "Sales Tax Revenue Concentration", sev: "medium", desc: "Sales tax represents 22.1% of revenue and is cyclically sensitive. A moderate recession could produce a 10-15% decline in this revenue line." },
+                ].map((r, i) => (
+                  <div key={i} style={{ margin: ".5rem 0", padding: ".8rem 1rem", borderLeft: `3px solid ${r.sev === "high" ? "var(--bad)" : "var(--warn)"}`, background: r.sev === "high" ? "var(--bad-bg)" : "var(--warn-bg)", borderRadius: "0 var(--radius) var(--radius) 0" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".2rem" }}>
+                      <span style={{ fontSize: ".85rem", fontWeight: 600, color: r.sev === "high" ? "var(--bad)" : "var(--warn)" }}>{r.icon} {r.title}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", textTransform: "uppercase", padding: ".15rem .4rem", borderRadius: 3, fontWeight: 600, background: r.sev === "high" ? "var(--bad)" : "var(--warn)", color: "#fff" }}>{r.sev}</span>
+                    </div>
+                    <p style={{ fontSize: ".82rem", color: "var(--text2)", margin: 0, lineHeight: 1.5 }}>{r.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sources */}
+              <div style={{ paddingTop: "1rem", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
+                  Sources: ACFR FY2025 · Adopted Budget FY2026 · CIP 2026-2030 · EMMA · U.S. Census
+                </div>
+                <Link href="/builder" className="btn btn-accent btn-sm">Generate your own →</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <div className="container">
         <div style={{
