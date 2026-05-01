@@ -75,7 +75,7 @@ export default function BuilderPage() {
 
   return (
     <div className="container" style={{ padding: "2.5rem 1.5rem 4rem" }}>
-      <div style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid var(--line)" }}>
+      <div className="no-print" style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid var(--line)" }}>
         <h1 style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-.02em" }}>Report Builder</h1>
         <p style={{ color: "var(--text2)", fontSize: ".95rem", marginTop: ".3rem" }}>
           Search for any issuer or upload your own documents to generate a complete AI-powered credit report.
@@ -83,7 +83,7 @@ export default function BuilderPage() {
       </div>
 
       {/* Tab switcher */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, marginBottom: "1.5rem", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+      <div className="no-print" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 0, marginBottom: "1.5rem", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
         <button
           onClick={() => setTab("search")}
           style={{
@@ -360,6 +360,62 @@ export default function BuilderPage() {
                 {report.executive_summary}
               </div>
             </div>
+
+            {/* ── ECONOMY SECTION ── */}
+            {report.economy && (
+              <div style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏙️</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Economic Profile</h3>
+                </div>
+                <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", marginBottom: "1.2rem", whiteSpace: "pre-wrap" }}>
+                  {report.economy.description}
+                </div>
+
+                {/* Economic indicators */}
+                {report.economy.economic_indicators?.length > 0 && (
+                  <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(report.economy.economic_indicators.length, 4)}, 1fr)`, gap: ".8rem", marginBottom: "1.2rem" }}>
+                    {report.economy.economic_indicators.map((ind: any, i: number) => (
+                      <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>{ind.name}</div>
+                        <div style={{ fontSize: "1.4rem", fontWeight: 700, color: ind.trend === "up" ? "var(--good)" : ind.trend === "down" ? "var(--bad)" : "var(--text)" }}>{ind.value}</div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: ind.trend === "up" ? "var(--good)" : ind.trend === "down" ? "var(--bad)" : "var(--text3)" }}>
+                          {ind.trend === "up" ? "▲ Growing" : ind.trend === "down" ? "▼ Declining" : "— Stable"}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Key stats row */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Key Economic Data</div>
+                    {[
+                      ["Unemployment Rate", report.economy.unemployment_rate],
+                      ["Median Household Income", report.economy.median_household_income ? `$${Number(report.economy.median_household_income).toLocaleString()}` : null],
+                      ["Poverty Rate", report.economy.poverty_rate],
+                    ].filter(([,v]) => v).map(([label, value], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".88rem" }}>
+                        <span style={{ color: "var(--text2)" }}>{label}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {report.economy.top_employers?.length > 0 && (
+                    <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Top Employers</div>
+                      {report.economy.top_employers.map((emp: string, i: number) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: ".5rem", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".88rem" }}>
+                          <span style={{ fontFamily: "var(--mono)", fontSize: ".75rem", color: "var(--accent)", fontWeight: 700, width: 20 }}>{i + 1}.</span>
+                          <span style={{ color: "var(--text2)" }}>{emp}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* ── SECTION 2: DETAILED FINANCIALS ── */}
             {report.financials && (
@@ -822,18 +878,130 @@ export default function BuilderPage() {
               </div>
             )}
 
-            {/* ── SECTION 7: FORWARD OUTLOOK ── */}
-            {report.forward_outlook && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
-                  <span style={{ fontSize: "1.1rem" }}>🔮</span>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Forward Outlook</h3>
-                </div>
-                <div style={{ padding: "1.2rem 1.4rem", background: "var(--accent-bg)", border: "1px solid rgba(99,102,241,.2)", borderRadius: "var(--radius)", fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap" }}>
+            {/* ── FORWARD OUTLOOK WITH CHARTS ── */}
+            <div style={{ marginTop: "2.5rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <span style={{ fontSize: "1.1rem" }}>🔮</span>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Forward Outlook & Projections</h3>
+              </div>
+
+              {/* Outlook text */}
+              {report.forward_outlook && (
+                <div style={{ padding: "1.2rem 1.4rem", background: "var(--accent-bg)", border: "1px solid var(--accent-line)", borderRadius: "var(--radius)", fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap", marginBottom: "1.2rem" }}>
                   {report.forward_outlook}
                 </div>
-              </div>
-            )}
+              )}
+              {report.forecast?.description && (
+                <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", marginBottom: "1.2rem", whiteSpace: "pre-wrap" }}>
+                  {report.forecast.description}
+                </div>
+              )}
+
+              {/* Revenue vs Expenditure Forecast Chart */}
+              {report.forecast?.revenue_forecast?.length > 0 && (
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
+                  <div style={{ fontSize: ".88rem", fontWeight: 600, marginBottom: ".15rem" }}>Projected Revenue vs. Expenditures</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginBottom: ".8rem" }}>FY2026 – FY2030 · Baseline scenario · $M</div>
+                  <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
+                    {[0,1,2,3].map(i => <line key={i} x1="50" y1={20+i*42} x2="490" y2={20+i*42} stroke="var(--line)" strokeWidth="0.5" />)}
+                    {(() => {
+                      const rev = report.forecast.revenue_forecast;
+                      const exp = report.forecast.expenditure_forecast || [];
+                      const all = [...rev, ...exp].map((d: any) => d.amount).filter((a: any) => typeof a === "number");
+                      const maxV = Math.max(...all, 1);
+                      const gap = 440 / rev.length;
+                      // Line chart
+                      const revPoints = rev.map((r: any, i: number) => `${60 + i * gap + gap * 0.3},${175 - (r.amount / maxV) * 145}`).join(" ");
+                      const expPoints = exp.map((r: any, i: number) => `${60 + i * gap + gap * 0.3},${175 - (r.amount / maxV) * 145}`).join(" ");
+                      return (
+                        <>
+                          <polyline points={revPoints} fill="none" stroke="#1e3a5f" strokeWidth="2.5" strokeLinejoin="round" />
+                          {rev.map((r: any, i: number) => <circle key={`r${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#1e3a5f" />)}
+                          {exp.length > 0 && <polyline points={expPoints} fill="none" stroke="#dc2626" strokeWidth="2.5" strokeDasharray="6 3" strokeLinejoin="round" />}
+                          {exp.map((r: any, i: number) => <circle key={`e${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#dc2626" />)}
+                          {rev.map((r: any, i: number) => (
+                            <g key={`l${i}`}>
+                              <text x={60 + i * gap + gap * 0.3} y="190" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{r.year?.replace("FY", "'")}</text>
+                              <text x={60 + i * gap + gap * 0.3} y={170 - (r.amount / maxV) * 145} fill="var(--text2)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">${(r.amount / 1e6).toFixed(0)}M</text>
+                            </g>
+                          ))}
+                        </>
+                      );
+                    })()}
+                    <line x1="60" y1="194" x2="72" y2="194" stroke="#1e3a5f" strokeWidth="2.5" />
+                    <text x="77" y="197" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Revenue</text>
+                    <line x1="130" y1="194" x2="142" y2="194" stroke="#dc2626" strokeWidth="2.5" strokeDasharray="4 2" />
+                    <text x="147" y="197" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Expenditures</text>
+                  </svg>
+                </div>
+              )}
+
+              {/* Scenario Analysis Chart */}
+              {report.forecast?.scenarios?.length > 0 && (
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
+                  <div style={{ fontSize: ".88rem", fontWeight: 600, marginBottom: ".15rem" }}>Scenario Analysis — Net Surplus / (Deficit)</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginBottom: ".8rem" }}>Three scenarios · FY2026 – FY2030 · $M</div>
+                  <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
+                    {/* Zero line */}
+                    <line x1="50" y1="100" x2="490" y2="100" stroke="var(--text3)" strokeWidth="0.8" strokeDasharray="4 2" />
+                    <text x="45" y="103" fill="var(--text3)" fontSize="7" textAnchor="end" fontFamily="var(--mono)">$0</text>
+                    {(() => {
+                      const scenarios = report.forecast.scenarios;
+                      const colors = ["#1e3a5f", "#059669", "#dc2626"];
+                      const labels = ["Baseline", "Optimistic", "Cautious"];
+                      const years = ["fy26", "fy27", "fy28", "fy29", "fy30"];
+                      const yearLabels = ["'26", "'27", "'28", "'29", "'30"];
+                      const allVals = scenarios.flatMap((s: any) => years.map(y => s[y] || 0));
+                      const maxAbs = Math.max(Math.abs(Math.min(...allVals)), Math.abs(Math.max(...allVals)), 1);
+                      const gap = 440 / 5;
+
+                      return (
+                        <>
+                          {scenarios.map((scenario: any, si: number) => {
+                            const points = years.map((y, i) => {
+                              const val = scenario[y] || 0;
+                              const yPos = 100 - (val / maxAbs) * 80;
+                              return `${60 + i * gap + gap * 0.3},${yPos}`;
+                            }).join(" ");
+                            return (
+                              <g key={si}>
+                                <polyline points={points} fill="none" stroke={colors[si]} strokeWidth="2" strokeLinejoin="round" strokeDasharray={si === 2 ? "5 3" : "none"} />
+                                {years.map((y, i) => <circle key={i} cx={60 + i * gap + gap * 0.3} cy={100 - ((scenario[y] || 0) / maxAbs) * 80} r="3" fill={colors[si]} />)}
+                              </g>
+                            );
+                          })}
+                          {yearLabels.map((l, i) => <text key={i} x={60 + i * gap + gap * 0.3} y="195" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{l}</text>)}
+                          {/* Legend */}
+                          {scenarios.map((s: any, i: number) => (
+                            <g key={`leg${i}`}>
+                              <line x1={60 + i * 120} y1="185" x2={72 + i * 120} y2="185" stroke={colors[i]} strokeWidth="2" strokeDasharray={i === 2 ? "4 2" : "none"} />
+                              <text x={77 + i * 120} y="188" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">{s.name || labels[i]}</text>
+                            </g>
+                          ))}
+                        </>
+                      );
+                    })()}
+                  </svg>
+
+                  {/* Scenario table */}
+                  <div style={{ marginTop: ".8rem", background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr 1fr 1fr 1fr", padding: ".6rem .8rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>
+                      <div>Scenario</div><div style={{textAlign:"right"}}>FY26</div><div style={{textAlign:"right"}}>FY27</div><div style={{textAlign:"right"}}>FY28</div><div style={{textAlign:"right"}}>FY29</div><div style={{textAlign:"right"}}>FY30</div>
+                    </div>
+                    {report.forecast.scenarios.map((s: any, i: number) => (
+                      <div key={i} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr 1fr 1fr 1fr", padding: ".55rem .8rem", borderBottom: "1px solid var(--line-soft)", fontSize: ".85rem" }}>
+                        <div style={{ fontWeight: 600, color: i === 0 ? "#1e3a5f" : i === 1 ? "var(--good)" : "var(--bad)" }}>{s.name || ["Baseline","Optimistic","Cautious"][i]}</div>
+                        {["fy26","fy27","fy28","fy29","fy30"].map(y => (
+                          <div key={y} style={{ textAlign: "right", fontFamily: "var(--mono)", color: (s[y] || 0) >= 0 ? "var(--good)" : "var(--bad)" }}>
+                            {(s[y] || 0) >= 0 ? "+" : ""}{typeof s[y] === "number" ? `$${s[y]}M` : s[y] || "—"}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* ── SECTION 8: SOURCES ── */}
             {report.sources?.length > 0 && (
