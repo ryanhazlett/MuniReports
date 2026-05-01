@@ -17,24 +17,25 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
         max_tokens: 2500,
+        tools: [{"type": "web_search_20250305", "name": "web_search"}],
         messages: [{
           role: "user",
-          content: `Municipal credit report JSON for "${issuerName}" in ${issuerState || "US"}. Return ONLY valid JSON, no markdown:
+          content: `Search the web for the most recent financial data for "${issuerName}" in ${issuerState || "US"}. Look for their latest ACFR, budget, and bond ratings. Then generate a credit report as JSON. Return ONLY valid JSON, no markdown:
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":82,
-"executive_summary":"2 paragraphs about credit profile",
-"economy":{"description":"1 paragraph about local economy","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","top_employers":["employer1","employer2","employer3","employer4","employer5"],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment Growth","value":"X.X%","trend":"up"},{"name":"Population Growth","value":"X.X%","trend":"up"},{"name":"Housing Starts","value":"X,XXX","trend":"flat"}]},
+"executive_summary":"2 paragraphs with specific recent data",
+"economy":{"description":"1 paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment Growth","value":"X.X%","trend":"up"},{"name":"Population Growth","value":"X.X%","trend":"up"},{"name":"Housing Starts","value":"X,XXX","trend":"flat"}]},
 "financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","pension_funded_ratio":"XX%","days_cash_on_hand":0},
 "revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
 "expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
 "revenue_composition":[{"category":"Property Tax","pct":"XX%"},{"category":"Sales Tax","pct":"XX%"},{"category":"Charges","pct":"XX%"},{"category":"Other","pct":"XX%"}],
 "expenditure_composition":[{"category":"Public Safety","pct":"XX%"},{"category":"General Gov","pct":"XX%"},{"category":"Public Works","pct":"XX%"},{"category":"Debt Service","pct":"XX%"},{"category":"Other","pct":"XX%"}],
-"forecast":{"description":"1 paragraph about outlook","scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0}],"revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}]},
+"forecast":{"description":"1 paragraph","scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0}],"revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}]},
 "risks":[{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],
 "strengths":["","",""],
 "capital_plan_summary":"1 paragraph",
 "forward_outlook":"1 paragraph",
-"sources":["ACFR","Budget","EMMA"]}
-Fill ALL values with realistic data. Numbers should be realistic dollar amounts. Forecast scenario values are net surplus/deficit in millions.`
+"sources":["","",""]}
+Fill ALL values with real data from your web search. Use the most recent fiscal year available.`
         }],
       }),
     });
