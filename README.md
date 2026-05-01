@@ -93,3 +93,4 @@ munireports/
 1. **Free users**: Search issuers, upload docs, generate reports — all without an account. Reports are ephemeral (not saved).
 2. **Logged-in free users**: Same as above, but reports are saved to their account.
 3. **Pro users ($49/mo)**: Permanent report library, watchlists, shareable links, and priority support.
+
