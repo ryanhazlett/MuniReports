@@ -16,26 +16,13 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 2500,
+        max_tokens: 3500,
         tools: [{"type": "web_search_20250305", "name": "web_search"}],
         messages: [{
           role: "user",
-          content: `Search the web for the most recent financial data for "${issuerName}" in ${issuerState || "US"}. Find their latest ACFR, adopted budget, and credit ratings. Then return ONLY a valid JSON credit report, no markdown:
-{"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":82,
-"executive_summary":"2 paragraphs citing specific recent fiscal year data you found",
-"economy":{"description":"1 paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment Growth","value":"X.X%","trend":"up"},{"name":"Population Growth","value":"X.X%","trend":"up"},{"name":"Housing Starts","value":"X,XXX","trend":"flat"}]},
-"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","pension_funded_ratio":"XX%","days_cash_on_hand":0},
-"revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
-"expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
-"revenue_composition":[{"category":"Property Tax","pct":"XX%"},{"category":"Sales Tax","pct":"XX%"},{"category":"Charges","pct":"XX%"},{"category":"Other","pct":"XX%"}],
-"expenditure_composition":[{"category":"Public Safety","pct":"XX%"},{"category":"General Gov","pct":"XX%"},{"category":"Public Works","pct":"XX%"},{"category":"Debt Service","pct":"XX%"},{"category":"Other","pct":"XX%"}],
-"forecast":{"description":"1 paragraph","scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0}],"revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}]},
-"risks":[{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],
-"strengths":["","",""],
-"capital_plan_summary":"1 paragraph",
-"forward_outlook":"1 paragraph",
-"sources":["","",""]}
-Fill ALL values with real data from your web search. Use the most recent fiscal year available.`
+          content: `Search the web for the most recent financial data for "${issuerName}" in ${issuerState || "US"}. Find their latest ACFR, adopted budget, and credit ratings. Then return ONLY valid JSON, no markdown or backticks. The JSON must be complete and properly closed. Structure:
+{"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":82,"executive_summary":"2 paragraphs","economy":{"description":"1 paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment Growth","value":"X.X%","trend":"up"},{"name":"Population Growth","value":"X.X%","trend":"up"},{"name":"Housing Starts","value":"X,XXX","trend":"flat"}]},"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX"},"revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],"expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],"revenue_composition":[{"category":"Property Tax","pct":"XX%"},{"category":"Sales Tax","pct":"XX%"},{"category":"Charges","pct":"XX%"},{"category":"Other","pct":"XX%"}],"expenditure_composition":[{"category":"Public Safety","pct":"XX%"},{"category":"General Gov","pct":"XX%"},{"category":"Public Works","pct":"XX%"},{"category":"Debt Service","pct":"XX%"},{"category":"Other","pct":"XX%"}],"forecast":{"description":"1 paragraph","revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0}]},"risks":[{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],"strengths":["","",""],"forward_outlook":"1 paragraph","sources":["","",""]}
+Use real data from your search. CRITICAL: Make sure the JSON is complete and valid.`
         }],
       }),
     });
@@ -56,9 +43,23 @@ Fill ALL values with real data from your web search. Use the most recent fiscal 
     let report: any = null;
     try {
       const match = text.match(/\{[\s\S]*\}/);
-      if (match) report = JSON.parse(match[0]);
+      if (match) {
+        let jsonStr = match[0];
+        // Fix common truncation issues
+        // Count open/close braces and brackets
+        let openBraces = (jsonStr.match(/\{/g) || []).length;
+        let closeBraces = (jsonStr.match(/\}/g) || []).length;
+        let openBrackets = (jsonStr.match(/\[/g) || []).length;
+        let closeBrackets = (jsonStr.match(/\]/g) || []).length;
+        // Close any unclosed brackets/braces
+        while (closeBrackets < openBrackets) { jsonStr += "]"; closeBrackets++; }
+        while (closeBraces < openBraces) { jsonStr += "}"; closeBraces++; }
+        // Remove trailing commas before ] or }
+        jsonStr = jsonStr.replace(/,\s*\]/g, "]").replace(/,\s*\}/g, "}");
+        report = JSON.parse(jsonStr);
+      }
     } catch (e) {
-      console.error("Parse error:", e, "Text:", text.substring(0, 300));
+      console.error("Parse error:", e, "Text preview:", text.substring(text.length - 200));
     }
 
     if (!report) {
