@@ -56,21 +56,28 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.ANTHROPIC_API_KEY || "";
 
     // CALL 1: Core financial data
-    const call1 = await callClaude(apiKey, `Search the web for financial data for "${issuerName}" in ${issuerState || "US"}. Find latest ACFR, budget, and ratings. Return ONLY valid JSON:
+    const call1 = await callClaude(apiKey, `Search the web for financial data for "${issuerName}" in ${issuerState || "US"}. Find latest ACFR, budget, and ratings. Return ONLY valid JSON.
+
+CRITICAL RULES:
+- All ratio/percentage fields must be SHORT numbers only. Example: "31.4%" NOT "31.4% of General Fund revenues (FY2021 reported)"
+- All pct fields must be just "XX%" like "40%" NOT "~40% (General Fund: $31.3M of $78.1M)"
+- Keep values concise. No parenthetical explanations in data fields.
+- Explanatory context goes ONLY in executive_summary, economy.description, capital_plan_summary, and forward_outlook fields.
+
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"","sentiment":"Positive","sentiment_score":85,
-"executive_summary":"2-3 detailed paragraphs citing specific fiscal year data found",
-"economy":{"description":"paragraph","unemployment_rate":"","median_household_income":0,"poverty_rate":"","msa_gdp_growth":"","net_migration":"","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"","trend":"up"},{"name":"Employment","value":"","trend":"up"},{"name":"Population","value":"","trend":"up"},{"name":"Permits","value":"","trend":"up"}]},
-"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"","available_fund_balance_ratio":"","operating_margin":"","liquidity_ratio":"","debt_outstanding":0,"debt_to_revenue":"","debt_per_capita":"","full_value_per_capita":"","days_cash_on_hand":0,"tax_collection_rate":"","top_10_taxpayers_pct":""},
+"executive_summary":"2-3 detailed paragraphs citing specific data",
+"economy":{"description":"paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","msa_gdp_growth":"X.X%","net_migration":"","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment","value":"XX,XXX","trend":"up"},{"name":"Population","value":"XX,XXX","trend":"up"},{"name":"Permits","value":"X,XXX","trend":"up"}]},
+"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX.X%","available_fund_balance_ratio":"XX.X%","operating_margin":"X.X%","liquidity_ratio":"XX.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","full_value_per_capita":"$XXX,XXX","days_cash_on_hand":0,"tax_collection_rate":"XX.X%","top_10_taxpayers_pct":"XX.X%"},
 "revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
 "expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
-"revenue_composition":[{"category":"Property Tax","pct":""},{"category":"Sales Tax","pct":""},{"category":"Charges","pct":""},{"category":"Other","pct":""}],
-"expenditure_composition":[{"category":"Public Safety","pct":""},{"category":"General Gov","pct":""},{"category":"Public Works","pct":""},{"category":"Debt Service","pct":""},{"category":"Other","pct":""}],
+"revenue_composition":[{"category":"Property Tax","pct":"XX%"},{"category":"Sales Tax","pct":"XX%"},{"category":"Charges/Utility","pct":"XX%"},{"category":"Other","pct":"XX%"}],
+"expenditure_composition":[{"category":"Public Safety","pct":"XX%"},{"category":"General Gov","pct":"XX%"},{"category":"Public Works","pct":"XX%"},{"category":"Debt Service","pct":"XX%"},{"category":"Other","pct":"XX%"}],
 "risks":[{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],
 "strengths":["","","",""],
 "capital_plan_summary":"paragraph",
 "forward_outlook":"paragraph",
 "sources":["","","",""]}
-Fill ALL values with real data. CRITICAL: Return complete valid JSON.`);
+Fill ALL values with real data. Return complete valid JSON.`);
 
     const coreReport = extractJSON(call1);
     if (!coreReport) {
@@ -95,6 +102,9 @@ Fill ALL values with real data. CRITICAL: Return complete valid JSON.`);
 IMPORTANT: Scenario fy26-fy30 values should be NET SURPLUS or DEFICIT in millions (e.g. 7 means +$7M surplus, -3 means $3M deficit). NOT total revenue. Fill with real data. Return complete valid JSON.`);
 
     const diffData = extractJSON(call2);
+    if (!diffData) {
+      console.error("Call 2 failed or returned no data. Error:", call2.error ? JSON.stringify(call2.error) : "No parseable JSON");
+    }
 
     // Merge both results
     const report = { ...coreReport };
