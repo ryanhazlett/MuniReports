@@ -75,7 +75,7 @@ export default function BuilderPage() {
 
   return (
     <div className="container" style={{ padding: "2.5rem 1.5rem 4rem" }}>
-      <div className="no-print" style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid var(--line)" }}>
+      <div className="no-print" style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "2px solid var(--accent)" }}>
         <h1 style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-.02em" }}>Report Builder</h1>
         <p style={{ color: "var(--text2)", fontSize: ".95rem", marginTop: ".3rem" }}>
           Search for any issuer or upload your own documents to generate a complete AI-powered credit report.
@@ -288,7 +288,7 @@ export default function BuilderPage() {
               📊 Credit Report · {report.issuer_name}
             </div>
             <div style={{ display: "flex", gap: ".4rem" }}>
-              <button className="btn btn-out btn-sm" onClick={() => window.print()}>📄 Print / PDF</button>
+              <button className="btn btn-out btn-sm" onClick={() => { alert('Tip: In the print dialog, uncheck "Headers and footers" for a clean PDF. Then select "Save as PDF" as the destination.'); setTimeout(() => window.print(), 300); }}>📄 Download PDF</button>
               <button className="btn btn-out btn-sm" onClick={() => { setReport(null); setSelectedIssuer(null); setQuery(""); }}>
                 ← New report
               </button>
@@ -299,12 +299,12 @@ export default function BuilderPage() {
             {/* Print-only header */}
             <div className="report-print-header">
               <div>
-                <div style={{ fontWeight: 700, fontSize: "1.2rem" }}>MuniReports</div>
-                <div style={{ fontSize: ".8rem", color: "#666" }}>Municipal Credit Analysis Report</div>
+                <div className="logo-text">MuniReports</div>
+                <div style={{ fontSize: ".75rem", color: "#666", fontFamily: "var(--mono)" }}>Municipal Credit Analysis Report</div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: ".8rem", color: "#666" }}>{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
-                <div style={{ fontSize: ".8rem", color: "#666" }}>munireports.com</div>
+                <div style={{ fontSize: ".75rem", color: "#666", fontFamily: "var(--mono)" }}>{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
+                <div style={{ fontSize: ".75rem", color: "#1e3a5f", fontWeight: 600 }}>munireports.com</div>
               </div>
             </div>
 
@@ -315,7 +315,7 @@ export default function BuilderPage() {
             <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.2rem", fontWeight: 400, marginBottom: ".4rem", lineHeight: 1.1 }}>
               {report.issuer_name}
             </h2>
-            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1.05rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1.2rem", borderBottom: "1px solid var(--line)" }}>
+            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1.05rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1.2rem", borderBottom: "2px solid var(--accent)" }}>
               {report.type} · {report.state} · Rating: {report.rating}
             </div>
 
@@ -352,7 +352,7 @@ export default function BuilderPage() {
 
             {/* ── SECTION 1: EXECUTIVE SUMMARY ── */}
             <div style={{ marginTop: "2.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                 <span style={{ fontSize: "1.1rem" }}>📋</span>
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700, letterSpacing: "-.01em" }}>Executive Summary</h3>
               </div>
@@ -364,7 +364,7 @@ export default function BuilderPage() {
             {/* ── ECONOMY SECTION ── */}
             {report.economy && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏙️</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Economic Profile</h3>
                 </div>
@@ -419,41 +419,40 @@ export default function BuilderPage() {
 
             {/* ── SECTION 2: DETAILED FINANCIALS ── */}
             {report.financials && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>💰</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Financial Overview</h3>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-                  {[
-                    ["Total Revenue", report.financials.total_revenue, true],
-                    ["Total Expenditures", report.financials.total_expenditures, true],
-                    ["Fund Balance", report.financials.fund_balance, true],
-                    ["Debt Outstanding", report.financials.debt_outstanding, true],
-                    ["Fund Balance Ratio", report.financials.fund_balance_ratio, false],
-                    ["Operating Margin", report.financials.operating_margin, false],
-                    ["Debt-to-Revenue", report.financials.debt_to_revenue, false],
-                  ].filter(([, val]) => val != null).map(([label, value, isCurrency], i) => (
-                    <div key={i} style={{
-                      padding: "1rem 1.2rem",
-                      borderBottom: "1px solid var(--line)",
-                      borderRight: i % 2 === 0 ? "1px solid var(--line)" : "none",
-                      display: "flex", justifyContent: "space-between", alignItems: "center",
-                    }}>
-                      <span style={{ fontSize: ".9rem", color: "var(--text2)" }}>{label as string}</span>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 600 }}>
-                        {isCurrency && typeof value === "number" ? `$${(value as number / 1000000).toFixed(1)}M` : String(value)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
+                  <tbody>
+                    {[
+                      ["Total Revenue", report.financials.total_revenue, true, "Total Expenditures", report.financials.total_expenditures, true],
+                      ["Fund Balance", report.financials.fund_balance, true, "Debt Outstanding", report.financials.debt_outstanding, true],
+                      ["Fund Balance Ratio", report.financials.fund_balance_ratio, false, "Operating Margin", report.financials.operating_margin, false],
+                      ["Debt-to-Revenue", report.financials.debt_to_revenue, false, "Debt Per Capita", report.financials.debt_per_capita, false],
+                      ["Pension Funded Ratio", report.financials.pension_funded_ratio, false, "Days Cash on Hand", report.financials.days_cash_on_hand, false],
+                    ].filter(([,v,,, v2]) => v != null || v2 != null).map(([l1, v1, c1, l2, v2, c2], i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                        <td style={{ padding: ".85rem 1rem", fontSize: ".9rem", color: "var(--text2)", width: "30%" }}>{l1 as string}</td>
+                        <td style={{ padding: ".85rem 1rem", fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 700, width: "20%", color: "var(--text)" }}>
+                          {c1 && typeof v1 === "number" ? `$${(v1 as number / 1000000).toFixed(1)}M` : v1 != null ? String(v1) : "—"}
+                        </td>
+                        <td style={{ padding: ".85rem 1rem", fontSize: ".9rem", color: "var(--text2)", width: "30%", borderLeft: "1px solid var(--line)" }}>{l2 as string}</td>
+                        <td style={{ padding: ".85rem 1rem", fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 700, width: "20%", color: "var(--text)" }}>
+                          {c2 && typeof v2 === "number" ? `$${(v2 as number / 1000000).toFixed(1)}M` : v2 != null ? String(v2) : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
 
             {/* ── SECTION 3: REVENUE & EXPENDITURE TRENDS ── */}
             {report.revenue_trend?.length > 0 && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>📈</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Revenue & Expenditure Trends</h3>
                 </div>
@@ -499,38 +498,44 @@ export default function BuilderPage() {
                 </div>
 
                 {/* Data table */}
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.revenue_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>
-                    <div></div>
-                    {report.revenue_trend.map((r: any, i: number) => (
-                      <div key={i} style={{ textAlign: "right" }}>{r.year}</div>
-                    ))}
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.revenue_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem", borderBottom: "1px solid var(--line)" }}>
-                    <div style={{ fontSize: ".88rem", color: "var(--text2)" }}>Revenue</div>
-                    {report.revenue_trend.map((r: any, i: number) => (
-                      <div key={i} style={{ textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
-                        {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
-                      </div>
-                    ))}
-                  </div>
-                  {report.expenditure_trend?.length > 0 && (
-                    <div style={{ display: "grid", gridTemplateColumns: `100px repeat(${report.expenditure_trend.length}, 1fr)`, gap: 0, padding: ".8rem 1rem" }}>
-                      <div style={{ fontSize: ".88rem", color: "var(--text2)" }}>Expenses</div>
-                      {report.expenditure_trend.map((r: any, i: number) => (
-                        <div key={i} style={{ textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
-                          {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <div className="report-section" style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "2px solid var(--accent)" }}>
+                        <th style={{ padding: ".7rem 1rem", textAlign: "left", fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", width: 100 }}></th>
+                        {report.revenue_trend.map((r: any, i: number) => (
+                          <th key={i} style={{ padding: ".7rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>{r.year}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                        <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)", fontWeight: 600 }}>Revenue</td>
+                        {report.revenue_trend.map((r: any, i: number) => (
+                          <td key={i} style={{ padding: ".7rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
+                            {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
+                          </td>
+                        ))}
+                      </tr>
+                      {report.expenditure_trend?.length > 0 && (
+                        <tr>
+                          <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)", fontWeight: 600 }}>Expenses</td>
+                          {report.expenditure_trend.map((r: any, i: number) => (
+                            <td key={i} style={{ padding: ".7rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
+                              {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
+                            </td>
+                          ))}
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
 
             {/* ── SECTION 3b: SENTIMENT GAUGE + FINANCIAL HEALTH ── */}
             <div style={{ marginTop: "2.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                 <span style={{ fontSize: "1.1rem" }}>🎯</span>
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Health Dashboard</h3>
               </div>
@@ -580,7 +585,7 @@ export default function BuilderPage() {
             {/* ── SECTION 4: MOODY'S-STYLE CREDIT SCORECARD ── */}
             {report.scorecard && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>📊</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Scorecard</h3>
                 </div>
@@ -615,7 +620,7 @@ export default function BuilderPage() {
             {/* ── SECTION 5: REVENUE & EXPENDITURE COMPOSITION ── */}
             {(report.revenue_composition?.length > 0 || report.expenditure_composition?.length > 0) && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🍩</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Revenue & Expenditure Composition</h3>
                 </div>
@@ -695,7 +700,7 @@ export default function BuilderPage() {
             {/* ── SECTION 6: DEBT SERVICE SCHEDULE ── */}
             {report.debt_schedule?.length > 0 && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>📉</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Debt Service Schedule</h3>
                 </div>
@@ -745,7 +750,7 @@ export default function BuilderPage() {
             {/* ── SECTION 7: PEER COMPARISON ── */}
             {report.peer_comparison?.length > 0 && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏆</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Peer Comparison</h3>
                 </div>
@@ -779,7 +784,7 @@ export default function BuilderPage() {
             {/* ── SECTION 8: ESG PROFILE ── */}
             {report.esg_profile && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🌱</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>ESG Credit Profile</h3>
                 </div>
@@ -804,7 +809,7 @@ export default function BuilderPage() {
             {/* ── MANAGEMENT DISCUSSION ── */}
             {report.management_discussion && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏛️</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Management & Governance</h3>
                 </div>
@@ -815,7 +820,7 @@ export default function BuilderPage() {
             )}
             {report.strengths?.length > 0 && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>✅</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Strengths</h3>
                 </div>
@@ -837,7 +842,7 @@ export default function BuilderPage() {
             {/* ── SECTION 5: RISK ASSESSMENT ── */}
             {report.risks?.length > 0 && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>⚠️</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Risk Assessment</h3>
                 </div>
@@ -868,7 +873,7 @@ export default function BuilderPage() {
             {/* ── SECTION 6: CAPITAL IMPROVEMENT PLAN ── */}
             {report.capital_plan_summary && (
               <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏗️</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Capital Improvement Plan</h3>
                 </div>
@@ -880,7 +885,7 @@ export default function BuilderPage() {
 
             {/* ── FORWARD OUTLOOK WITH CHARTS ── */}
             <div style={{ marginTop: "2.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "1px solid var(--line)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                 <span style={{ fontSize: "1.1rem" }}>🔮</span>
                 <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Forward Outlook & Projections</h3>
               </div>

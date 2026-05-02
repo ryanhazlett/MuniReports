@@ -128,7 +128,7 @@ footer{background:var(--bg2);padding:3.5rem 0 1.5rem;border-top:1px solid var(--
     color: #111 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-    font-size: 11pt;
+    font-size: 10.5pt;
   }
   body::before { display: none !important; }
   main { padding: 0 !important; }
@@ -138,16 +138,23 @@ footer{background:var(--bg2);padding:3.5rem 0 1.5rem;border-top:1px solid var(--
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 0;
-    border-bottom: 2px solid #111;
+    border-bottom: 3px solid #1e3a5f;
     margin-bottom: 1rem;
+  }
+  .report-print-header .logo-text {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #1e3a5f;
+    letter-spacing: -.02em;
   }
   * {
     box-shadow: none !important;
   }
   h2, h3, h4 { break-after: avoid; }
   svg { break-inside: avoid; }
+  .report-section { break-inside: avoid; }
   @page {
-    margin: 0.6in;
+    margin: 0.5in 0.6in;
     size: letter;
   }
 }
