@@ -16,36 +16,35 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
-        max_tokens: 4000,
+        max_tokens: 8000,
         tools: [{"type": "web_search_20250305", "name": "web_search"}],
         messages: [{
           role: "user",
-          content: `Search the web for comprehensive financial data for "${issuerName}" in ${issuerState || "US"}. Find their latest ACFR, budget, bond ratings, pension reports, and economic data. Then return ONLY valid JSON (no markdown, no backticks). The JSON must be complete.
+          content: `Search the web for financial data for "${issuerName}" in ${issuerState || "US"}. Find latest ACFR, budget, ratings, pension reports, and bond data on EMMA. Return ONLY valid JSON, no markdown.
 
-Structure:
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":82,
-"executive_summary":"3 detailed paragraphs citing specific fiscal year data",
-"economy":{"description":"detailed paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","msa_gdp_growth":"X.X%","resident_income_ratio":"XXX%","net_migration":"positive/negative with number","top_employers":["","","","",""],"economic_indicators":[{"name":"MSA GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment Growth","value":"X.X%","trend":"up"},{"name":"Population Growth","value":"X.X%","trend":"up"},{"name":"Building Permits","value":"X,XXX","trend":"up"}]},
-"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX.X%","available_fund_balance_ratio":"XX.X%","operating_margin":"X.X%","liquidity_ratio":"XX.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","full_value_per_capita":"$XXX,XXX","total_assessed_value":0,"days_cash_on_hand":0,"tax_collection_rate":"XX.X%","top_10_taxpayers_pct":"XX.X%"},
-"pension":{"funded_ratio":"XX.X%","adjusted_net_pension_liability":0,"anpl_to_revenue":"XX.X%","employer_contribution":0,"contribution_to_adc":"XXX%","system_name":"pension system name"},
-"tax_burden":{"property_tax_rate":"$X.XX per $100","property_tax_rate_vs_state":"below/above average","effective_tax_rate":"X.XX%","total_tax_burden_per_capita":"$X,XXX","sales_tax_rate":"X.XX%","homestead_exemption":"$XX,XXX or none"},
-"housing":{"median_home_value":0,"median_home_value_to_income":"X.X","avg_assessed_value":0,"assessed_value_growth_5yr":"XX.X%","homeownership_rate":"XX.X%"},
-"bond_market":{"outstanding_bonds":[{"cusip":"","description":"GO Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"},{"cusip":"","description":"Revenue Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"}],"total_outstanding_par":0,"avg_coupon":"X.XX%","avg_yield":"X.XX%","avg_spread":"XX bps","market_commentary":"1-2 sentences about current trading conditions and investor demand"},
-"climate_risk":{"flood_risk":"low/moderate/high","wildfire_risk":"low/moderate/high","hurricane_risk":"low/moderate/high","heat_risk":"low/moderate/high","overall_score":"X/10","description":"1-2 sentences about natural hazard exposure"},
+"executive_summary":"2-3 paragraphs",
+"economy":{"description":"paragraph","unemployment_rate":"","median_household_income":0,"poverty_rate":"","msa_gdp_growth":"","resident_income_ratio":"","net_migration":"","top_employers":["","","","",""],"economic_indicators":[{"name":"MSA GDP Growth","value":"","trend":"up"},{"name":"Employment Growth","value":"","trend":"up"},{"name":"Population Growth","value":"","trend":"up"},{"name":"Building Permits","value":"","trend":"up"}]},
+"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"","available_fund_balance_ratio":"","operating_margin":"","liquidity_ratio":"","debt_outstanding":0,"debt_to_revenue":"","debt_per_capita":"","full_value_per_capita":"","total_assessed_value":0,"days_cash_on_hand":0,"tax_collection_rate":"","top_10_taxpayers_pct":""},
+"pension":{"funded_ratio":"","adjusted_net_pension_liability":0,"anpl_to_revenue":"","employer_contribution":0,"contribution_to_adc":"","system_name":""},
+"bond_market":{"outstanding_bonds":[{"description":"","par_amount":0,"coupon":"","maturity":"","yield_to_maturity":"","price":"","spread_to_aaa":""}],"total_outstanding_par":0,"avg_coupon":"","avg_yield":"","avg_spread":"","market_commentary":""},
+"tax_burden":{"property_tax_rate":"","property_tax_rate_vs_state":"","effective_tax_rate":"","total_tax_burden_per_capita":"","sales_tax_rate":"","homestead_exemption":""},
+"housing":{"median_home_value":0,"median_home_value_to_income":"","avg_assessed_value":0,"assessed_value_growth_5yr":"","homeownership_rate":""},
+"climate_risk":{"flood_risk":"","wildfire_risk":"","hurricane_risk":"","heat_risk":"","overall_score":"","description":""},
 "revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
 "expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
-"revenue_composition":[{"category":"Property Tax","pct":"XX%"},{"category":"Sales Tax","pct":"XX%"},{"category":"Charges","pct":"XX%"},{"category":"Intergovernmental","pct":"XX%"},{"category":"Other","pct":"XX%"}],
-"expenditure_composition":[{"category":"Public Safety","pct":"XX%"},{"category":"General Gov","pct":"XX%"},{"category":"Public Works","pct":"XX%"},{"category":"Debt Service","pct":"XX%"},{"category":"Other","pct":"XX%"}],
-"forecast":{"description":"paragraph","revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0}],"scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0}]},
-"peer_comparison":[{"name":"","population":0,"rating":"","fund_balance_ratio":"XX%","debt_per_capita":"$X,XXX","operating_margin":"X%"},{"name":"","population":0,"rating":"","fund_balance_ratio":"XX%","debt_per_capita":"$X,XXX","operating_margin":"X%"},{"name":"","population":0,"rating":"","fund_balance_ratio":"XX%","debt_per_capita":"$X,XXX","operating_margin":"X%"}],
+"revenue_composition":[{"category":"Property Tax","pct":""},{"category":"Sales Tax","pct":""},{"category":"Charges","pct":""},{"category":"Other","pct":""}],
+"expenditure_composition":[{"category":"Public Safety","pct":""},{"category":"General Gov","pct":""},{"category":"Public Works","pct":""},{"category":"Debt Service","pct":""},{"category":"Other","pct":""}],
+"forecast":{"description":"","revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0}],"scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0}]},
+"peer_comparison":[{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""}],
 "risks":[{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],
-"strengths":["","","",""],
-"capital_plan_summary":"paragraph",
-"forward_outlook":"paragraph",
-"ai_confidence":{"overall":"high/medium/low","financials":"high/medium/low","economy":"high/medium/low","description":"1 sentence about data freshness"},
-"sources":["","","",""]}
+"strengths":["","",""],
+"capital_plan_summary":"",
+"forward_outlook":"",
+"ai_confidence":{"overall":"high","financials":"high","economy":"high","description":""},
+"sources":["","",""]}
 
-Fill ALL values with real data from web search. Use most recent fiscal year. Scenario values are net surplus/deficit in $M. CRITICAL: Return complete, valid JSON.`
+IMPORTANT: Fill ALL fields with real data. Include at least 1-2 outstanding bonds with real CUSIP/series info from EMMA. Return COMPLETE valid JSON.`
         }],
       }),
     });
