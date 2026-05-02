@@ -88,6 +88,9 @@ Fill ALL values with real data. Return complete valid JSON.`);
       return NextResponse.json({ error: "Failed to parse core report" }, { status: 500 });
     }
 
+    // Wait 2 seconds to avoid rate limit
+    await new Promise(r => setTimeout(r, 2000));
+
     // CALL 2: Differentiators (pension, bonds, tax, housing, climate, forecast, peers)
     const call2 = await callClaude(apiKey, `Search the web for additional data for "${issuerName}" in ${issuerState || "US"}. Find pension reports, bond info on EMMA, tax rates, housing data, and climate risk. Return ONLY valid JSON:
 {"pension":{"funded_ratio":"","adjusted_net_pension_liability":0,"anpl_to_revenue":"","employer_contribution":0,"contribution_to_adc":"","system_name":""},
