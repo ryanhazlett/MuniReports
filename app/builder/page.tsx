@@ -455,45 +455,61 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>📈</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Revenue & Expenditure Trends</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".75rem", color: "var(--text3)", marginLeft: "auto" }}>
+                    {report.revenue_trend[0]?.year} – {report.revenue_trend[report.revenue_trend.length - 1]?.year}
+                  </span>
                 </div>
 
                 {/* SVG Bar Chart */}
                 <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: ".8rem" }}>
+                    <div>
+                      <div style={{ fontSize: ".88rem", fontWeight: 600 }}>Revenue vs. Expenditures</div>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
+                        {report.revenue_trend[0]?.year} – {report.revenue_trend[report.revenue_trend.length - 1]?.year} · $M
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "1rem", fontFamily: "var(--mono)", fontSize: ".72rem" }}>
+                      <span><span style={{ display: "inline-block", width: 10, height: 10, background: "#1e3a5f", borderRadius: 2, marginRight: 4, verticalAlign: "middle" }}></span>Revenue</span>
+                      <span><span style={{ display: "inline-block", width: 10, height: 10, background: "#7c3aed", borderRadius: 2, marginRight: 4, verticalAlign: "middle", opacity: .7 }}></span>Expenditures</span>
+                    </div>
+                  </div>
                   <svg viewBox="0 0 500 220" style={{ width: "100%", height: "auto" }}>
-                    {/* Grid lines */}
                     {[0,1,2,3,4].map(i => (
                       <line key={i} x1="50" y1={25 + i * 40} x2="490" y2={25 + i * 40} stroke="var(--line)" strokeWidth="0.5" />
                     ))}
-                    {/* Bars */}
                     {(() => {
                       const rev = report.revenue_trend || [];
                       const exp = report.expenditure_trend || [];
                       const allAmounts = [...rev, ...exp].map((d: any) => d.amount).filter((a: any) => typeof a === "number");
                       const maxVal = Math.max(...allAmounts, 1);
-                      const barW = Math.min(20, 300 / rev.length / 2.5);
-                      const gap = 460 / rev.length;
+                      const barW = Math.min(22, 300 / rev.length / 2.5);
+                      const gap = 440 / rev.length;
                       return rev.map((r: any, i: number) => {
-                        const x = 60 + i * gap;
+                        const x = 65 + i * gap;
                         const revH = (r.amount / maxVal) * 150;
                         const expItem = exp[i];
                         const expH = expItem ? (expItem.amount / maxVal) * 150 : 0;
                         return (
                           <g key={i}>
-                            <rect x={x} y={185 - revH} width={barW} height={revH} fill="#1e3a5f" rx="2" opacity="0.9" />
+                            <rect x={x} y={185 - revH} width={barW} height={revH} fill="#1e3a5f" rx="2" />
                             {expH > 0 && <rect x={x + barW + 3} y={185 - expH} width={barW} height={expH} fill="#7c3aed" rx="2" opacity="0.7" />}
-                            <text x={x + barW} y="200" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{r.year?.replace("FY","'")}</text>
-                            <text x={x + barW/2} y={180 - revH} fill="var(--text2)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">
-                              {typeof r.amount === "number" ? `$${(r.amount/1000000).toFixed(0)}M` : ""}
+                            {/* Year label */}
+                            <text x={x + barW + 1} y="200" fill="var(--text)" fontSize="8" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{r.year || ""}</text>
+                            {/* Revenue amount on top of bar */}
+                            <text x={x + barW/2} y={180 - revH} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">
+                              {typeof r.amount === "number" ? `$${(r.amount/1e6).toFixed(0)}M` : ""}
                             </text>
+                            {/* Expenditure amount on top of bar */}
+                            {expH > 0 && expItem && (
+                              <text x={x + barW + 3 + barW/2} y={180 - expH} fill="#7c3aed" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">
+                                {typeof expItem.amount === "number" ? `$${(expItem.amount/1e6).toFixed(0)}M` : ""}
+                              </text>
+                            )}
                           </g>
                         );
                       });
                     })()}
-                    {/* Legend */}
-                    <rect x="60" y="210" width="10" height="5" fill="#1e3a5f" rx="1" />
-                    <text x="75" y="215" fill="var(--text2)" fontSize="8" fontFamily="var(--mono)">Revenue</text>
-                    <rect x="140" y="210" width="10" height="5" fill="#7c3aed" rx="1" />
-                    <text x="155" y="215" fill="var(--text2)" fontSize="8" fontFamily="var(--mono)">Expenditures</text>
                   </svg>
                 </div>
 
@@ -883,6 +899,281 @@ export default function BuilderPage() {
               </div>
             )}
 
+            {/* ── PENSION & OPEB ANALYSIS ── */}
+            {report.pension && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏦</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Pension & OPEB Analysis</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginLeft: "auto" }}>Moody&apos;s Adjusted Basis</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem", marginBottom: "1rem" }}>
+                  {[
+                    { label: "Funded Ratio", value: report.pension.funded_ratio, color: parseFloat(report.pension.funded_ratio) > 80 ? "var(--good)" : parseFloat(report.pension.funded_ratio) > 60 ? "var(--warn)" : "var(--bad)" },
+                    { label: "ANPL / Revenue", value: report.pension.anpl_to_revenue, color: parseFloat(report.pension.anpl_to_revenue) < 100 ? "var(--good)" : "var(--warn)" },
+                    { label: "Contribution to ADC", value: report.pension.contribution_to_adc, color: parseFloat(report.pension.contribution_to_adc) >= 100 ? "var(--good)" : "var(--warn)" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>{m.label}</div>
+                      <div style={{ fontSize: "1.5rem", fontWeight: 700, color: m.color }}>{m.value || "—"}</div>
+                    </div>
+                  ))}
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
+                  <tbody>
+                    {[
+                      ["Pension System", report.pension.system_name],
+                      ["Adjusted Net Pension Liability", report.pension.adjusted_net_pension_liability ? `$${(report.pension.adjusted_net_pension_liability/1e6).toFixed(1)}M` : null],
+                      ["Annual Employer Contribution", report.pension.employer_contribution ? `$${(report.pension.employer_contribution/1e6).toFixed(1)}M` : null],
+                    ].filter(([,v]) => v).map(([label, value], i) => (
+                      <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                        <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)" }}>{label}</td>
+                        <td style={{ padding: ".7rem 1rem", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 600, textAlign: "right" }}>{value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* ── TAX BURDEN ANALYSIS (DIFFERENTIATOR) ── */}
+            {report.tax_burden && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
+                  <span style={{ fontSize: "1.1rem" }}>💲</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Tax Burden Analysis</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Property Tax</div>
+                    {[
+                      ["Tax Rate", report.tax_burden.property_tax_rate],
+                      ["vs. State Average", report.tax_burden.property_tax_rate_vs_state],
+                      ["Effective Rate", report.tax_burden.effective_tax_rate],
+                      ["Homestead Exemption", report.tax_burden.homestead_exemption],
+                    ].filter(([,v]) => v).map(([label, value], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".86rem" }}>
+                        <span style={{ color: "var(--text2)" }}>{label}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600, color: String(value).toLowerCase().includes("below") ? "var(--good)" : "var(--text)" }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Overall Tax Burden</div>
+                    {[
+                      ["Total Tax Burden Per Capita", report.tax_burden.total_tax_burden_per_capita],
+                      ["Sales Tax Rate", report.tax_burden.sales_tax_rate],
+                    ].filter(([,v]) => v).map(([label, value], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".86rem" }}>
+                        <span style={{ color: "var(--text2)" }}>{label}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── HOUSING & TAX BASE (DIFFERENTIATOR) ── */}
+            {report.housing && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏠</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Housing & Tax Base Stability</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem" }}>
+                  {[
+                    { label: "Median Home Value", value: report.housing.median_home_value ? `$${(report.housing.median_home_value/1000).toFixed(0)}K` : "—" },
+                    { label: "Price-to-Income", value: report.housing.median_home_value_to_income ? `${report.housing.median_home_value_to_income}×` : "—", color: parseFloat(report.housing.median_home_value_to_income) > 5 ? "var(--warn)" : "var(--good)" },
+                    { label: "5Y AV Growth", value: report.housing.assessed_value_growth_5yr || "—" },
+                    { label: "Homeownership", value: report.housing.homeownership_rate || "—" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>{m.label}</div>
+                      <div style={{ fontSize: "1.3rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
+                    </div>
+                  ))}
+                </div>
+                {report.financials?.full_value_per_capita && (
+                  <div style={{ marginTop: ".8rem", padding: ".8rem 1rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <span style={{ fontSize: ".88rem", color: "var(--text2)" }}>Full Value Per Capita</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", marginLeft: ".5rem" }}>(Moody&apos;s Key Metric)</span>
+                    </div>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 700 }}>{report.financials.full_value_per_capita}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── CLIMATE & DISASTER RISK (DIFFERENTIATOR) ── */}
+            {report.climate_risk && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🌍</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Climate & Natural Hazard Risk</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
+                    {[
+                      { label: "Flood Risk", value: report.climate_risk.flood_risk, icon: "🌊" },
+                      { label: "Wildfire Risk", value: report.climate_risk.wildfire_risk, icon: "🔥" },
+                      { label: "Hurricane Risk", value: report.climate_risk.hurricane_risk, icon: "🌀" },
+                      { label: "Heat Risk", value: report.climate_risk.heat_risk, icon: "🌡️" },
+                    ].map((r, i) => (
+                      <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "1.2rem", marginBottom: ".3rem" }}>{r.icon}</div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>{r.label}</div>
+                        <div style={{ fontWeight: 700, fontSize: ".9rem", color: r.value === "low" ? "var(--good)" : r.value === "moderate" ? "var(--warn)" : "var(--bad)", textTransform: "capitalize" }}>{r.value || "—"}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Overall Climate Risk Score</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: ".4rem", marginBottom: ".8rem" }}>
+                      <span style={{ fontSize: "2.5rem", fontWeight: 700, color: parseInt(report.climate_risk.overall_score) <= 3 ? "var(--good)" : parseInt(report.climate_risk.overall_score) <= 6 ? "var(--warn)" : "var(--bad)" }}>{report.climate_risk.overall_score}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text3)" }}>/ 10</span>
+                    </div>
+                    <div style={{ height: 8, background: "var(--line)", borderRadius: 4, overflow: "hidden", marginBottom: ".8rem" }}>
+                      <div style={{ height: "100%", width: `${(parseInt(report.climate_risk.overall_score) || 0) * 10}%`, background: parseInt(report.climate_risk.overall_score) <= 3 ? "var(--good)" : parseInt(report.climate_risk.overall_score) <= 6 ? "var(--warn)" : "var(--bad)", borderRadius: 4 }} />
+                    </div>
+                    <p style={{ fontSize: ".85rem", color: "var(--text2)", margin: 0, lineHeight: 1.5 }}>{report.climate_risk.description}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── PEER COMPARISON ── */}
+            {report.peer_comparison?.length > 0 && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏆</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Peer Comparison</h3>
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid var(--line)" }}>
+                      <th style={{ padding: ".6rem .8rem", textAlign: "left", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Municipality</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Pop.</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Rating</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Fund Bal.</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Debt/Cap</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Margin</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: "1px solid var(--line)", background: "var(--accent-bg)" }}>
+                      <td style={{ padding: ".6rem .8rem", fontWeight: 700, color: "var(--accent)", fontSize: ".85rem" }}>{report.issuer_name} ←</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.population ? `${(report.population/1000).toFixed(0)}K` : "—"}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 600 }}>{report.rating}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.financials?.fund_balance_ratio || "—"}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.financials?.debt_per_capita || "—"}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.financials?.operating_margin || "—"}</td>
+                    </tr>
+                    {report.peer_comparison.map((p: any, i: number) => (
+                      <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                        <td style={{ padding: ".6rem .8rem", fontWeight: 500, fontSize: ".85rem" }}>{p.name}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.population ? `${(p.population/1000).toFixed(0)}K` : "—"}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 600 }}>{p.rating}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.fund_balance_ratio || "—"}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.debt_per_capita || "—"}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.operating_margin || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* ── BOND MARKET PERFORMANCE (DIFFERENTIATOR) ── */}
+            {report.bond_market && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
+                  <span style={{ fontSize: "1.1rem" }}>📈</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Bond Market Performance</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+
+                {/* Summary metrics */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem", marginBottom: "1rem" }}>
+                  {[
+                    { label: "Total Outstanding", value: report.bond_market.total_outstanding_par ? `$${(report.bond_market.total_outstanding_par/1e6).toFixed(0)}M` : "—" },
+                    { label: "Avg Coupon", value: report.bond_market.avg_coupon || "—" },
+                    { label: "Avg Yield", value: report.bond_market.avg_yield || "—" },
+                    { label: "Avg Spread to AAA", value: report.bond_market.avg_spread || "—", color: parseInt(report.bond_market.avg_spread) <= 25 ? "var(--good)" : parseInt(report.bond_market.avg_spread) <= 75 ? "var(--warn)" : "var(--bad)" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".9rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".3rem" }}>{m.label}</div>
+                      <div style={{ fontSize: "1.2rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Bond table */}
+                {report.bond_market.outstanding_bonds?.length > 0 && (
+                  <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", marginBottom: ".8rem" }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--line)" }}>
+                        {["Issue", "Par Amount", "Coupon", "Maturity", "YTM", "Price", "Spread"].map(h => (
+                          <th key={h} style={{ padding: ".6rem .6rem", textAlign: h === "Issue" ? "left" : "right", fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {report.bond_market.outstanding_bonds.map((bond: any, i: number) => (
+                        <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                          <td style={{ padding: ".6rem", fontSize: ".82rem", fontWeight: 500, maxWidth: 180 }}>{bond.description}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.par_amount ? `$${(bond.par_amount/1e6).toFixed(1)}M` : "—"}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.coupon || "—"}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.maturity || "—"}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.yield_to_maturity || "—"}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem", fontWeight: 600 }}>{bond.price || "—"}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem", color: parseInt(bond.spread_to_aaa) <= 25 ? "var(--good)" : "var(--text)" }}>{bond.spread_to_aaa || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {/* Market commentary */}
+                {report.bond_market.market_commentary && (
+                  <p style={{ fontSize: ".88rem", color: "var(--text2)", margin: 0, padding: ".8rem 1rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", lineHeight: 1.6 }}>
+                    <span style={{ fontWeight: 600, color: "var(--text)" }}>Market Commentary: </span>
+                    {report.bond_market.market_commentary}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* ── AI CONFIDENCE SCORE (DIFFERENTIATOR) ── */}
+            {report.ai_confidence && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🤖</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>AI Data Confidence</h3>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem", marginBottom: ".8rem" }}>
+                  {[
+                    { label: "Overall Confidence", value: report.ai_confidence.overall },
+                    { label: "Financial Data", value: report.ai_confidence.financials },
+                    { label: "Economic Data", value: report.ai_confidence.economy },
+                  ].map((c, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>{c.label}</div>
+                      <div style={{ fontWeight: 700, fontSize: "1rem", textTransform: "capitalize", color: c.value === "high" ? "var(--good)" : c.value === "medium" ? "var(--warn)" : "var(--bad)" }}>{c.value || "—"}</div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: ".85rem", color: "var(--text2)", margin: 0, padding: ".6rem .8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", lineHeight: 1.5, fontStyle: "italic" }}>
+                  {report.ai_confidence.description || "This report was generated using AI analysis of publicly available financial documents. Data accuracy depends on the availability and recency of source documents."}
+                </p>
+              </div>
+            )}
+
             {/* ── FORWARD OUTLOOK WITH CHARTS ── */}
             <div style={{ marginTop: "2.5rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
@@ -905,8 +1196,18 @@ export default function BuilderPage() {
               {/* Revenue vs Expenditure Forecast Chart */}
               {report.forecast?.revenue_forecast?.length > 0 && (
                 <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
-                  <div style={{ fontSize: ".88rem", fontWeight: 600, marginBottom: ".15rem" }}>Projected Revenue vs. Expenditures</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginBottom: ".8rem" }}>FY2026 – FY2030 · Baseline scenario · $M</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: ".8rem" }}>
+                    <div>
+                      <div style={{ fontSize: ".88rem", fontWeight: 600 }}>Projected Revenue vs. Expenditures</div>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
+                        {report.forecast.revenue_forecast[0]?.year} – {report.forecast.revenue_forecast[report.forecast.revenue_forecast.length - 1]?.year} · Baseline scenario · $M
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "1rem", fontFamily: "var(--mono)", fontSize: ".72rem" }}>
+                      <span><span style={{ display: "inline-block", width: 10, height: 2, background: "#1e3a5f", marginRight: 4, verticalAlign: "middle" }}></span>Revenue</span>
+                      <span><span style={{ display: "inline-block", width: 10, height: 2, background: "#dc2626", marginRight: 4, verticalAlign: "middle", borderTop: "1px dashed #dc2626" }}></span>Expenditures</span>
+                    </div>
+                  </div>
                   <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
                     {[0,1,2,3].map(i => <line key={i} x1="50" y1={20+i*42} x2="490" y2={20+i*42} stroke="var(--line)" strokeWidth="0.5" />)}
                     {(() => {
@@ -926,17 +1227,13 @@ export default function BuilderPage() {
                           {exp.map((r: any, i: number) => <circle key={`e${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#dc2626" />)}
                           {rev.map((r: any, i: number) => (
                             <g key={`l${i}`}>
-                              <text x={60 + i * gap + gap * 0.3} y="190" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{r.year?.replace("FY", "'")}</text>
-                              <text x={60 + i * gap + gap * 0.3} y={170 - (r.amount / maxV) * 145} fill="var(--text2)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">${(r.amount / 1e6).toFixed(0)}M</text>
+                              <text x={60 + i * gap + gap * 0.3} y="190" fill="var(--text)" fontSize="8" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{r.year || ""}</text>
+                              <text x={60 + i * gap + gap * 0.3} y={165 - (r.amount / maxV) * 145} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">${(r.amount / 1e6).toFixed(0)}M</text>
                             </g>
                           ))}
                         </>
                       );
                     })()}
-                    <line x1="60" y1="194" x2="72" y2="194" stroke="#1e3a5f" strokeWidth="2.5" />
-                    <text x="77" y="197" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Revenue</text>
-                    <line x1="130" y1="194" x2="142" y2="194" stroke="#dc2626" strokeWidth="2.5" strokeDasharray="4 2" />
-                    <text x="147" y="197" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Expenditures</text>
                   </svg>
                 </div>
               )}
@@ -955,7 +1252,7 @@ export default function BuilderPage() {
                       const colors = ["#1e3a5f", "#059669", "#dc2626"];
                       const labels = ["Baseline", "Optimistic", "Cautious"];
                       const years = ["fy26", "fy27", "fy28", "fy29", "fy30"];
-                      const yearLabels = ["'26", "'27", "'28", "'29", "'30"];
+                      const yearLabels = ["FY2026", "FY2027", "FY2028", "FY2029", "FY2030"];
                       const allVals = scenarios.flatMap((s: any) => years.map(y => s[y] || 0));
                       const maxAbs = Math.max(Math.abs(Math.min(...allVals)), Math.abs(Math.max(...allVals)), 1);
                       const gap = 440 / 5;

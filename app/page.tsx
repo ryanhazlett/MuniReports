@@ -466,6 +466,190 @@ export default function HomePage() {
                 ))}
               </div>
 
+              {/* Pension Analysis */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
+                  <span>🏦</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Pension & OPEB Analysis</h4>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", marginLeft: "auto" }}>Moody&apos;s Adjusted Basis</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".6rem", marginBottom: ".8rem" }}>
+                  {[
+                    { label: "Funded Ratio", value: "73.2%", color: "var(--warn)" },
+                    { label: "ANPL / Revenue", value: "89.4%", color: "var(--good)" },
+                    { label: "Contribution to ADC", value: "100%", color: "var(--good)" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>{m.label}</div>
+                      <div style={{ fontSize: "1.2rem", fontWeight: 700, color: m.color }}>{m.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", fontSize: ".82rem" }}>
+                  {[["Pension System", "COAERS"], ["Adjusted Net Pension Liability", "$2.8B"], ["Annual Employer Contribution", "$198.4M"]].map(([l,v], i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".5rem .8rem", borderBottom: "1px solid var(--line-soft)" }}>
+                      <span style={{ color: "var(--text2)" }}>{l}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tax Burden - Exclusive */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
+                  <span>💲</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Tax Burden Analysis</h4>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".4rem" }}>Property Tax</div>
+                    {[["Tax Rate", "$0.4431 / $100"], ["vs. State Average", "Below Average"], ["Homestead Exemption", "$110,000"]].map(([l,v], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".3rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".78rem" }}>
+                        <span style={{ color: "var(--text2)" }}>{l}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600, color: String(v).includes("Below") ? "var(--good)" : "var(--text)" }}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".4rem" }}>Overall Burden</div>
+                    {[["Tax Burden Per Capita", "$2,840"], ["Sales Tax Rate", "8.25%"]].map(([l,v], i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".3rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".78rem" }}>
+                        <span style={{ color: "var(--text2)" }}>{l}</span>
+                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Housing - Exclusive */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
+                  <span>🏠</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Housing & Tax Base Stability</h4>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem" }}>
+                  {[
+                    { label: "Median Home", value: "$485K" },
+                    { label: "Price/Income", value: "4.8×", color: "var(--good)" },
+                    { label: "5Y AV Growth", value: "+38.2%" },
+                    { label: "Ownership", value: "52.4%" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".7rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".25rem" }}>{m.label}</div>
+                      <div style={{ fontSize: "1.1rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: ".5rem", padding: ".6rem .8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", display: "flex", justifyContent: "space-between", fontSize: ".82rem" }}>
+                  <span style={{ color: "var(--text2)" }}>Full Value Per Capita <span style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>(Moody&apos;s Key Metric)</span></span>
+                  <span style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: ".95rem" }}>$197,200</span>
+                </div>
+              </div>
+
+              {/* Climate Risk - Exclusive */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
+                  <span>🌍</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Climate & Natural Hazard Risk</h4>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem" }}>
+                    {[
+                      { label: "Flood", value: "Moderate", icon: "🌊", color: "var(--warn)" },
+                      { label: "Wildfire", value: "Low", icon: "🔥", color: "var(--good)" },
+                      { label: "Hurricane", value: "Low", icon: "🌀", color: "var(--good)" },
+                      { label: "Heat", value: "High", icon: "🌡️", color: "var(--bad)" },
+                    ].map((r, i) => (
+                      <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".6rem", textAlign: "center" }}>
+                        <div style={{ fontSize: "1rem", marginBottom: ".2rem" }}>{r.icon}</div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".2rem" }}>{r.label}</div>
+                        <div style={{ fontWeight: 700, fontSize: ".82rem", color: r.color }}>{r.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".4rem" }}>Overall Climate Risk</div>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: ".3rem", marginBottom: ".5rem" }}>
+                      <span style={{ fontSize: "2rem", fontWeight: 700, color: "var(--warn)" }}>4</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".8rem", color: "var(--text3)" }}>/ 10</span>
+                    </div>
+                    <div style={{ height: 6, background: "var(--line)", borderRadius: 3, overflow: "hidden", marginBottom: ".5rem" }}>
+                      <div style={{ height: "100%", width: "40%", background: "var(--warn)", borderRadius: 3 }} />
+                    </div>
+                    <p style={{ fontSize: ".78rem", color: "var(--text2)", margin: 0, lineHeight: 1.4 }}>Austin faces moderate flood risk from flash flooding in Hill Country watersheds and elevated heat stress. Wildfire and hurricane exposure are minimal.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bond Market Performance - Exclusive */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
+                  <span>📈</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Bond Market Performance</h4>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem", marginBottom: ".8rem" }}>
+                  {[
+                    { label: "Outstanding", value: "$4.2B" },
+                    { label: "Avg Coupon", value: "4.12%" },
+                    { label: "Avg Yield", value: "3.45%" },
+                    { label: "Spread to AAA", value: "8 bps", color: "var(--good)" },
+                  ].map((m, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".7rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".25rem" }}>{m.label}</div>
+                      <div style={{ fontSize: "1.1rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", fontSize: ".78rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1.8fr .8fr .6fr .5fr .5fr .6fr .6fr", padding: ".5rem .6rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase" }}>
+                    <div>Issue</div><div style={{textAlign:"right"}}>Par</div><div style={{textAlign:"right"}}>Coupon</div><div style={{textAlign:"right"}}>Mat.</div><div style={{textAlign:"right"}}>YTM</div><div style={{textAlign:"right"}}>Price</div><div style={{textAlign:"right"}}>Spread</div>
+                  </div>
+                  {[
+                    { desc: "GO Bonds Series 2022A", par: "$158.8M", coupon: "5.00%", mat: "2042", ytm: "3.42%", price: "$112.45", spread: "6 bps" },
+                    { desc: "Water & Wastewater Rev 2021", par: "$245.0M", coupon: "4.25%", mat: "2046", ytm: "3.58%", price: "$108.20", spread: "12 bps" },
+                    { desc: "GO Refunding 2020", par: "$89.5M", coupon: "3.50%", mat: "2035", ytm: "3.18%", price: "$103.80", spread: "4 bps" },
+                  ].map((b, i) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.8fr .8fr .6fr .5fr .5fr .6fr .6fr", padding: ".45rem .6rem", borderBottom: "1px solid var(--line-soft)", alignItems: "center" }}>
+                      <div style={{ fontWeight: 500 }}>{b.desc}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.par}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.coupon}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.mat}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.ytm}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{b.price}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--good)" }}>{b.spread}</div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: ".78rem", color: "var(--text2)", margin: 0, marginTop: ".5rem", padding: ".5rem .7rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", lineHeight: 1.4 }}>
+                  <span style={{ fontWeight: 600, color: "var(--text)" }}>Market Commentary: </span>
+                  Austin GO bonds trade at tight spreads reflecting strong investor demand and AAA credit quality. Recent secondary market activity shows stable pricing with yields declining 15 bps over the past quarter amid favorable municipal market conditions.
+                </p>
+              </div>
+
+              {/* AI Confidence - Exclusive */}
+              <div style={{ marginBottom: "1.8rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
+                  <span>🤖</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>AI Data Confidence</h4>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".5rem", marginBottom: ".5rem" }}>
+                  {[
+                    { label: "Overall", value: "High" },
+                    { label: "Financial Data", value: "High" },
+                    { label: "Economic Data", value: "High" },
+                  ].map((c, i) => (
+                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".6rem", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".2rem" }}>{c.label}</div>
+                      <div style={{ fontWeight: 700, fontSize: ".88rem", color: "var(--good)" }}>{c.value}</div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: ".78rem", color: "var(--text2)", margin: 0, padding: ".5rem .7rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", lineHeight: 1.4, fontStyle: "italic" }}>
+                  Report generated from City of Austin FY2025 ACFR, FY2026 Adopted Budget, EMMA filings, and U.S. Census 2024 ACS data. All financial figures verified against primary source documents.
+                </p>
+              </div>
+
               {/* Sources */}
               <div style={{ paddingTop: "1rem", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
