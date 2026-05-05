@@ -1,6 +1,20 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+const FREE_REPORT_LIMIT = 1;
+
+function getReportCount(): number {
+  if (typeof window === "undefined") return 0;
+  return parseInt(localStorage.getItem("muni_report_count") || "0", 10);
+}
+
+function incrementReportCount(): number {
+  const count = getReportCount() + 1;
+  localStorage.setItem("muni_report_count", String(count));
+  return count;
+}
 
 export default function BuilderPage() {
   const [tab, setTab] = useState<"search" | "upload">("search");
@@ -11,29 +25,32 @@ export default function BuilderPage() {
   const [generating, setGenerating] = useState(false);
   const [report, setReport] = useState<any>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const debounceRef = useRef<any>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [reportsUsed, setReportsUsed] = useState(0);
   const router = useRouter();
 
-  // Debounced issuer search
-  const handleSearch = (val: string) => {
-    setQuery(val);
-    if (val.length < 3) { setResults([]); return; }
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => doSearch(val), 400);
-  };
+  useEffect(() => {
+    setReportsUsed(getReportCount());
+  }, []);
 
-  const doSearch = async (q: string) => {
+  // Search only when button is clicked
+  const doSearch = async () => {
+    if (query.length < 2) return;
     setSearching(true);
     try {
       const res = await fetch("/api/search-issuers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: q }),
+        body: JSON.stringify({ query }),
       });
       const data = await res.json();
       setResults(data.issuers || []);
     } catch { setResults([]); }
     setSearching(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") doSearch();
   };
 
   const selectIssuer = (iss: any) => {
@@ -43,6 +60,12 @@ export default function BuilderPage() {
   };
 
   const generateReport = async () => {
+    // Check usage limit
+    if (reportsUsed >= FREE_REPORT_LIMIT) {
+      setShowPaywall(true);
+      return;
+    }
+
     setGenerating(true);
     try {
       const res = await fetch("/api/generate-report", {
@@ -57,6 +80,8 @@ export default function BuilderPage() {
       const data = await res.json();
       if (data.report) {
         setReport(data.report);
+        const newCount = incrementReportCount();
+        setReportsUsed(newCount);
         if (data.savedId) {
           router.push(`/report/${data.savedId}`);
         }
@@ -131,14 +156,17 @@ export default function BuilderPage() {
               <input
                 type="text"
                 value={query}
-                onChange={e => handleSearch(e.target.value)}
+                onChange={e => { setQuery(e.target.value); setResults([]); }}
+                onKeyDown={handleKeyDown}
                 placeholder="Search 22,400 issuers — city, county, school district, utility…"
                 style={{
                   border: "none", background: "transparent", fontFamily: "var(--sans)",
                   fontSize: "1rem", color: "var(--text)", flex: 1, outline: "none",
                 }}
               />
-              {searching && <span style={{ fontSize: ".82rem", color: "var(--text3)" }}>Searching…</span>}
+              <button onClick={doSearch} className="btn btn-accent btn-sm" disabled={searching || query.length < 2}>
+                {searching ? "Searching…" : "Search"}
+              </button>
             </div>
 
             {/* Dropdown results */}
@@ -1328,6 +1356,47 @@ export default function BuilderPage() {
                 munireports.com
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {/* ===== PAYWALL MODAL ===== */}
+      {showPaywall && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,.6)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 1000, backdropFilter: "blur(4px)",
+        }} onClick={() => setShowPaywall(false)}>
+          <div onClick={e => e.stopPropagation()} style={{
+            background: "var(--panel)", border: "1px solid var(--line)",
+            borderRadius: "var(--radius-lg)", padding: "2.5rem",
+            maxWidth: 480, width: "90%", textAlign: "center",
+            boxShadow: "0 20px 60px rgba(0,0,0,.3)",
+          }}>
+            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📊</div>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: ".5rem", letterSpacing: "-.02em" }}>
+              You&apos;ve used your free report
+            </h2>
+            <p style={{ color: "var(--text2)", fontSize: ".95rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
+              Upgrade to <strong style={{ color: "var(--text)" }}>MuniReports Pro</strong> for unlimited credit reports, saved report history, PDF exports, and priority generation.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".5rem", marginBottom: "1.5rem", padding: "1rem", background: "var(--bg)", borderRadius: "var(--radius)", border: "1px solid var(--line)" }}>
+              {[
+                { label: "Free", value: "1 report", current: true },
+                { label: "Pro", value: "Unlimited", current: false },
+                { label: "Team", value: "Unlimited + API", current: false },
+              ].map((p, i) => (
+                <div key={i} style={{ textAlign: "center", padding: ".5rem", borderRadius: 6, background: i === 1 ? "var(--accent-bg)" : "transparent", border: i === 1 ? "1px solid var(--accent)" : "1px solid transparent" }}>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>{p.label}</div>
+                  <div style={{ fontWeight: 700, fontSize: ".9rem", color: i === 1 ? "var(--accent)" : "var(--text)" }}>{p.value}</div>
+                </div>
+              ))}
+            </div>
+            <Link href="/pricing" className="btn btn-accent btn-lg" style={{ width: "100%", justifyContent: "center", marginBottom: ".8rem" }}>
+              Upgrade to Pro — $49/month →
+            </Link>
+            <button onClick={() => setShowPaywall(false)} style={{ background: "none", border: "none", color: "var(--text3)", fontSize: ".85rem", cursor: "pointer", fontFamily: "var(--sans)" }}>
+              Maybe later
+            </button>
           </div>
         </div>
       )}
