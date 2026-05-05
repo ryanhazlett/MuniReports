@@ -1,6 +1,7 @@
 import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "MuniReports — Municipal Bond Credit Reports",
@@ -87,6 +88,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <span>Not a credit rating agency. AI sentiment is research, not an NRSRO rating.</span>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
