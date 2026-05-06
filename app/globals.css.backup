@@ -161,10 +161,3 @@ footer{background:var(--bg2);padding:3.5rem 0 1.5rem;border-top:1px solid var(--
 @media not print {
   .report-print-header { display: none !important; }
 }
-
-/* ============ FOOTER OVERLAP FIX ============ */
-/* Ensures search dropdowns have room to expand without colliding with the footer */
-main {
-  min-height: calc(100vh - 200px);
-  padding-bottom: 4rem;
-}
