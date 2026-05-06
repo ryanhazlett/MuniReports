@@ -1,8 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-
 import Link from "next/link";
 
 const FREE_REPORT_LIMIT = 1;
@@ -19,30 +17,6 @@ function incrementReportCount(): number {
 }
 
 export default function BuilderPage() {
-  const router = useRouter();
-  const [authChecked, setAuthChecked] = useState(false);
-  const [isAuthed, setIsAuthed] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        router.replace("/login?next=/builder");
-      } else {
-        setIsAuthed(true);
-        setAuthChecked(true);
-      }
-    });
-  }, [router]);
-
-  if (!authChecked) {
-    return (
-      <main style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ color: "var(--ink-mute)" }}>Loading…</div>
-      </main>
-    );
-  }
-
   const [tab, setTab] = useState<"search" | "upload">("search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -53,7 +27,7 @@ export default function BuilderPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
-  
+  const router = useRouter();
 
   useEffect(() => {
     setReportsUsed(getReportCount());
