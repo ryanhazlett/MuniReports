@@ -111,12 +111,6 @@ export default function BuilderPage() {
     setGenerating(false);
   };
 
-  const handleFileDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-    setUploadedFiles(prev => [...prev, ...files]);
-  };
-
   return (
     <div className="container" style={{ padding: "2.5rem 1.5rem 4rem" }}>
       <div className="no-print" style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "2px solid var(--accent)" }}>
