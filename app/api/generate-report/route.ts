@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
-import { rateLimit, getClientIP } from "@/utils/rate-limit";
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 // Sleep helper
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -115,15 +114,6 @@ function extractJSON(data: any): any {
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = getClientIP(req);
-    const rl = rateLimit(`generate:${ip}`, 3, 3600000);
-    if (!rl.allowed) {
-      return NextResponse.json(
-        { error: "Too many requests. Please slow down.", retryAfter: rl.retryAfterSeconds },
-        { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
-      );
-    }
-
     const { issuerName, issuerState } = await req.json();
     const apiKey = process.env.ANTHROPIC_API_KEY || "";
 
