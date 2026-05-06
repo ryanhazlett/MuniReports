@@ -181,11 +181,7 @@ FORMATTING RULES:
 - All "pct" fields: like "40%". Never with explanations.
 - Long context goes ONLY in description/summary/narrative fields.
 - Fill EVERY field. Use "—" or 0 for unknown values, but try web search first.
-- Write narrative text in NORMAL SENTENCE CASE. Do NOT title-case ANY field. This applies ESPECIALLY to climate_risk fields (flood_risk, wildfire_risk, hurricane_risk, heat_risk, description). Capitalize ONLY the first word of each sentence and proper nouns (city names, agency names). Examples:
-  CORRECT: "Flooding is the city's highest-priority natural hazard, with buildings averaging a 35% chance of a flood event over 30 years."
-  WRONG: "Flooding Is The City's Highest-Priority Natural Hazard, With Buildings Averaging A 35% Chance Of A Flood Event Over 30 Years."
-  CORRECT: "More than 60% of structures sit within 1.5 miles of the wildland-urban interface."
-  WRONG: "More Than 60% Of Structures Sit Within 1.5 Miles Of The Wildland-Urban Interface."
+- Write narrative text in NORMAL SENTENCE CASE. Do NOT title-case. Correct: "wildland-urban interface areas in western Austin." WRONG: "Wildland-Urban Interface Areas In Western Austin."
 - climate_risk.overall_score: ONE phrase like "Moderate" or "Moderate-High" or "High". NOT a number/10.
 - bond_market.outstanding_bonds: every bond MUST have a "price" (estimate from YTM/coupon if needed, format "$XXX.XX") and "spread_to_aaa" in basis points (format "XX bps"). Never blank.
 - bond_market.avg_spread: average of per-bond spreads, format "XX bps". Never blank.

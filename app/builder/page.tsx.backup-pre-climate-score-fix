@@ -1073,8 +1073,12 @@ export default function BuilderPage() {
                   </div>
                   <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                     <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Overall Climate Risk Score</div>
-                    <div style={{ marginBottom: ".8rem" }}>
-                      <span style={{ fontSize: "1.8rem", fontWeight: 700, color: /low/i.test(String(report.climate_risk.overall_score || "")) ? "var(--good)" : (/high/i.test(String(report.climate_risk.overall_score || "")) && !/moderate/i.test(String(report.climate_risk.overall_score || ""))) ? "var(--bad)" : "var(--warn)" }}>{report.climate_risk.overall_score || "—"}</span>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: ".4rem", marginBottom: ".8rem" }}>
+                      <span style={{ fontSize: "2.5rem", fontWeight: 700, color: parseInt(report.climate_risk.overall_score) <= 3 ? "var(--good)" : parseInt(report.climate_risk.overall_score) <= 6 ? "var(--warn)" : "var(--bad)" }}>{report.climate_risk.overall_score}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text3)" }}>/ 10</span>
+                    </div>
+                    <div style={{ height: 8, background: "var(--line)", borderRadius: 4, overflow: "hidden", marginBottom: ".8rem" }}>
+                      <div style={{ height: "100%", width: `${(parseInt(report.climate_risk.overall_score) || 0) * 10}%`, background: parseInt(report.climate_risk.overall_score) <= 3 ? "var(--good)" : parseInt(report.climate_risk.overall_score) <= 6 ? "var(--warn)" : "var(--bad)", borderRadius: 4 }} />
                     </div>
                     <p style={{ fontSize: ".85rem", color: "var(--text2)", margin: 0, lineHeight: 1.5 }}>{report.climate_risk.description}</p>
                   </div>
