@@ -3,6 +3,10 @@ import { createClient } from "@/utils/supabase/server";
 
 export const maxDuration = 120;
 
+// Sleep helper
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+// Calls Claude with automatic retry on rate limits and transient errors
 async function callClaude(apiKey: string, prompt: string, useSearch: boolean = true) {
   const body: any = {
     model: "claude-sonnet-4-6",
@@ -10,23 +14,81 @@ async function callClaude(apiKey: string, prompt: string, useSearch: boolean = t
     messages: [{ role: "user", content: prompt }],
   };
   if (useSearch) {
-    body.tools = [{"type": "web_search_20250305", "name": "web_search"}];
+    body.tools = [{ type: "web_search_20250305", name: "web_search" }];
   }
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify(body),
-  });
-  return response.json();
+
+  const maxAttempts = 4;
+  // Wait times in ms before each retry: 2s, 5s, 12s
+  const backoffs = [2000, 5000, 12000];
+
+  let lastError: any = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      // If we got a real response (success or content error), return it
+      if (response.ok && !data.error) {
+        return data;
+      }
+
+      // Check error type for retry decision
+      const errType = data?.error?.type || "";
+      const isRetryable =
+        response.status === 429 ||           // rate limit
+        response.status === 529 ||           // overloaded
+        response.status >= 500 ||            // server errors
+        errType === "rate_limit_error" ||
+        errType === "overloaded_error" ||
+        errType === "api_error";
+
+      lastError = data;
+
+      // If not retryable, give up immediately
+      if (!isRetryable) {
+        console.error(`Non-retryable error (status ${response.status}):`, JSON.stringify(data.error));
+        return data;
+      }
+
+      // If this was the last attempt, return what we have
+      if (attempt === maxAttempts - 1) {
+        console.error(`Exhausted ${maxAttempts} attempts. Last error:`, JSON.stringify(data.error));
+        return data;
+      }
+
+      // Otherwise wait and retry
+      const wait = backoffs[attempt];
+      console.warn(`Retryable error on attempt ${attempt + 1}/${maxAttempts} (${errType || response.status}). Waiting ${wait}ms before retry.`);
+      await sleep(wait);
+    } catch (err) {
+      // Network errors etc — retry these too
+      lastError = err;
+      if (attempt === maxAttempts - 1) {
+        console.error("Network error, exhausted retries:", err);
+        return { error: { type: "network_error", message: String(err) } };
+      }
+      const wait = backoffs[attempt];
+      console.warn(`Network error on attempt ${attempt + 1}/${maxAttempts}. Waiting ${wait}ms.`);
+      await sleep(wait);
+    }
+  }
+
+  return lastError || { error: { type: "unknown", message: "All retry attempts failed" } };
 }
 
 function extractJSON(data: any): any {
   let text = "";
-  if (data.content) {
+  if (data?.content) {
     for (const block of data.content) {
       if (block.type === "text") text += block.text;
     }
@@ -35,10 +97,10 @@ function extractJSON(data: any): any {
     const match = text.match(/\{[\s\S]*\}/);
     if (match) {
       let j = match[0];
-      let ob = (j.match(/\{/g)||[]).length;
-      let cb = (j.match(/\}/g)||[]).length;
-      let oq = (j.match(/\[/g)||[]).length;
-      let cq = (j.match(/\]/g)||[]).length;
+      let ob = (j.match(/\{/g) || []).length;
+      let cb = (j.match(/\}/g) || []).length;
+      let oq = (j.match(/\[/g) || []).length;
+      let cq = (j.match(/\]/g) || []).length;
       while (cq < oq) { j += "]"; cq++; }
       while (cb < ob) { j += "}"; cb++; }
       j = j.replace(/,\s*\]/g, "]").replace(/,\s*\}/g, "}");
@@ -81,20 +143,23 @@ Fill ALL values with real data. Return complete valid JSON.`);
 
     const coreReport = extractJSON(call1);
     if (!coreReport) {
-      if (call1.error) {
-        console.error("Call 1 API error:", JSON.stringify(call1.error));
-        return NextResponse.json({ error: call1.error.message }, { status: 500 });
-      }
-      return NextResponse.json({ error: "Failed to parse core report" }, { status: 500 });
+      console.error("Call 1 failed. Error:", call1?.error ? JSON.stringify(call1.error) : "No parseable JSON");
+      return NextResponse.json({ error: "Failed to generate report core data. Please try again." }, { status: 500 });
     }
 
-    // Wait 2 seconds to avoid rate limit
-    await new Promise(r => setTimeout(r, 2000));
+    // Wait between calls to be friendly to rate limits
+    await sleep(4000);
 
-    // CALL 2: Differentiators (pension, bonds, tax, housing, climate, forecast, peers)
-    const call2 = await callClaude(apiKey, `Search the web for additional data for "${issuerName}" in ${issuerState || "US"}. Find pension reports, bond info on EMMA, tax rates, housing data, and climate risk. Return ONLY valid JSON:
-{"pension":{"funded_ratio":"","adjusted_net_pension_liability":0,"anpl_to_revenue":"","employer_contribution":0,"contribution_to_adc":"","system_name":""},
-"bond_market":{"outstanding_bonds":[{"description":"GO Bonds Series XXXX","par_amount":0,"coupon":"","maturity":"","yield_to_maturity":"","price":"","spread_to_aaa":""},{"description":"Rev Bonds Series XXXX","par_amount":0,"coupon":"","maturity":"","yield_to_maturity":"","price":"","spread_to_aaa":""}],"total_outstanding_par":0,"avg_coupon":"","avg_yield":"","avg_spread":"","market_commentary":"1-2 sentences"},
+    // CALL 2: Differentiator data
+    const call2 = await callClaude(apiKey, `Search the web for "${issuerName}" in ${issuerState || "US"}. Find pension data, outstanding bonds on EMMA, property tax rates, housing data, climate risk, and peer comparables. Return ONLY valid JSON.
+
+CRITICAL RULES:
+- All ratio/percentage fields must be SHORT numbers only like "73.2%" NOT "73.2% (per latest valuation report)"
+- All pct fields must be just "XX%" with no parentheticals
+- Keep values concise. No explanations inside data fields.
+
+{"pension":{"system_name":"","funded_ratio":"XX.X%","anpl":0,"anpl_to_revenue":"X.XX","contribution_to_adc":"XXX%","discount_rate":"X.X%"},
+"bond_market":{"outstanding_bonds":[{"cusip":"","description":"GO Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"},{"cusip":"","description":"Revenue Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"}],"total_outstanding_par":0,"avg_coupon":"X.XX%","avg_yield":"X.XX%","avg_spread":"XX bps","market_commentary":"1-2 sentences"},
 "tax_burden":{"property_tax_rate":"","property_tax_rate_vs_state":"","effective_tax_rate":"","total_tax_burden_per_capita":"","sales_tax_rate":"","homestead_exemption":""},
 "housing":{"median_home_value":0,"median_home_value_to_income":"","avg_assessed_value":0,"assessed_value_growth_5yr":"","homeownership_rate":""},
 "climate_risk":{"flood_risk":"","wildfire_risk":"","hurricane_risk":"","heat_risk":"","overall_score":"","description":""},
@@ -102,15 +167,17 @@ Fill ALL values with real data. Return complete valid JSON.`);
 "peer_comparison":[{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""}],
 "scorecard":{"economy":{"score":"","factors":[{"name":"Tax Base","value":"","score":""},{"name":"Per Capita Income","value":"","score":""}]},"finances":{"score":"","factors":[{"name":"Fund Balance","value":"","score":""},{"name":"Revenue Trend","value":"","score":""}]},"management":{"score":"","factors":[{"name":"Governance","value":"","score":""},{"name":"Budget History","value":"","score":""}]},"debt_profile":{"score":"","factors":[{"name":"Debt/Revenue","value":"","score":""},{"name":"Pension","value":"","score":""}]}},
 "ai_confidence":{"overall":"high","financials":"high","economy":"high","description":"sentence about data sources"}}
-IMPORTANT: Scenario fy26-fy30 values should be NET SURPLUS or DEFICIT in millions (e.g. 7 means +$7M surplus, -3 means $3M deficit). NOT total revenue. Fill with real data. Return complete valid JSON.`);
+IMPORTANT: Scenario fy26-fy30 values are NET SURPLUS or DEFICIT in millions (e.g. 7 means +$7M surplus, -3 means $3M deficit). NOT total revenue. Fill with real data. Return complete valid JSON.`);
 
     const diffData = extractJSON(call2);
+    let call2Failed = false;
     if (!diffData) {
-      console.error("Call 2 failed or returned no data. Error:", call2.error ? JSON.stringify(call2.error) : "No parseable JSON");
+      call2Failed = true;
+      console.error("Call 2 failed after retries. Error:", call2?.error ? JSON.stringify(call2.error) : "No parseable JSON");
     }
 
     // Merge both results
-    const report = { ...coreReport };
+    const report: any = { ...coreReport };
     if (diffData) {
       if (diffData.pension) report.pension = diffData.pension;
       if (diffData.bond_market) report.bond_market = diffData.bond_market;
@@ -123,19 +190,27 @@ IMPORTANT: Scenario fy26-fy30 values should be NET SURPLUS or DEFICIT in million
       if (diffData.ai_confidence) report.ai_confidence = diffData.ai_confidence;
     }
 
+    // Flag partial reports so the UI can show a notice
+    report._partial = call2Failed;
+
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     let savedId = null;
     if (user) {
       const { data: saveData } = await supabase.from("reports").insert({
-        user_id: user.id, issuer_name: report.issuer_name || issuerName,
-        state: report.state || issuerState, issuer_type: report.type,
-        rating: report.rating, sentiment: report.sentiment,
-        sentiment_score: report.sentiment_score, report_data: report,
+        user_id: user.id,
+        issuer_name: report.issuer_name || issuerName,
+        state: report.state || issuerState,
+        issuer_type: report.type,
+        rating: report.rating,
+        sentiment: report.sentiment,
+        sentiment_score: report.sentiment_score,
+        report_data: report,
       }).select("id").single();
       if (saveData) savedId = saveData.id;
     }
-    return NextResponse.json({ report, savedId });
+
+    return NextResponse.json({ report, savedId, partial: call2Failed });
   } catch (error) {
     console.error("Report error:", error);
     return NextResponse.json({ error: "Report generation failed" }, { status: 500 });
