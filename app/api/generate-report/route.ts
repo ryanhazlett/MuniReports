@@ -5,7 +5,6 @@ export const maxDuration = 300;
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-// Single Claude call with retries on transient errors
 async function callClaude(apiKey: string, prompt: string) {
   const body: any = {
     model: "claude-sonnet-4-6",
@@ -76,14 +75,12 @@ function extractJSON(data: any): any {
     const match = text.match(/\{[\s\S]*\}/);
     if (match) {
       let j = match[0];
-      // Auto-close any unterminated brackets
       let ob = (j.match(/\{/g) || []).length;
       let cb = (j.match(/\}/g) || []).length;
       let oq = (j.match(/\[/g) || []).length;
       let cq = (j.match(/\]/g) || []).length;
       while (cq < oq) { j += "]"; cq++; }
       while (cb < ob) { j += "}"; cb++; }
-      // Remove trailing commas before close brackets
       j = j.replace(/,\s*\]/g, "]").replace(/,\s*\}/g, "}");
       return JSON.parse(j);
     }
@@ -100,11 +97,15 @@ export async function POST(req: NextRequest) {
 
     const prompt = `Search the web for "${issuerName}" in ${issuerState || "US"}. Find their latest ACFR, budget, CIP, EMMA bond filings, pension data, ratings actions, and economic data. Then return ONLY valid JSON. NO markdown. NO backticks. NO explanation outside the JSON.
 
-CRITICAL RULES:
+CRITICAL FORMATTING RULES:
 - All percentage fields must be SHORT numbers like "31.4%" — never with parenthetical explanations
 - All "pct" fields just like "40%" — no explanations inside data fields
 - Long context belongs ONLY in description/summary/narrative fields
 - Fill EVERY field. Use "—" or 0 for unknown values, but try web search first.
+- Write all narrative text in NORMAL SENTENCE CASE. Do NOT title-case. Example correct: "Wildland-urban interface areas in western Austin present ongoing risk." Example WRONG: "Wildland-Urban Interface Areas In Western Austin Present Ongoing Risk."
+- For climate_risk.overall_score: provide a single phrase like "Moderate" or "Moderate-High" or "High" — NOT a number/10 fraction.
+- For bond_market.outstanding_bonds: every bond MUST have a "price" value (estimate using YTM and coupon if not directly available, format as "$XXX.XX") and a "spread_to_aaa" value in basis points (estimate from yield comparison if needed, format as "XX bps"). Never leave price or spread blank.
+- For bond_market.avg_spread: compute the average of the per-bond spreads and report as "XX bps". Never leave blank.
 
 Return this JSON structure:
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":85,
@@ -119,10 +120,10 @@ Return this JSON structure:
 "risks":[{"title":"","severity":"high","description":"specific risk with numbers"},{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],
 "capital_plan_summary":"1-2 paragraph CIP narrative — total size, themes, funding mix",
 "pension":{"system_name":"","funded_ratio":"XX.X%","anpl":0,"contribution_to_adc":"XXX%"},
-"bond_market":{"outstanding_bonds":[{"description":"GO Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","spread_to_aaa":"XX bps"},{"description":"Revenue Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","spread_to_aaa":"XX bps"}],"total_outstanding_par":0,"avg_coupon":"X.XX%","avg_yield":"X.XX%","market_commentary":"1-2 sentences on trading conditions"},
+"bond_market":{"outstanding_bonds":[{"description":"GO Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"},{"description":"Revenue Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"}],"total_outstanding_par":0,"avg_coupon":"X.XX%","avg_yield":"X.XX%","avg_spread":"XX bps","market_commentary":"1-2 sentences on trading conditions in normal sentence case"},
 "tax_burden":{"property_tax_rate":"","property_tax_rate_vs_state":"","total_tax_burden_per_capita":"","sales_tax_rate":"","homestead_exemption":""},
 "housing":{"median_home_value":0,"median_home_value_to_income":"","assessed_value_growth_5yr":"","homeownership_rate":""},
-"climate_risk":{"flood_risk":"","wildfire_risk":"","hurricane_risk":"","heat_risk":"","overall_score":"","description":"1-2 sentences"},
+"climate_risk":{"flood_risk":"sentence in normal case","wildfire_risk":"sentence in normal case","hurricane_risk":"sentence in normal case","heat_risk":"sentence in normal case","overall_score":"Moderate","description":"1-2 sentences in normal case"},
 "forecast":{"description":"1 paragraph on near-term outlook","revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0}]},
 "forward_outlook":"1-2 paragraphs on 5-year outlook and key drivers",
 "peer_comparison":[{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""}],
@@ -143,7 +144,6 @@ Make the JSON complete and valid. Close all braces and brackets.`;
       return NextResponse.json({ error: "Failed to parse report. Please try again." }, { status: 500 });
     }
 
-    // Save to user library if logged in
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     let savedId = null;

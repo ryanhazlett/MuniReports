@@ -760,6 +760,16 @@ export default function BuilderPage() {
                     <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.debt_per_capita || "—"}</div>
                     <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.operating_margin || "—"}</div>
                   </div>
+                  {report.peer_comparison.map((p: any, i: number) => (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line-soft)", fontSize: ".85rem" }}>
+                      <div style={{ fontWeight: 500 }}>{p.name}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.population ? (p.population/1000).toFixed(0) + "K" : "—"}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{p.rating}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.fund_balance_ratio || "—"}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.debt_per_capita || "—"}</div>
+                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{p.operating_margin || "—"}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -1014,6 +1024,46 @@ export default function BuilderPage() {
             )}
 
             {/* ── PEER COMPARISON ── */}
+            {report.peer_comparison?.length > 0 && (
+              <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
+                  <span style={{ fontSize: "1.1rem" }}>🏆</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Peer Comparison</h3>
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid var(--line)" }}>
+                      <th style={{ padding: ".6rem .8rem", textAlign: "left", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Municipality</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Pop.</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Rating</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Fund Bal.</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Debt/Cap</th>
+                      <th style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>Margin</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: "1px solid var(--line)", background: "var(--accent-bg)" }}>
+                      <td style={{ padding: ".6rem .8rem", fontWeight: 700, color: "var(--accent)", fontSize: ".85rem" }}>{report.issuer_name} ←</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.population ? `${(report.population/1000).toFixed(0)}K` : "—"}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 600 }}>{report.rating}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.financials?.fund_balance_ratio || "—"}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.financials?.debt_per_capita || "—"}</td>
+                      <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem" }}>{report.financials?.operating_margin || "—"}</td>
+                    </tr>
+                    {report.peer_comparison.map((p: any, i: number) => (
+                      <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                        <td style={{ padding: ".6rem .8rem", fontWeight: 500, fontSize: ".85rem" }}>{p.name}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.population ? `${(p.population/1000).toFixed(0)}K` : "—"}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 600 }}>{p.rating}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.fund_balance_ratio || "—"}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.debt_per_capita || "—"}</td>
+                        <td style={{ padding: ".6rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{p.operating_margin || "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* ── BOND MARKET PERFORMANCE (DIFFERENTIATOR) ── */}
             {report.bond_market && (
