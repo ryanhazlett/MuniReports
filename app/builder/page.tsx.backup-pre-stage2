@@ -114,10 +114,7 @@ export default function BuilderPage() {
   return (
     <div className="container" style={{ padding: "2.5rem 1.5rem 4rem" }}>
       <div className="no-print" style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "2px solid var(--accent)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: ".3rem" }}>
-          <h1 style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-.02em" }}>Report Builder</h1>
-          <span style={{ fontSize: ".7rem", padding: ".2rem .5rem", background: "var(--accent)", color: "white", borderRadius: "999px", fontWeight: 600, letterSpacing: ".04em" }}>BETA</span>
-        </div>
+        <h1 style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-.02em" }}>Report Builder</h1>
         <p style={{ color: "var(--text2)", fontSize: ".95rem", marginTop: ".3rem" }}>
           Search for any issuer and generate a complete AI-powered credit report in minutes.
         </p>
@@ -412,8 +409,6 @@ export default function BuilderPage() {
                       ["Fund Balance Ratio", report.financials.fund_balance_ratio, false, "Operating Margin", report.financials.operating_margin, false],
                       ["Debt-to-Revenue", report.financials.debt_to_revenue, false, "Debt Per Capita", report.financials.debt_per_capita, false],
                       ["Pension Funded Ratio", report.financials.pension_funded_ratio, false, "Days Cash on Hand", report.financials.days_cash_on_hand, false],
-                      ["Fixed Costs Ratio", report.financials.fixed_costs_ratio, false, "Available Reserves Ratio", report.financials.available_reserves_ratio, false],
-                      ["Available Reserves", report.financials.available_reserves, true, "Total Tax-Supported Debt", report.financials.debt_outstanding, true],
                     ].filter(([,v,,, v2]) => v != null || v2 != null).map(([l1, v1, c1, l2, v2, c2], i) => (
                       <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
                         <td style={{ padding: ".85rem 1rem", fontSize: ".9rem", color: "var(--text2)", width: "30%" }}>{l1 as string}</td>
@@ -532,63 +527,6 @@ export default function BuilderPage() {
             )}
 
             {/* ── SECTION 3b: SENTIMENT GAUGE + FINANCIAL HEALTH ── */}
-            {/* ── MUNIREPORTS SCORE ── */}
-            {report.munireports_score && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
-                  <span style={{ fontSize: "1.1rem" }}>🛡️</span>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>MuniReports Score</h3>
-                  <span style={{ fontSize: ".65rem", padding: ".15rem .45rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "999px", color: "var(--text2)", fontFamily: "var(--mono)" }}>INDICATOR</span>
-                </div>
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.5rem", marginBottom: "1rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.2rem", paddingBottom: "1.2rem", borderBottom: "1px solid var(--line-soft)" }}>
-                    <div>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Overall Score</div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: ".6rem" }}>
-                        <span style={{ fontSize: "2rem", fontWeight: 700, fontFamily: "var(--mono)" }}>{report.munireports_score.overall?.toFixed?.(1) || report.munireports_score.overall}</span>
-                        <span style={{ fontSize: "1rem", color: "var(--text2)" }}>/ 5.0</span>
-                      </div>
-                      <div style={{ fontSize: "1.1rem", marginTop: ".3rem", letterSpacing: ".1em" }}>
-                        {[1,2,3,4,5].map(n => (
-                          <span key={n} style={{ color: n <= Math.round(report.munireports_score.overall || 0) ? "#f59e0b" : "var(--line)" }}>★</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Equivalent</div>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--accent)" }}>{report.munireports_score.letter_equivalent}</div>
-                      <div style={{ fontSize: ".9rem", color: "var(--text2)", marginTop: ".2rem" }}>{report.munireports_score.label}</div>
-                    </div>
-                  </div>
-                  {report.munireports_score.factors && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
-                      {[["economy","Economy"],["financial_strength","Financial Strength"],["debt_pension","Debt & Pension"],["forward_outlook","Forward Outlook"]].map(([key, label]) => {
-                        const f = report.munireports_score.factors[key];
-                        if (!f) return null;
-                        return (
-                          <div key={key} style={{ padding: ".8rem", background: "var(--bg2)", borderRadius: "var(--radius)", border: "1px solid var(--line-soft)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".3rem" }}>
-                              <span style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>{label}</span>
-                              <span style={{ fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 700 }}>{f.score?.toFixed?.(1) || f.score}</span>
-                            </div>
-                            <div style={{ fontSize: ".8rem" }}>
-                              {[1,2,3,4,5].map(n => (
-                                <span key={n} style={{ color: n <= Math.round(f.score || 0) ? "#f59e0b" : "var(--line)", marginRight: "1px" }}>★</span>
-                              ))}
-                            </div>
-                            {f.rationale && <div style={{ fontSize: ".78rem", color: "var(--text2)", marginTop: ".4rem", lineHeight: 1.4 }}>{f.rationale}</div>}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                  <div style={{ marginTop: "1rem", paddingTop: ".8rem", borderTop: "1px solid var(--line-soft)", fontSize: ".72rem", color: "var(--text3)", fontStyle: "italic" }}>
-                    ℹ️ {report.munireports_score.disclaimer || "MuniReports Score is an AI-generated indicator from public data, not a credit rating."}
-                  </div>
-                </div>
-              </div>
-            )}
-
             <div style={{ marginTop: "2.5rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                 <span style={{ fontSize: "1.1rem" }}>🎯</span>
@@ -1303,21 +1241,6 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem" }}>
                   {report.sources.map((s: string, i: number) => (
                     <span key={i} style={{ display: "inline-block", padding: ".25rem .6rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 4, fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text2)" }}>{s}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── DATA SOURCES PER SECTION ── */}
-            {report.data_sources && (
-              <div style={{ marginTop: "2.5rem", padding: "1.2rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".8rem" }}>Data Sources by Section</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem .8rem", fontSize: ".78rem" }}>
-                  {Object.entries(report.data_sources).filter(([, v]) => v).map(([key, value]) => (
-                    <div key={key} style={{ paddingBottom: ".4rem", borderBottom: "1px solid var(--line-soft)" }}>
-                      <div style={{ fontWeight: 600, color: "var(--text)", textTransform: "capitalize", marginBottom: ".15rem" }}>{key.replace(/_/g, " ")}</div>
-                      <div style={{ color: "var(--text2)", lineHeight: 1.4 }}>{String(value)}</div>
-                    </div>
                   ))}
                 </div>
               </div>
