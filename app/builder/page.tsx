@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { useRouter } from "next/navigation";
+
 import Link from "next/link";
 
 const FREE_REPORT_LIMIT = 1;
