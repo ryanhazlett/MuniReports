@@ -31,6 +31,20 @@ export default function BuilderPage() {
 
   useEffect(() => {
     setReportsUsed(getReportCount());
+    // Check for successful purchase
+    const params = new URLSearchParams(window.location.search);
+    const purchased = params.get("purchased");
+    if (purchased === "single") {
+      // Add 1 credit
+      const current = parseInt(localStorage.getItem("muni_credits") || "0", 10);
+      localStorage.setItem("muni_credits", String(current + 1));
+      window.history.replaceState({}, "", "/builder");
+    } else if (purchased === "5pack") {
+      // Add 5 credits
+      const current = parseInt(localStorage.getItem("muni_credits") || "0", 10);
+      localStorage.setItem("muni_credits", String(current + 5));
+      window.history.replaceState({}, "", "/builder");
+    }
   }, []);
 
   // Search only when button is clicked
@@ -60,8 +74,9 @@ export default function BuilderPage() {
   };
 
   const generateReport = async () => {
-    // Check usage limit
-    if (reportsUsed >= FREE_REPORT_LIMIT) {
+    // Check usage limit - allow if they have purchased credits
+    const credits = parseInt(localStorage.getItem("muni_credits") || "0", 10);
+    if (reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
       setShowPaywall(true);
       return;
     }
@@ -80,8 +95,13 @@ export default function BuilderPage() {
       const data = await res.json();
       if (data.report) {
         setReport(data.report);
-        const newCount = incrementReportCount();
-        setReportsUsed(newCount);
+        // Use a purchased credit if available, otherwise count as free
+        if (reportsUsed >= FREE_REPORT_LIMIT && credits > 0) {
+          localStorage.setItem("muni_credits", String(credits - 1));
+        } else {
+          const newCount = incrementReportCount();
+          setReportsUsed(newCount);
+        }
         if (data.savedId) {
           router.push(`/report/${data.savedId}`);
         }
@@ -1369,7 +1389,7 @@ export default function BuilderPage() {
           <div onClick={e => e.stopPropagation()} style={{
             background: "var(--panel)", border: "1px solid var(--line)",
             borderRadius: "var(--radius-lg)", padding: "2.5rem",
-            maxWidth: 480, width: "90%", textAlign: "center",
+            maxWidth: 520, width: "90%", textAlign: "center",
             boxShadow: "0 20px 60px rgba(0,0,0,.3)",
           }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📊</div>
@@ -1377,23 +1397,38 @@ export default function BuilderPage() {
               You&apos;ve used your free report
             </h2>
             <p style={{ color: "var(--text2)", fontSize: ".95rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              Upgrade to <strong style={{ color: "var(--text)" }}>MuniReports Pro</strong> for unlimited credit reports, saved report history, PDF exports, and priority generation.
+              Get comprehensive credit reports with real-time data, pension analysis, bond pricing, climate risk scoring, and more — data that Moody&apos;s and S&amp;P don&apos;t provide.
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".5rem", marginBottom: "1.5rem", padding: "1rem", background: "var(--bg)", borderRadius: "var(--radius)", border: "1px solid var(--line)" }}>
-              {[
-                { label: "Free", value: "1 report", current: true },
-                { label: "Pro", value: "Unlimited", current: false },
-                { label: "Team", value: "Unlimited + API", current: false },
-              ].map((p, i) => (
-                <div key={i} style={{ textAlign: "center", padding: ".5rem", borderRadius: 6, background: i === 1 ? "var(--accent-bg)" : "transparent", border: i === 1 ? "1px solid var(--accent)" : "1px solid transparent" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>{p.label}</div>
-                  <div style={{ fontWeight: 700, fontSize: ".9rem", color: i === 1 ? "var(--accent)" : "var(--text)" }}>{p.value}</div>
-                </div>
-              ))}
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem", marginBottom: "1.5rem" }}>
+              <button onClick={async () => {
+                const res = await fetch("/api/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceType: "single" }) });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+              }} style={{
+                padding: "1.2rem", background: "var(--accent)", color: "#fff", border: "none",
+                borderRadius: "var(--radius)", cursor: "pointer", fontFamily: "var(--sans)",
+              }}>
+                <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>$4.99</div>
+                <div style={{ fontSize: ".85rem", opacity: .9 }}>Single Report</div>
+              </button>
+              <button onClick={async () => {
+                const res = await fetch("/api/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceType: "5pack" }) });
+                const data = await res.json();
+                if (data.url) window.location.href = data.url;
+              }} style={{
+                padding: "1.2rem", background: "var(--bg)", color: "var(--text)", border: "2px solid var(--accent)",
+                borderRadius: "var(--radius)", cursor: "pointer", fontFamily: "var(--sans)",
+              }}>
+                <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>$19.99</div>
+                <div style={{ fontSize: ".85rem", color: "var(--text2)" }}>5-Pack <span style={{ color: "var(--good)", fontWeight: 600 }}>Save 20%</span></div>
+              </button>
             </div>
-            <Link href="/pricing" className="btn btn-accent btn-lg" style={{ width: "100%", justifyContent: "center", marginBottom: ".8rem" }}>
-              Upgrade to Pro — $49/month →
-            </Link>
+
+            <div style={{ fontSize: ".82rem", color: "var(--text2)", marginBottom: "1rem" }}>
+              Need unlimited reports? <a href="mailto:admin@munireports.com?subject=Unlimited%20Pricing" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}>Contact us</a>
+            </div>
+
             <button onClick={() => setShowPaywall(false)} style={{ background: "none", border: "none", color: "var(--text3)", fontSize: ".85rem", cursor: "pointer", fontFamily: "var(--sans)" }}>
               Maybe later
             </button>

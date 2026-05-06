@@ -1,25 +1,31 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@/utils/supabase/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2024-12-18.acacia" as any });
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const { priceType } = await req.json();
+    
+    let priceId: string;
+    if (priceType === "single") {
+      priceId = process.env.STRIPE_PRICE_SINGLE || "";
+    } else if (priceType === "5pack") {
+      priceId = process.env.STRIPE_PRICE_5PACK || "";
+    } else {
+      return NextResponse.json({ error: "Invalid price type" }, { status: 400 });
+    }
 
-    if (!user) {
-      return NextResponse.json({ error: "Must be logged in" }, { status: 401 });
+    if (!priceId) {
+      return NextResponse.json({ error: "Price not configured" }, { status: 500 });
     }
 
     const session = await stripe.checkout.sessions.create({
-      customer_email: user.email,
-      line_items: [{ price: process.env.STRIPE_PRICE_ID, quantity: 1 }],
-      mode: "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?upgraded=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/pricing`,
-      metadata: { user_id: user.id },
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://munireports.com"}/builder?purchased=${priceType}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://munireports.com"}/pricing`,
     });
 
     return NextResponse.json({ url: session.url });
