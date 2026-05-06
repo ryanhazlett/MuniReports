@@ -53,7 +53,7 @@ export default function BuilderPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
-  const router = useRouter();
+  
 
   useEffect(() => {
     setReportsUsed(getReportCount());
