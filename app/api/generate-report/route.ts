@@ -3,12 +3,18 @@ import { createClient } from "@/utils/supabase/server";
 
 export const maxDuration = 300;
 
+const CACHE_TTL_DAYS = 7;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+function normalizeKey(name: string, state: string): string {
+  return `${(name || "").trim().toLowerCase()}|${(state || "").trim().toLowerCase()}`;
+}
 
 async function callClaude(apiKey: string, prompt: string) {
   const body: any = {
     model: "claude-sonnet-4-6",
     max_tokens: 8000,
+    temperature: 0.1,
     tools: [{ type: "web_search_20250305", name: "web_search" }],
     messages: [{ role: "user", content: prompt }],
   };
@@ -50,9 +56,7 @@ async function callClaude(apiKey: string, prompt: string) {
         console.error(`All ${maxAttempts} attempts exhausted.`, JSON.stringify(data.error));
         return data;
       }
-      const wait = backoffs[attempt];
-      console.warn(`Retryable error attempt ${attempt + 1}/${maxAttempts}. Waiting ${wait}ms.`);
-      await sleep(wait);
+      await sleep(backoffs[attempt]);
     } catch (err) {
       lastError = err;
       if (attempt === maxAttempts - 1) {
@@ -92,20 +96,66 @@ function extractJSON(data: any): any {
 
 export async function POST(req: NextRequest) {
   try {
-    const { issuerName, issuerState } = await req.json();
+    const { issuerName, issuerState, forceRefresh } = await req.json();
     const apiKey = process.env.ANTHROPIC_API_KEY || "";
+    const supabase = await createClient();
 
-    const prompt = `Search the web for "${issuerName}" in ${issuerState || "US"}. Find their latest ACFR, budget, CIP, EMMA bond filings, pension data, ratings actions, and economic data. Then return ONLY valid JSON. NO markdown. NO backticks. NO explanation outside the JSON.
+    const cacheKey = normalizeKey(issuerName, issuerState);
 
-CRITICAL FORMATTING RULES:
-- All percentage fields must be SHORT numbers like "31.4%" — never with parenthetical explanations
-- All "pct" fields just like "40%" — no explanations inside data fields
-- Long context belongs ONLY in description/summary/narrative fields
+    if (!forceRefresh && cacheKey && cacheKey !== "|") {
+      try {
+        const { data: cached } = await supabase
+          .from("cached_reports")
+          .select("report_data, generated_at")
+          .eq("issuer_key", cacheKey)
+          .maybeSingle();
+
+        if (cached) {
+          const ageMs = Date.now() - new Date(cached.generated_at).getTime();
+          const ageDays = ageMs / (1000 * 60 * 60 * 24);
+          if (ageDays < CACHE_TTL_DAYS) {
+            console.log(`Cache hit: ${cacheKey} (age ${ageDays.toFixed(1)}d)`);
+            return NextResponse.json({
+              report: cached.report_data,
+              cached: true,
+              generatedAt: cached.generated_at,
+            });
+          }
+        }
+      } catch (cacheErr) {
+        console.warn("Cache lookup failed (non-fatal):", cacheErr);
+      }
+    }
+
+    const prompt = `Search the web for "${issuerName}" in ${issuerState || "US"}. Find their most recent published Annual Comprehensive Financial Report (ACFR), adopted budget, capital improvement plan (CIP), EMMA bond filings, pension actuarial valuations, ratings agency reports, and economic data from BLS/Census/state sources. Then return ONLY valid JSON. NO markdown. NO backticks. NO explanation outside the JSON.
+
+============================================================
+DEFINITIONS — USE THESE EXACTLY (do not improvise):
+============================================================
+- total_revenue: GENERAL FUND actual total revenue from the most recent FISCAL YEAR ACTUAL in the ACFR. Not budget. Not all-funds. Not enterprise.
+- total_expenditures: GENERAL FUND actual total expenditures from the most recent FISCAL YEAR ACTUAL in the ACFR.
+- fund_balance: UNASSIGNED general fund balance per the most recent ACFR balance sheet. NOT total fund balance, NOT committed+assigned, NOT all-funds combined.
+- fund_balance_ratio: (unassigned general fund balance) / (general fund total expenditures) × 100, expressed as "XX.X%"
+- operating_margin: (general fund revenue - general fund expenditures) / general fund revenue × 100, expressed as "X.X%"
+- debt_outstanding: TAX-SUPPORTED general obligation (GO) debt only, EXCLUDING enterprise/utility revenue debt, EXCLUDING component units. From the latest ACFR debt schedule.
+- debt_to_revenue: debt_outstanding / general fund revenue, expressed as "X.XX"
+- debt_per_capita: debt_outstanding / population, expressed as "$X,XXX"
+- pension_funded_ratio: actuarial funded ratio (NOT market value) from most recent pension valuation, expressed as "XX.X%"
+- days_cash_on_hand: (general fund cash & equivalents × 365) / general fund expenditures, integer
+- revenue_trend / expenditure_trend: GENERAL FUND ACTUAL totals from each year's ACFR. Five years FY2021-FY2025 if available.
+- revenue_composition / expenditure_composition: percentages of GENERAL FUND only.
+
+============================================================
+FORMATTING RULES:
+============================================================
+- All percentages: short numbers like "31.4%". Never with parentheticals.
+- All "pct" fields: like "40%". Never with explanations.
+- Long context goes ONLY in description/summary/narrative fields.
 - Fill EVERY field. Use "—" or 0 for unknown values, but try web search first.
-- Write all narrative text in NORMAL SENTENCE CASE. Do NOT title-case. Example correct: "Wildland-urban interface areas in western Austin present ongoing risk." Example WRONG: "Wildland-Urban Interface Areas In Western Austin Present Ongoing Risk."
-- For climate_risk.overall_score: provide a single phrase like "Moderate" or "Moderate-High" or "High" — NOT a number/10 fraction.
-- For bond_market.outstanding_bonds: every bond MUST have a "price" value (estimate using YTM and coupon if not directly available, format as "$XXX.XX") and a "spread_to_aaa" value in basis points (estimate from yield comparison if needed, format as "XX bps"). Never leave price or spread blank.
-- For bond_market.avg_spread: compute the average of the per-bond spreads and report as "XX bps". Never leave blank.
+- Write narrative text in NORMAL SENTENCE CASE. Do NOT title-case. Correct: "wildland-urban interface areas in western Austin." WRONG: "Wildland-Urban Interface Areas In Western Austin."
+- climate_risk.overall_score: ONE phrase like "Moderate" or "Moderate-High" or "High". NOT a number/10.
+- bond_market.outstanding_bonds: every bond MUST have a "price" (estimate from YTM/coupon if needed, format "$XXX.XX") and "spread_to_aaa" in basis points (format "XX bps"). Never blank.
+- bond_market.avg_spread: average of per-bond spreads, format "XX bps". Never blank.
 
 Return this JSON structure:
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":85,
@@ -120,7 +170,7 @@ Return this JSON structure:
 "risks":[{"title":"","severity":"high","description":"specific risk with numbers"},{"title":"","severity":"medium","description":""},{"title":"","severity":"low","description":""}],
 "capital_plan_summary":"1-2 paragraph CIP narrative — total size, themes, funding mix",
 "pension":{"system_name":"","funded_ratio":"XX.X%","anpl":0,"contribution_to_adc":"XXX%"},
-"bond_market":{"outstanding_bonds":[{"description":"GO Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"},{"description":"Revenue Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"}],"total_outstanding_par":0,"avg_coupon":"X.XX%","avg_yield":"X.XX%","avg_spread":"XX bps","market_commentary":"1-2 sentences on trading conditions in normal sentence case"},
+"bond_market":{"outstanding_bonds":[{"description":"GO Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"},{"description":"Revenue Bonds Series 20XX","par_amount":0,"coupon":"X.XX%","maturity":"20XX","yield_to_maturity":"X.XX%","price":"$XXX.XX","spread_to_aaa":"XX bps"}],"total_outstanding_par":0,"avg_coupon":"X.XX%","avg_yield":"X.XX%","avg_spread":"XX bps","market_commentary":"1-2 sentences in normal sentence case"},
 "tax_burden":{"property_tax_rate":"","property_tax_rate_vs_state":"","total_tax_burden_per_capita":"","sales_tax_rate":"","homestead_exemption":""},
 "housing":{"median_home_value":0,"median_home_value_to_income":"","assessed_value_growth_5yr":"","homeownership_rate":""},
 "climate_risk":{"flood_risk":"sentence in normal case","wildfire_risk":"sentence in normal case","hurricane_risk":"sentence in normal case","heat_risk":"sentence in normal case","overall_score":"Moderate","description":"1-2 sentences in normal case"},
@@ -144,7 +194,23 @@ Make the JSON complete and valid. Close all braces and brackets.`;
       return NextResponse.json({ error: "Failed to parse report. Please try again." }, { status: 500 });
     }
 
-    const supabase = await createClient();
+    const generatedAt = new Date().toISOString();
+    if (cacheKey && cacheKey !== "|") {
+      try {
+        await supabase.from("cached_reports").upsert({
+          issuer_key: cacheKey,
+          issuer_name: report.issuer_name || issuerName,
+          state: report.state || issuerState,
+          report_data: report,
+          generated_at: generatedAt,
+          refresh_count: forceRefresh ? 1 : 0,
+        }, { onConflict: "issuer_key" });
+        console.log(`Cache saved: ${cacheKey}`);
+      } catch (saveErr) {
+        console.error("Cache save failed (non-fatal):", saveErr);
+      }
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     let savedId = null;
     if (user) {
@@ -161,11 +227,16 @@ Make the JSON complete and valid. Close all braces and brackets.`;
         }).select("id").single();
         if (saveData) savedId = saveData.id;
       } catch (saveErr) {
-        console.error("Save failed:", saveErr);
+        console.error("User library save failed:", saveErr);
       }
     }
 
-    return NextResponse.json({ report, savedId });
+    return NextResponse.json({
+      report,
+      cached: false,
+      generatedAt,
+      savedId,
+    });
   } catch (error) {
     console.error("Report error:", error);
     return NextResponse.json({ error: "Report generation failed" }, { status: 500 });
