@@ -71,16 +71,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </div>
             <div>
               <h6>Resources</h6>
-              <Link href="/methodology">Methodology</Link>
-              <Link href="/faq">FAQ</Link>
-              <Link href="/status">Status</Link>
+              <a>Help Center</a>
+              <a>Methodology</a>
+              <a>Status</a>
             </div>
             <div>
               <h6>Company</h6>
-              <Link href="/about">About</Link>
-              <a href="mailto:admin@munireports.com">Contact</a>
-              <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Terms</Link>
+              <a>About</a>
+              <a>Contact</a>
+              <a>Security</a>
             </div>
           </div>
           <div className="footer-bottom">
