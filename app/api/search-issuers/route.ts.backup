@@ -1,17 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { rateLimit, getClientIP } from "@/utils/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = getClientIP(req);
-    const rl = rateLimit(`search:${ip}`, 10, 60000);
-    if (!rl.allowed) {
-      return NextResponse.json(
-        { error: "Too many requests. Please slow down.", retryAfter: rl.retryAfterSeconds },
-        { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds) } }
-      );
-    }
-
     const { query } = await req.json();
     if (!query || query.length < 2) {
       return NextResponse.json({ issuers: [] });
