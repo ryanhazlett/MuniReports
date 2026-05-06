@@ -229,6 +229,22 @@ Make the JSON complete and valid. Close all braces and brackets.`;
       return NextResponse.json({ error: "Failed to parse report. Please try again." }, { status: 500 });
     }
 
+    // De-title-case climate_risk narrative fields (model has a strong title-case prior here)
+    if (report.climate_risk) {
+      const fields = ["flood_risk", "wildfire_risk", "hurricane_risk", "heat_risk", "description"];
+      for (const f of fields) {
+        const v = report.climate_risk[f];
+        if (typeof v !== "string" || !v) continue;
+        const words = v.split(/\s+/);
+        const titleCased = words.filter((w: string) => /^[A-Z][a-z]/.test(w)).length / words.length > 0.5;
+        if (titleCased) {
+          report.climate_risk[f] = v
+            .toLowerCase()
+            .replace(/(^|[.!?]\s+)([a-z])/g, (_: string, p: string, c: string) => p + c.toUpperCase());
+        }
+      }
+    }
+
     const generatedAt = new Date().toISOString();
     if (cacheKey && cacheKey !== "|") {
       try {
