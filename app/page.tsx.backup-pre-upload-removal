@@ -104,8 +104,8 @@ export default function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 1: Search or Upload</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Search any issuer — let AI <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>find the documents.</em></h3>
-              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Type an issuer name and MuniReports searches EMMA, state comptroller sites, and the issuer&apos;s own website to assemble a complete credit report in minutes.</p>
+              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Find any issuer — or drag, drop, and let AI <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>read everything.</em></h3>
+              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Type an issuer name and MuniReports searches EMMA, state comptroller sites, and the issuer&apos;s own website. Or upload your own files directly.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
                 {["Search 22,400 issuers — auto-discovers documents", "Pulls from EMMA, state archives, city websites", "Drag-and-drop your own PDFs, XLSX, CSV", "Auto-detects document type & extracts tables"].map(item => (
                   <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
@@ -760,7 +760,7 @@ export default function HomePage() {
             Free credit reports. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Right now.</em>
           </h2>
           <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,.8)", maxWidth: "48ch", margin: "0 auto 2rem", position: "relative" }}>
-            No account needed to start. Search any issuer and get a full AI-powered credit report in minutes.
+            No account. No credit card. Search any issuer or upload your docs and have a full credit report in minutes.
           </p>
           <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", position: "relative" }}>
             <Link href="/builder" className="btn btn-lg" style={{ background: "#fff", color: "var(--accent)", fontWeight: 700, border: "none" }}>Start analyzing — free →</Link>

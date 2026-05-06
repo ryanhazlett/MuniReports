@@ -17,13 +17,14 @@ function incrementReportCount(): number {
 }
 
 export default function BuilderPage() {
-  const [tab, setTab] = useState<"search">("search");
+  const [tab, setTab] = useState<"search" | "upload">("search");
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);
   const [selectedIssuer, setSelectedIssuer] = useState<any>(null);
   const [generating, setGenerating] = useState(false);
   const [report, setReport] = useState<any>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
   const router = useRouter();
@@ -122,7 +123,7 @@ export default function BuilderPage() {
       <div className="no-print" style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "2px solid var(--accent)" }}>
         <h1 style={{ fontSize: "1.8rem", fontWeight: 700, letterSpacing: "-.02em" }}>Report Builder</h1>
         <p style={{ color: "var(--text2)", fontSize: ".95rem", marginTop: ".3rem" }}>
-          Search for any issuer and generate a complete AI-powered credit report in minutes.
+          Search for any issuer or upload your own documents to generate a complete AI-powered credit report.
         </p>
       </div>
 
@@ -141,6 +142,21 @@ export default function BuilderPage() {
           <span style={{ fontSize: "1.2rem" }}>🔎</span>
           <span><strong style={{ display: "block" }}>Search Issuer</strong>
             <span style={{ fontWeight: 400, color: "var(--text2)", fontSize: ".82rem" }}>We find the documents for you</span>
+          </span>
+        </button>
+        <button
+          onClick={() => setTab("upload")}
+          style={{
+            display: "flex", alignItems: "center", gap: ".8rem", padding: "1.1rem 1.3rem",
+            background: tab === "upload" ? "var(--panel)" : "var(--bg)", border: "none",
+            cursor: "pointer", fontFamily: "var(--sans)", fontSize: ".92rem", textAlign: "left",
+            color: "var(--text)",
+            boxShadow: tab === "upload" ? "inset 0 2px 0 var(--accent)" : "none",
+          }}
+        >
+          <span style={{ fontSize: "1.2rem" }}>📄</span>
+          <span><strong style={{ display: "block" }}>Upload Documents</strong>
+            <span style={{ fontWeight: 400, color: "var(--text2)", fontSize: ".82rem" }}>Drag & drop your own files</span>
           </span>
         </button>
       </div>
@@ -254,7 +270,56 @@ export default function BuilderPage() {
       )}
 
       {/* ===== UPLOAD TAB ===== */}
-      
+      {tab === "upload" && !report && (
+        <div className="animate-in">
+          <div
+            className="upload-zone"
+            onDragOver={e => e.preventDefault()}
+            onDrop={handleFileDrop}
+          >
+            <div className="upload-icon">📄</div>
+            <h4>Drag & drop your documents here</h4>
+            <p style={{ fontSize: ".92rem", color: "var(--text2)", margin: ".5rem 0 1rem" }}>or click to browse · Upload multiple files at once</p>
+            <div style={{ fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text3)" }}>
+              Accepted: PDF · XLSX · CSV · Scanned documents OK · Max 100 MB per file
+            </div>
+          </div>
+
+          {uploadedFiles.length > 0 && (
+            <div style={{ marginTop: "1rem" }}>
+              {uploadedFiles.map((file, i) => (
+                <div key={i} className="doc-item">
+                  <div className="doc-icon os">PDF</div>
+                  <div>
+                    <div style={{ fontWeight: 500, fontSize: ".88rem" }}>{file.name}</div>
+                    <small style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>
+                      {(file.size / 1024 / 1024).toFixed(1)} MB
+                    </small>
+                  </div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text2)" }}>Detecting…</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text2)", display: "flex", alignItems: "center", gap: ".3rem" }}>
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--warn)", animation: "pulse 1s infinite" }} />
+                    Queued
+                  </div>
+                  <button
+                    onClick={() => setUploadedFiles(prev => prev.filter((_, j) => j !== i))}
+                    style={{
+                      width: 28, height: 28, borderRadius: 6, border: "1px solid var(--line-soft)",
+                      background: "var(--bg)", display: "flex", alignItems: "center",
+                      justifyContent: "center", cursor: "pointer", fontSize: ".8rem", color: "var(--text3)",
+                    }}
+                  >×</button>
+                </div>
+              ))}
+              <div style={{ display: "flex", gap: ".6rem", justifyContent: "flex-end", marginTop: "1.5rem" }}>
+                <button className="btn btn-accent btn-lg" onClick={generateReport} disabled={generating}>
+                  {generating ? "⚡ Generating…" : "⚡ Generate Credit Report →"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ===== GENERATED REPORT ===== */}
       {report && (
