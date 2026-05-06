@@ -13,7 +13,7 @@ function normalizeKey(name: string, state: string): string {
 async function callClaude(apiKey: string, prompt: string) {
   const body: any = {
     model: "claude-sonnet-4-6",
-    max_tokens: 8000,
+    max_tokens: 10000,
     temperature: 0.1,
     tools: [{ type: "web_search_20250305", name: "web_search" }],
     messages: [{ role: "user", content: prompt }],
@@ -136,14 +136,43 @@ DEFINITIONS — USE THESE EXACTLY (do not improvise):
 - total_expenditures: GENERAL FUND actual total expenditures from the most recent FISCAL YEAR ACTUAL in the ACFR.
 - fund_balance: UNASSIGNED general fund balance per the most recent ACFR balance sheet. NOT total fund balance, NOT committed+assigned, NOT all-funds combined.
 - fund_balance_ratio: (unassigned general fund balance) / (general fund total expenditures) × 100, expressed as "XX.X%"
+- available_reserves: SUM of unassigned + committed + assigned general fund balance per ACFR. Format as integer dollar amount.
+- available_reserves_ratio: available_reserves / general fund expenditures × 100, expressed as "XX.X%"
 - operating_margin: (general fund revenue - general fund expenditures) / general fund revenue × 100, expressed as "X.X%"
 - debt_outstanding: TAX-SUPPORTED general obligation (GO) debt only, EXCLUDING enterprise/utility revenue debt, EXCLUDING component units. From the latest ACFR debt schedule.
 - debt_to_revenue: debt_outstanding / general fund revenue, expressed as "X.XX"
 - debt_per_capita: debt_outstanding / population, expressed as "$X,XXX"
 - pension_funded_ratio: actuarial funded ratio (NOT market value) from most recent pension valuation, expressed as "XX.X%"
+- fixed_costs_ratio: (annual debt service + annual pension contribution + annual OPEB pay-go contribution) / general fund operating revenue × 100, expressed as "XX.X%". Moody's-style indicator of long-term obligation pressure on operations.
 - days_cash_on_hand: (general fund cash & equivalents × 365) / general fund expenditures, integer
 - revenue_trend / expenditure_trend: GENERAL FUND ACTUAL totals from each year's ACFR. Five years FY2021-FY2025 if available.
 - revenue_composition / expenditure_composition: percentages of GENERAL FUND only.
+
+============================================================
+MUNIREPORTS SCORE — INDICATOR (NOT a credit rating):
+============================================================
+Score the issuer on 4 factors, each 1.0–5.0 (5 best, decimals OK):
+1. Economy (25% weight): tax base diversity, employment, population trend, income, employer concentration. 5 = top 10% of US issuers; 1 = severe decline.
+2. Financial Strength (25%): fund balance ratio, operating margin, days cash, reserves trajectory. 5 = AAA-equivalent reserves; 1 = structural deficit + low reserves.
+3. Debt & Pension Burden (25%): debt/revenue, debt per capita, pension funded ratio, fixed costs ratio. 5 = low debt, fully funded pension; 1 = >300% debt/revenue or <40% funded pension.
+4. Forward Outlook (25%): forecast trajectory, scenario range, climate exposure, structural balance. 5 = clear surplus path; 1 = chronic deficits.
+
+Compute overall = average of the 4 (since equal weight). Map to letter equivalent:
+- 4.5–5.0 → "AAA-equivalent" / label "Exceptional"
+- 4.0–4.49 → "AA-equivalent" / label "Strong"
+- 3.5–3.99 → "A-equivalent" / label "Above Average"
+- 3.0–3.49 → "BBB-equivalent" / label "Average"
+- 2.5–2.99 → "BB-equivalent" / label "Below Average"
+- 2.0–2.49 → "B-equivalent" / label "Weak"
+- below 2.0 → "Below Investment Grade equivalent" / label "Distressed"
+
+ALWAYS include the disclaimer field exactly as: "MuniReports Score is an AI-generated indicator from public data, not a credit rating."
+
+============================================================
+SOURCE ATTRIBUTION:
+============================================================
+For data_sources field, map each major data category to the source document(s) used. Be specific.
+Example: {"financials":"FY2024 ACFR (austintexas.gov, December 2024)","pension":"COAERS 2024 Actuarial Valuation","economy":"BLS, U.S. Census ACS 2024",...}
 
 ============================================================
 FORMATTING RULES:
@@ -159,9 +188,10 @@ FORMATTING RULES:
 
 Return this JSON structure:
 {"issuer_name":"","state":"","type":"","population":0,"rating":"","rating_outlook":"Stable","sentiment":"Positive","sentiment_score":85,
+"munireports_score":{"overall":4.2,"letter_equivalent":"AA-equivalent","label":"Strong","disclaimer":"MuniReports Score is an AI-generated indicator from public data, not a credit rating.","factors":{"economy":{"score":4.5,"rationale":"specific 1-sentence rationale citing data"},"financial_strength":{"score":4.0,"rationale":""},"debt_pension":{"score":3.5,"rationale":""},"forward_outlook":{"score":4.0,"rationale":""}}},
 "executive_summary":"2-3 paragraphs with specific data",
 "economy":{"description":"paragraph","unemployment_rate":"X.X%","median_household_income":0,"poverty_rate":"X.X%","top_employers":["","","","",""],"economic_indicators":[{"name":"GDP Growth","value":"X.X%","trend":"up"},{"name":"Employment","value":"XX,XXX","trend":"up"},{"name":"Population","value":"XX,XXX","trend":"up"},{"name":"Permits","value":"X,XXX","trend":"up"}]},
-"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX.X%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","days_cash_on_hand":0,"pension_funded_ratio":"XX%"},
+"financials":{"total_revenue":0,"total_expenditures":0,"fund_balance":0,"fund_balance_ratio":"XX.X%","available_reserves":0,"available_reserves_ratio":"XX.X%","operating_margin":"X.X%","debt_outstanding":0,"debt_to_revenue":"X.XX","debt_per_capita":"$X,XXX","fixed_costs_ratio":"XX.X%","days_cash_on_hand":0,"pension_funded_ratio":"XX%"},
 "revenue_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
 "expenditure_trend":[{"year":"FY2021","amount":0},{"year":"FY2022","amount":0},{"year":"FY2023","amount":0},{"year":"FY2024","amount":0},{"year":"FY2025","amount":0}],
 "revenue_composition":[{"category":"Property Tax","pct":"XX%"},{"category":"Sales Tax","pct":"XX%"},{"category":"Charges","pct":"XX%"},{"category":"Other","pct":"XX%"}],
@@ -177,7 +207,8 @@ Return this JSON structure:
 "forecast":{"description":"1 paragraph on near-term outlook","revenue_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"expenditure_forecast":[{"year":"FY2026","amount":0},{"year":"FY2027","amount":0},{"year":"FY2028","amount":0},{"year":"FY2029","amount":0},{"year":"FY2030","amount":0}],"scenarios":[{"name":"Baseline","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Optimistic","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0},{"name":"Cautious","fy26":0,"fy27":0,"fy28":0,"fy29":0,"fy30":0}]},
 "forward_outlook":"1-2 paragraphs on 5-year outlook and key drivers",
 "peer_comparison":[{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""},{"name":"","population":0,"rating":"","fund_balance_ratio":"","debt_per_capita":"","operating_margin":""}],
-"sources":["ACFR","Budget","EMMA","Census","other source"]}
+"data_sources":{"financials":"specific document name and date","pension":"specific document name and date","economy":"specific source(s)","bond_market":"EMMA filings cited","forecast":"5-year forecast doc name and date","climate":"sources","housing":"sources","tax":"sources"},
+"sources":["ACFR (full title and date)","Budget (full title and date)","EMMA (specific filings)","Census","BLS","Pension valuation","Other source"]}
 
 CRITICAL: scenarios fy26-fy30 are NET SURPLUS or DEFICIT in millions (e.g. 7 = +$7M surplus, -3 = -$3M deficit). NOT total revenue.
 Make the JSON complete and valid. Close all braces and brackets.`;
