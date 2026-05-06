@@ -26,18 +26,6 @@ export default function BuilderPage() {
   const [report, setReport] = useState<any>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
-  const [isOwner, setIsOwner] = useState(false);
-
-  // Owner bypass: check if logged-in user is the owner
-  useEffect(() => {
-    (async () => {
-      try {
-        const sb = createClient();
-        const { data: { user } } = await sb.auth.getUser();
-        if (user?.email === "admin@munireports.com") setIsOwner(true);
-      } catch {}
-    })();
-  }, []);
   const router = useRouter();
 
   useEffect(() => {
@@ -87,7 +75,7 @@ export default function BuilderPage() {
   const generateReport = async () => {
     // Check usage limit - allow if they have purchased credits
     const credits = parseInt(localStorage.getItem("muni_credits") || "0", 10);
-    if (!isOwner && reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
+    if (reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
       setShowPaywall(true);
       return;
     }
