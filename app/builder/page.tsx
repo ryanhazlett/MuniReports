@@ -16,6 +16,15 @@ function incrementReportCount(): number {
   return count;
 }
 
+function formatStat(label: string, value: any, isCurrency = false): string {
+  const isZero =
+    (typeof value === "number" && value === 0) ||
+    (typeof value === "string" && /^[$]?0+(\.0+)?\s*[%]?$/.test(value.trim()));
+  if (isZero && /debt/i.test(label)) return "Debt-free";
+  if (isCurrency && typeof value === "number") return `$${(value / 1e6).toFixed(1)}M`;
+  return value != null ? String(value) : "—";
+}
+
 export default function BuilderPage() {
   const [tab, setTab] = useState<"search">("search");
   const [query, setQuery] = useState("");
@@ -418,11 +427,11 @@ export default function BuilderPage() {
                       <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
                         <td style={{ padding: ".85rem 1rem", fontSize: ".9rem", color: "var(--text2)", width: "30%" }}>{l1 as string}</td>
                         <td style={{ padding: ".85rem 1rem", fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 700, width: "20%", color: "var(--text)" }}>
-                          {c1 && typeof v1 === "number" ? `$${(v1 as number / 1000000).toFixed(1)}M` : v1 != null ? String(v1) : "—"}
+                          {formatStat(l1 as string, v1, c1 as boolean)}
                         </td>
                         <td style={{ padding: ".85rem 1rem", fontSize: ".9rem", color: "var(--text2)", width: "30%", borderLeft: "1px solid var(--line)" }}>{l2 as string}</td>
                         <td style={{ padding: ".85rem 1rem", fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 700, width: "20%", color: "var(--text)" }}>
-                          {c2 && typeof v2 === "number" ? `$${(v2 as number / 1000000).toFixed(1)}M` : v2 != null ? String(v2) : "—"}
+                          {formatStat(l2 as string, v2, c2 as boolean)}
                         </td>
                       </tr>
                     ))}
@@ -1026,7 +1035,7 @@ export default function BuilderPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem" }}>
                   {[
                     { label: "Median Home Value", value: report.housing.median_home_value ? `$${(report.housing.median_home_value/1000).toFixed(0)}K` : "—" },
-                    { label: "Price-to-Income", value: report.housing.median_home_value_to_income ? `${report.housing.median_home_value_to_income}×` : "—", color: parseFloat(report.housing.median_home_value_to_income) > 5 ? "var(--warn)" : "var(--good)" },
+                    { label: "Price-to-Income", value: report.housing.median_home_value_to_income ? `${String(report.housing.median_home_value_to_income).replace(/[xX×]\s*$/, "").trim()}×` : "—", color: parseFloat(report.housing.median_home_value_to_income) > 5 ? "var(--warn)" : "var(--good)" },
                     { label: "5Y AV Growth", value: report.housing.assessed_value_growth_5yr || "—" },
                     { label: "Homeownership", value: report.housing.homeownership_rate || "—" },
                   ].map((m, i) => (
