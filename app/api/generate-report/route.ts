@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 
 export const maxDuration = 300;
 
-const CACHE_TTL_DAYS = 7;
+const CACHE_TTL_DAYS = 90;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 function normalizeKey(name: string, state: string): string {
