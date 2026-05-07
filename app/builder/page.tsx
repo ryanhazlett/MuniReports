@@ -1067,7 +1067,7 @@ export default function BuilderPage() {
                       <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem", textAlign: "center" }}>
                         <div style={{ fontSize: "1.2rem", marginBottom: ".3rem" }}>{r.icon}</div>
                         <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>{r.label}</div>
-                        <div style={{ fontWeight: 700, fontSize: ".9rem", color: r.value === "low" ? "var(--good)" : r.value === "moderate" ? "var(--warn)" : "var(--bad)", textTransform: "capitalize" }}>{r.value || "—"}</div>
+                        <div style={{ fontWeight: 700, fontSize: ".9rem", color: r.value === "low" ? "var(--good)" : r.value === "moderate" ? "var(--warn)" : "var(--bad)" }}>{r.value || "—"}</div>
                       </div>
                     ))}
                   </div>
