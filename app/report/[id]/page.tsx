@@ -38,13 +38,28 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         </div>
         <div style={{ padding: "2rem 2.2rem", maxWidth: 800 }}>
           <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 600, marginBottom: ".5rem" }}>
-            Executive Summary
+            AI-Assisted Municipal Issuer Brief
           </div>
           <h2 style={{ fontFamily: "var(--serif)", fontSize: "2rem", fontWeight: 500, marginBottom: ".4rem" }}>
             {r?.issuer_name || report.issuer_name}
           </h2>
           <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>
             {r?.type || report.issuer_type} · {r?.state || report.state} · Rating: {r?.rating || report.rating}
+          </div>
+
+          {/* TODO: report.created_at is when the row was saved, not when the underlying report data was generated. For accuracy, store and use the original generated_at from cached_reports. Tracked for follow-up. */}
+          <div style={{
+            margin: "1rem 0 1.5rem",
+            padding: ".75rem 1rem",
+            background: "var(--bg2)",
+            border: "1px solid var(--line)",
+            borderRadius: "var(--radius)",
+            fontSize: ".82rem",
+            fontStyle: "italic",
+            color: "var(--text2)",
+            lineHeight: 1.5,
+          }}>
+            Snapshot dated {new Date(report.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}. This report is AI-generated preliminary research compiled from public sources via web search. Figures may vary between generations and should be verified against primary source documents (ACFRs, EMMA filings, official statements) before any investment, lending, or financial decision. Not a credit rating. Not investment advice.
           </div>
 
           {/* KPIs */}

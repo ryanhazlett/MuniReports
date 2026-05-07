@@ -33,6 +33,7 @@ export default function BuilderPage() {
   const [selectedIssuer, setSelectedIssuer] = useState<any>(null);
   const [generating, setGenerating] = useState(false);
   const [report, setReport] = useState<any>(null);
+  const [reportGeneratedAt, setReportGeneratedAt] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -111,6 +112,7 @@ export default function BuilderPage() {
       const data = await res.json();
       if (data.report) {
         setReport(data.report);
+        setReportGeneratedAt(data.generatedAt || null);
         // Use a purchased credit if available, otherwise count as free (skip for admin)
         if (!isAdmin) {
           if (reportsUsed >= FREE_REPORT_LIMIT && credits > 0) {
@@ -316,6 +318,20 @@ export default function BuilderPage() {
             </h2>
             <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1.05rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1.2rem", borderBottom: "2px solid var(--accent)" }}>
               {report.type} · {report.state} · Rating: {report.rating}
+            </div>
+
+            <div style={{
+              margin: "1rem 0 1.5rem",
+              padding: ".75rem 1rem",
+              background: "var(--bg2)",
+              border: "1px solid var(--line)",
+              borderRadius: "var(--radius)",
+              fontSize: ".82rem",
+              fontStyle: "italic",
+              color: "var(--text2)",
+              lineHeight: 1.5,
+            }}>
+              Snapshot dated {new Date(reportGeneratedAt || Date.now()).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}. This report is AI-generated preliminary research compiled from public sources via web search. Figures may vary between generations and should be verified against primary source documents (ACFRs, EMMA filings, official statements) before any investment, lending, or financial decision. Not a credit rating. Not investment advice.
             </div>
 
             {/* ── SENTIMENT + TOP KPIs ── */}
