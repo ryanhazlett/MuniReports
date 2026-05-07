@@ -1027,6 +1027,7 @@ export default function BuilderPage() {
             {/* ── HOUSING & TAX BASE (DIFFERENTIATOR) ── */}
             {report.housing && (
               <div className="report-section" style={{ marginTop: "2.5rem" }}>
+                {console.log("DEBUG price-to-income raw:", JSON.stringify(report.housing.median_home_value_to_income))}
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏠</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Housing & Tax Base Stability</h3>
