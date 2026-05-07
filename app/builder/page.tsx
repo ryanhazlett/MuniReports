@@ -289,7 +289,7 @@ export default function BuilderPage() {
             <div className="report-print-header">
               <div>
                 <div className="logo-text">MuniReports</div>
-                <div style={{ fontSize: ".75rem", color: "#666", fontFamily: "var(--mono)" }}>Municipal Credit Analysis Report</div>
+                <div style={{ fontSize: ".75rem", color: "#666", fontFamily: "var(--mono)" }}>AI-Assisted Municipal Issuer Brief</div>
               </div>
               <div style={{ textAlign: "right" }}>
                 <div style={{ fontSize: ".75rem", color: "#666", fontFamily: "var(--mono)" }}>{new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</div>
@@ -299,7 +299,7 @@ export default function BuilderPage() {
 
             {/* ── HEADER ── */}
             <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent-soft)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>
-              Municipal Credit Analysis Report
+              AI-Assisted Municipal Issuer Brief
             </div>
             <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.2rem", fontWeight: 400, marginBottom: ".4rem", lineHeight: 1.1 }}>
               {report.issuer_name}
