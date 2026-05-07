@@ -44,7 +44,7 @@ export default function HomePage() {
               fontSize: "1.15rem", color: "var(--text2)", maxWidth: "58ch",
               margin: "0 auto 2.5rem", lineHeight: 1.6
             }}>
-              Search any issuer. AI compiles research from public sources. Get a complete AI-powered credit report with
+              Search any issuer. AI compiles research from public sources. Get an AI-powered credit report with
               five-year analysis, forward projections, and risk flags — <strong style={{ color: "var(--text)" }}>completely free.</strong>
             </p>
 
@@ -105,7 +105,7 @@ export default function HomePage() {
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 1: Search</div>
               <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Search any issuer — let AI <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>find the documents.</em></h3>
-              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Type an issuer name and MuniReports surfaces public filings from EMMA, state comptroller sites, and the issuer&apos;s own website to assemble complete credit research in minutes.</p>
+              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Type an issuer name and MuniReports surfaces public filings from EMMA, state comptroller sites, and the issuer&apos;s own website to assemble credit research in minutes.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
                 {["Search 22,400 issuers — AI finds public filings online", "Surfaces public filings from EMMA, state archives, city websites"].map(item => (
                   <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
@@ -197,7 +197,7 @@ export default function HomePage() {
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 2: AI Analysis</div>
               <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Five-year history. Forward projections. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Risk flags.</em></h3>
-              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Once documents are parsed, MuniReports builds a complete financial picture: standardized 5-year statements, three-scenario forecast, CIP analysis, and a five-pillar credit sentiment score.</p>
+              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Once documents are parsed, MuniReports builds a financial overview: standardized 5-year statements, three-scenario forecast, CIP analysis, and a five-pillar credit sentiment score.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
                 {["5-year revenue, expenditure & fund balance trends", "3-scenario forecast (baseline, optimistic, cautious)", "Capital plan with project roster & funding sources", "Sensitivity analysis on key inputs"].map(item => (
                   <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
@@ -213,10 +213,10 @@ export default function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 3: Credit Research</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Full credit research. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Every claim cited.</em></h3>
+              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Credit research. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Citations provided.</em></h3>
               <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>MuniReports generates multi-section research: executive summary, financial analysis, capital plan review, debt profile, forward projections, and risk assessment.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
-                {["12–25 page research with executive summary", "Charts auto-generated from public source data", "Every claim cites the source document", "Export PDF · Share link · Print-ready"].map(item => (
+                {["12–25 page research with executive summary", "Charts auto-generated from public source data", "Citations provided for source documents", "Export PDF · Share link · Print-ready"].map(item => (
                   <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
                     <span style={{ color: "var(--accent)", fontWeight: 600 }}>✓</span> {item}
                   </li>
@@ -283,7 +283,7 @@ export default function HomePage() {
               </p>
               <h2 style={{ fontSize: "2.25rem", margin: "0 0 0.75rem 0" }}>Four examples across the credit spectrum</h2>
               <p style={{ color: "var(--ink-mute)", maxWidth: "640px", margin: "0 auto", fontSize: "1.05rem" }}>
-                Download a complete sample to see exactly what you get — financials, peer comparison, pension analysis, climate risk, and bond market data.
+                Download a sample to see exactly what you get — financials, peer comparison, pension analysis, climate risk, and bond market data.
               </p>
             </div>
 
@@ -583,7 +583,7 @@ export default function HomePage() {
               <div style={{ marginBottom: "1.8rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
                   <span>💲</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Tax Burden Analysis</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
                   <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem" }}>
@@ -611,7 +611,7 @@ export default function HomePage() {
               <div style={{ marginBottom: "1.8rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
                   <span>🏠</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Housing & Tax Base Stability</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem" }}>
                   {[
@@ -636,7 +636,7 @@ export default function HomePage() {
               <div style={{ marginBottom: "1.8rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
                   <span>🌍</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Climate & Natural Hazard Risk</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem" }}>
@@ -671,7 +671,7 @@ export default function HomePage() {
               <div style={{ marginBottom: "1.8rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
                   <span>📈</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Bond Market Performance</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem", marginBottom: ".8rem" }}>
                   {[
@@ -712,28 +712,9 @@ export default function HomePage() {
                 </p>
               </div>
 
-              {/* AI Confidence - Exclusive */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
-                  <span>🤖</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>AI Data Confidence</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".5rem", marginBottom: ".5rem" }}>
-                  {[
-                    { label: "Overall", value: "High" },
-                    { label: "Financial Data", value: "High" },
-                    { label: "Economic Data", value: "High" },
-                  ].map((c, i) => (
-                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".6rem", textAlign: "center" }}>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".2rem" }}>{c.label}</div>
-                      <div style={{ fontWeight: 700, fontSize: ".88rem", color: "var(--good)" }}>{c.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ fontSize: ".78rem", color: "var(--text2)", margin: 0, padding: ".5rem .7rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", lineHeight: 1.4, fontStyle: "italic" }}>
-                  Report generated from City of Austin FY2025 ACFR, FY2026 Adopted Budget, EMMA filings, and U.S. Census 2024 ACS data. Compiled by AI from public sources. Verify against original filings before relying on figures.
-                </p>
-              </div>
+              <p style={{ fontSize: ".72rem", fontStyle: "italic", color: "var(--text3)", marginTop: "1rem", marginBottom: ".5rem", lineHeight: 1.5 }}>
+                Sample shown. AI-generated research compiled from public sources. Verify figures against original filings.
+              </p>
 
               {/* Sources */}
               <div style={{ paddingTop: "1rem", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
