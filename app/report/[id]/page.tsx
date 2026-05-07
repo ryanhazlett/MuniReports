@@ -29,7 +29,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           borderBottom: "1px solid var(--line)",
         }}>
           <div style={{ fontSize: ".88rem", fontWeight: 600 }}>
-            📊 Credit Report · {r?.issuer_name || report.issuer_name}
+            📊 {r?.issuer_name || report.issuer_name}
           </div>
           <div style={{ display: "flex", gap: ".4rem" }}>
             <Link href="/dashboard" className="btn btn-out btn-sm">← My Reports</Link>

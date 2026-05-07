@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 
 export const metadata = {
-  title: "MuniReports — Municipal Bond Credit Reports",
+  title: "MuniReports — AI-Assisted Municipal Credit Research & Bond Analysis",
   description: "Free AI-powered credit reports for municipal bonds. Search any issuer, AI compiles research from public sources in minutes.",
 };
 

@@ -140,7 +140,7 @@ export default function BuilderPage() {
           <span style={{ fontSize: ".7rem", padding: ".2rem .5rem", background: "var(--accent)", color: "white", borderRadius: "999px", fontWeight: 600, letterSpacing: ".04em" }}>BETA</span>
         </div>
         <p style={{ color: "var(--text2)", fontSize: ".95rem", marginTop: ".3rem" }}>
-          Search for any issuer and generate a complete AI-powered credit report in minutes.
+          Search for any issuer and generate complete AI-powered credit research in minutes.
         </p>
       </div>
 
@@ -286,7 +286,7 @@ export default function BuilderPage() {
             padding: ".75rem 1.2rem", background: "var(--bg2)", borderBottom: "1px solid var(--line)",
           }}>
             <div style={{ fontSize: ".88rem", fontWeight: 600 }}>
-              📊 Credit Report · {report.issuer_name}
+              📊 {report.issuer_name}
             </div>
             <div style={{ display: "flex", gap: ".4rem" }}>
               <button className="btn btn-out btn-sm" onClick={() => { alert('Tip: In the print dialog, uncheck "Headers and footers" for a clean PDF. Then select "Save as PDF" as the destination.'); setTimeout(() => window.print(), 300); }}>📄 Download PDF</button>
