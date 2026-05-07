@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+// TODO: Add server-side paywall enforcement. Currently /api/generate-report is open to anyone
+// who can hit the endpoint directly. Tracked separately from owner-bypass work.
+
 export const maxDuration = 300;
 
 const CACHE_TTL_DAYS = 7;

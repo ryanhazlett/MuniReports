@@ -35,6 +35,7 @@ export default function BuilderPage() {
   const [report, setReport] = useState<any>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -53,6 +54,13 @@ export default function BuilderPage() {
       localStorage.setItem("muni_credits", String(current + 5));
       window.history.replaceState({}, "", "/builder");
     }
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/me/admin-status")
+      .then(r => r.ok ? r.json() : { isAdmin: false })
+      .then(d => setIsAdmin(!!d.isAdmin))
+      .catch(() => {});
   }, []);
 
   // Search only when button is clicked
@@ -84,7 +92,7 @@ export default function BuilderPage() {
   const generateReport = async () => {
     // Check usage limit - allow if they have purchased credits
     const credits = parseInt(localStorage.getItem("muni_credits") || "0", 10);
-    if (reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
+    if (!isAdmin && reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
       setShowPaywall(true);
       return;
     }
@@ -103,12 +111,14 @@ export default function BuilderPage() {
       const data = await res.json();
       if (data.report) {
         setReport(data.report);
-        // Use a purchased credit if available, otherwise count as free
-        if (reportsUsed >= FREE_REPORT_LIMIT && credits > 0) {
-          localStorage.setItem("muni_credits", String(credits - 1));
-        } else {
-          const newCount = incrementReportCount();
-          setReportsUsed(newCount);
+        // Use a purchased credit if available, otherwise count as free (skip for admin)
+        if (!isAdmin) {
+          if (reportsUsed >= FREE_REPORT_LIMIT && credits > 0) {
+            localStorage.setItem("muni_credits", String(credits - 1));
+          } else {
+            const newCount = incrementReportCount();
+            setReportsUsed(newCount);
+          }
         }
         if (data.savedId) {
           router.push(`/report/${data.savedId}`);
