@@ -18,7 +18,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <div className="nav-in">
             <Link href="/" className="brand">
               <div className="brand-dot">MR</div>
-              Muni<em>Reports</em>
+              <span>Muni<em>Reports</em></span>
             </Link>
             <div className="nav-links">
               <Link href="/">Product</Link>
@@ -57,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div>
               <div className="brand" style={{ marginBottom: "0.5rem" }}>
                 <div className="brand-dot">MR</div>
-                Muni<em>Reports</em>
+                <span>Muni<em>Reports</em></span>
               </div>
               <p style={{ color: "var(--text2)", fontSize: "0.88rem", lineHeight: 1.55, maxWidth: "36ch", marginTop: "0.7rem" }}>
                 Free AI-powered credit reports for municipal bonds. Search any issuer to generate research from public sources.
