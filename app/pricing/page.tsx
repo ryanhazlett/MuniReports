@@ -23,10 +23,10 @@ export default function PricingPage() {
       <div style={{ textAlign: "center", marginBottom: "3rem" }}>
         <div style={{ fontFamily: "var(--mono)", fontSize: ".76rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".16em", marginBottom: ".8rem" }}>Pricing</div>
         <h1 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.1, marginBottom: ".8rem" }}>
-          Professional credit reports. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>Fair pricing.</em>
+          Credit research, on demand. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>Fair pricing.</em>
         </h1>
         <p style={{ fontSize: "1.05rem", color: "var(--text2)", maxWidth: "50ch", margin: "0 auto" }}>
-          Get the same depth of analysis as Moody&apos;s and S&amp;P — plus exclusive data they don&apos;t provide — at a fraction of the cost.
+          Compile public financial data into a structured research brief in minutes. A starting point for credit analysis at a price point professional services can&apos;t match.
         </p>
       </div>
 
@@ -34,12 +34,12 @@ export default function PricingPage() {
         {/* Free */}
         <div className="price-card">
           <div className="price-name">Free</div>
-          <div className="price-desc">Try MuniReports risk-free</div>
+          <div className="price-desc">Try MuniReports — no account needed</div>
           <div className="price-amount">$0</div>
           <div className="price-detail">1 free report</div>
-          <Link href="/builder" className="btn btn-out" style={{ width: "100%", justifyContent: "center" }}>Generate free report →</Link>
+          <Link href="/builder" className="btn btn-out" style={{ width: "100%", justifyContent: "center" }}>Generate a research brief →</Link>
           <ul className="price-features">
-            <li><strong>1 credit report</strong> — any issuer</li>
+            <li><strong>1 research brief</strong> — any issuer</li>
             <li>Executive summary &amp; financial overview</li>
             <li>Revenue &amp; expenditure analysis</li>
             <li>Risk assessment &amp; credit strengths</li>
@@ -52,21 +52,20 @@ export default function PricingPage() {
         <div className="price-card feat">
           <div className="price-badge">Most Popular</div>
           <div className="price-name">Single Report</div>
-          <div className="price-desc">One comprehensive credit report</div>
+          <div className="price-desc">One research brief</div>
           <div className="price-amount">$4.99</div>
           <div className="price-detail">per report · one-time purchase</div>
-          <button onClick={() => handleCheckout("single")} className="btn btn-accent" style={{ width: "100%", justifyContent: "center" }}>Buy report — $4.99 →</button>
+          <button onClick={() => handleCheckout("single")} className="btn btn-accent" style={{ width: "100%", justifyContent: "center" }}>Buy brief — $4.99 →</button>
           <ul className="price-features">
             <li><strong>Everything in Free, plus:</strong></li>
-            <li>Web-sourced real-time data (latest FY)</li>
-            <li>Pension &amp; OPEB analysis (Moody&apos;s adjusted)</li>
+            <li>Web-sourced public data (latest available FY)</li>
+            <li>Pension &amp; OPEB analysis (adjusted basis)</li>
             <li>Bond market performance &amp; spreads</li>
-            <li>Tax burden analysis <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#059669", fontWeight: 600 }}>EXCLUSIVE</span></li>
-            <li>Housing &amp; tax base stability <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#059669", fontWeight: 600 }}>EXCLUSIVE</span></li>
-            <li>Climate &amp; hazard risk score <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#059669", fontWeight: 600 }}>EXCLUSIVE</span></li>
+            <li>Tax burden analysis</li>
+            <li>Housing &amp; tax base stability</li>
+            <li>Climate &amp; hazard risk score</li>
             <li>Peer comparison table</li>
             <li>Forward outlook with scenario analysis</li>
-            <li>AI confidence transparency</li>
           </ul>
         </div>
 
@@ -78,10 +77,10 @@ export default function PricingPage() {
           <div className="price-detail">$4.00 per report · save 20%</div>
           <button onClick={() => handleCheckout("5pack")} className="btn btn-out" style={{ width: "100%", justifyContent: "center" }}>Buy 5-pack — $19.99 →</button>
           <ul className="price-features">
-            <li><strong>5 full credit reports</strong></li>
+            <li><strong>5 research briefs</strong></li>
             <li>Everything in Single Report</li>
             <li>Use anytime — credits never expire</li>
-            <li>Best value for active investors</li>
+            <li>Best value for repeat use</li>
           </ul>
         </div>
       </div>
@@ -104,40 +103,11 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* Comparison to competitors */}
+      {/* NRSRO disclaimer */}
       <div style={{ maxWidth: 800, margin: "4rem auto", textAlign: "center" }}>
-        <h3 style={{ fontSize: "1.3rem", fontWeight: 700, marginBottom: "1.5rem" }}>How we compare</h3>
-        <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ borderBottom: "1px solid var(--line)" }}>
-                <th style={{ padding: ".8rem 1rem", textAlign: "left", fontSize: ".85rem" }}>Feature</th>
-                <th style={{ padding: ".8rem .6rem", textAlign: "center", fontSize: ".85rem", color: "var(--accent)", fontWeight: 700 }}>MuniReports</th>
-                <th style={{ padding: ".8rem .6rem", textAlign: "center", fontSize: ".85rem", color: "var(--text2)" }}>Moody&apos;s</th>
-                <th style={{ padding: ".8rem .6rem", textAlign: "center", fontSize: ".85rem", color: "var(--text2)" }}>S&amp;P</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ["Price per report", "$4.99", "$300-500", "$250-400"],
-                ["Turnaround time", "< 2 minutes", "2-4 weeks", "2-4 weeks"],
-                ["Issuers covered", "22,400+", "~15,000", "~18,000"],
-                ["Tax burden analysis", "✓", "✗", "✗"],
-                ["Climate risk scoring", "✓", "Limited", "Limited"],
-                ["Bond pricing data", "✓", "✗", "✗"],
-                ["Housing affordability", "✓", "✗", "✗"],
-                ["AI confidence score", "✓", "✗", "✗"],
-              ].map(([feature, muni, moodys, sp], i) => (
-                <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
-                  <td style={{ padding: ".65rem 1rem", fontSize: ".88rem", color: "var(--text2)" }}>{feature}</td>
-                  <td style={{ padding: ".65rem .6rem", textAlign: "center", fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 600, color: muni === "✓" ? "var(--good)" : "var(--text)" }}>{muni}</td>
-                  <td style={{ padding: ".65rem .6rem", textAlign: "center", fontFamily: "var(--mono)", fontSize: ".85rem", color: moodys === "✗" ? "var(--bad)" : "var(--text2)" }}>{moodys}</td>
-                  <td style={{ padding: ".65rem .6rem", textAlign: "center", fontFamily: "var(--mono)", fontSize: ".85rem", color: sp === "✗" ? "var(--bad)" : "var(--text2)" }}>{sp}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <p style={{ fontSize: ".95rem", color: "var(--text2)", lineHeight: 1.6, margin: 0 }}>
+          MuniReports is research output, not a credit rating. We&apos;re not registered as an NRSRO and our briefs aren&apos;t a substitute for ratings from Moody&apos;s, S&amp;P, Fitch, or KBRA. We cover ~22,400 U.S. municipal issuers, including many that aren&apos;t rated by the agencies.
+        </p>
       </div>
     </div>
   );

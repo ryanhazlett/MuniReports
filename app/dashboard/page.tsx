@@ -50,7 +50,7 @@ export default async function DashboardPage() {
           <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📊</div>
           <h3 style={{ fontSize: "1.2rem", fontWeight: 600, marginBottom: ".5rem" }}>No reports yet</h3>
           <p style={{ color: "var(--text2)", marginBottom: "1.5rem" }}>
-            Generate your first credit report — search any issuer or upload documents.
+            Generate your first research brief — search any issuer.
           </p>
           <Link href="/builder" className="btn btn-accent">Go to Report Builder →</Link>
         </div>

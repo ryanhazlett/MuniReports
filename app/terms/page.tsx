@@ -24,7 +24,7 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2>2. The Service</h2>
         <p>
-          MuniReports provides AI-generated credit analysis reports for U.S. municipal issuers. Reports are generated using
+          MuniReports provides AI-assisted credit research briefs for U.S. municipal issuers. Reports are generated using
           large language models combined with public data sources.
         </p>
       </section>
@@ -93,7 +93,7 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2>9. Intellectual property</h2>
         <p>
-          The Service, its design, codebase, and proprietary methodology are owned by MuniReports. Reports you generate are
+          The Service, its design, codebase, and methodology are owned by MuniReports. Reports you generate are
           licensed for your personal or internal business use. Underlying public data (ACFRs, EMMA disclosures, etc.) belongs
           to its respective issuers and sources.
         </p>

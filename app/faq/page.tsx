@@ -8,11 +8,11 @@ export const metadata = {
 const faqs = [
   {
     q: "What is MuniReports?",
-    a: "MuniReports is an AI-powered tool that generates credit analysis reports for U.S. municipal issuers — cities, counties, school districts, utilities, and special districts. We synthesize public financial disclosures into a structured credit profile in under two minutes.",
+    a: "MuniReports is an AI-assisted research tool that compiles public financial disclosures into structured credit research briefs for U.S. municipal issuers — cities, counties, school districts, utilities, and special districts. Briefs generate in under two minutes.",
   },
   {
     q: "Who is this for?",
-    a: "Bond investors, community banks, hedge funds, asset managers, financial advisors, and journalists who need fast, structured analysis of municipal issuers without paying $300+ for a Moody's or S&P report.",
+    a: "Bond investors, community banks, hedge funds, asset managers, financial advisors, and journalists who need fast, structured research on municipal issuers as a starting point for due diligence.",
   },
   {
     q: "Is this a credit rating?",
@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     q: "How accurate is the AI?",
-    a: "Reports are generated using real-time web search of public financial documents. Accuracy depends on the quality and recency of available disclosures. We recommend verifying any specific data point against the primary source (the issuer's ACFR or budget) before making investment decisions.",
+    a: "Reports are generated using web search of public financial documents at the time of your request. Accuracy depends on the quality and recency of available disclosures. We recommend verifying any specific data point against the primary source (the issuer's ACFR or budget) before making investment decisions.",
   },
   {
     q: "How much does a report cost?",
@@ -40,11 +40,11 @@ const faqs = [
   },
   {
     q: "How fresh is the data?",
-    a: "Reports are generated on-demand using live web search. Data reflects whatever the issuer has most recently published publicly. If the latest fiscal year's ACFR hasn't been released yet, the report will use the most recent available year.",
+    a: "Reports are generated on-demand from web search at the time of your request. Data reflects whatever the issuer has most recently published publicly. If the latest fiscal year's ACFR hasn't been released yet, the report will use the most recent available year.",
   },
   {
     q: "Can I save reports to my account?",
-    a: "Yes. When you create a free account, your generated reports are saved to your dashboard so you can revisit them anytime.",
+    a: "Yes. When you create an account, your generated reports are saved to your dashboard so you can revisit them anytime.",
   },
   {
     q: "Do you offer refunds?",
@@ -74,7 +74,7 @@ export default function FaqPage() {
       </div>
 
       <div style={{ marginTop: "2rem" }}>
-        <Link href="/builder" className="btn btn-accent">Try it free →</Link>
+        <Link href="/builder" className="btn btn-accent">Try it →</Link>
       </div>
     </main>
   );

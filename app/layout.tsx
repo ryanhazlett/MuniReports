@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "MuniReports — AI-Assisted Municipal Credit Research & Bond Analysis",
-  description: "Free AI-powered credit reports for municipal bonds. Search any issuer, AI compiles research from public sources in minutes.",
+  description: "AI-assisted municipal credit research. Search any issuer, compile public financial data into a structured research brief in minutes. Not a credit rating.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <span>Muni<em>Reports</em></span>
               </div>
               <p style={{ color: "var(--text2)", fontSize: "0.88rem", lineHeight: 1.55, maxWidth: "36ch", marginTop: "0.7rem" }}>
-                Free AI-powered credit reports for municipal bonds. Search any issuer to generate research from public sources.
+                AI-assisted municipal credit research. Search any issuer to generate a research brief from public financial data.
               </p>
             </div>
             <div>

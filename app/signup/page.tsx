@@ -30,7 +30,7 @@ export default function SignupPage() {
         <h1>Check your email</h1>
         <p className="subtitle">We sent a confirmation link to <strong>{email}</strong>. Click it to activate your account.</p>
         <Link href="/builder" className="btn btn-out" style={{ marginTop: "1rem" }}>
-          Continue analyzing for free →
+          Continue analyzing →
         </Link>
       </div>
     );
@@ -39,7 +39,7 @@ export default function SignupPage() {
   return (
     <div className="auth-container">
       <h1>Create your account</h1>
-      <p className="subtitle">Save reports, build watchlists, and collaborate. The analysis is always free.</p>
+      <p className="subtitle">Save reports, build watchlists, and collaborate.</p>
       <form onSubmit={handleSignup}>
         <div className="form-group">
           <label>Email</label>
@@ -51,7 +51,7 @@ export default function SignupPage() {
         </div>
         {error && <div className="form-error">{error}</div>}
         <button type="submit" className="btn btn-accent" style={{ width: "100%", justifyContent: "center", marginTop: "1rem" }} disabled={loading}>
-          {loading ? "Creating account..." : "Create free account"}
+          {loading ? "Creating account..." : "Create account"}
         </button>
       </form>
       <div className="auth-footer">

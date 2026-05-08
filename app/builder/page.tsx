@@ -980,7 +980,7 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏦</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Pension & OPEB Analysis</h3>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginLeft: "auto" }}>Moody&apos;s Adjusted Basis</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginLeft: "auto" }}>Adjusted basis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem", marginBottom: "1rem" }}>
                   {[
@@ -1017,7 +1017,7 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>💲</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Tax Burden Analysis</h3>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
                   <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
@@ -1057,7 +1057,7 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏠</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Housing & Tax Base Stability</h3>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem" }}>
                   {[
@@ -1076,7 +1076,7 @@ export default function BuilderPage() {
                   <div style={{ marginTop: ".8rem", padding: ".8rem 1rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <span style={{ fontSize: ".88rem", color: "var(--text2)" }}>Full Value Per Capita</span>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", marginLeft: ".5rem" }}>(Moody&apos;s Key Metric)</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", marginLeft: ".5rem" }}>(industry-standard metric)</span>
                     </div>
                     <span style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 700 }}>{report.financials.full_value_per_capita}</span>
                   </div>
@@ -1090,7 +1090,7 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>🌍</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Climate & Natural Hazard Risk</h3>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
@@ -1126,7 +1126,7 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>📈</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Bond Market Performance</h3>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
 
                 {/* Summary metrics */}
@@ -1186,7 +1186,7 @@ export default function BuilderPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>🤖</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>AI Data Confidence</h3>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Exclusive</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem", marginBottom: ".8rem" }}>
                   {[
@@ -1396,7 +1396,7 @@ export default function BuilderPage() {
               You&apos;ve used your free report
             </h2>
             <p style={{ color: "var(--text2)", fontSize: ".95rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              Get comprehensive credit reports with real-time data, pension analysis, bond pricing, climate risk scoring, and more — data that Moody&apos;s and S&amp;P don&apos;t provide.
+              Get research briefs with the data you need: pension analysis, bond pricing, climate risk, and coverage of issuers Moody&apos;s and S&amp;P don&apos;t rate.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem", marginBottom: "1.5rem" }}>

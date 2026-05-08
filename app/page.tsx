@@ -44,8 +44,7 @@ export default function HomePage() {
               fontSize: "1.15rem", color: "var(--text2)", maxWidth: "58ch",
               margin: "0 auto 2.5rem", lineHeight: 1.6
             }}>
-              Search any issuer. AI compiles research from public sources. Get an AI-powered credit report with
-              five-year analysis, forward projections, and risk flags — <strong style={{ color: "var(--text)" }}>completely free.</strong>
+              Search any issuer. AI compiles public financial data into a research brief — five-year trends, forward projections, and risk flags.
             </p>
 
             <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", marginBottom: ".8rem" }}>
@@ -385,7 +384,7 @@ export default function HomePage() {
                   { label: "Fund Balance", value: "18.4%", sub: "of expenditures", color: "var(--text)" },
                   { label: "Op. Margin", value: "4.3%", sub: "net revenue", color: "var(--text)" },
                   { label: "Debt/Revenue", value: "1.62×", sub: "leverage ratio", color: "var(--text)" },
-                  { label: "Rating", value: "AAA", sub: "S&P / Aaa Moody's", color: "var(--accent)" },
+                  { label: "Rating", value: "AAA", sub: "agency rating shown", color: "var(--accent)" },
                 ].map((k, i) => (
                   <div key={i} style={{ textAlign: "center" }}>
                     <div style={{ fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".3rem" }}>{k.label}</div>
@@ -555,7 +554,7 @@ export default function HomePage() {
               <div style={{ marginBottom: "1.8rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
                   <span>🏦</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Pension & OPEB Analysis</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", marginLeft: "auto" }}>Moody&apos;s Adjusted Basis</span>
+                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", marginLeft: "auto" }}>Adjusted basis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".6rem", marginBottom: ".8rem" }}>
                   {[
@@ -627,7 +626,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <div style={{ marginTop: ".5rem", padding: ".6rem .8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", display: "flex", justifyContent: "space-between", fontSize: ".82rem" }}>
-                  <span style={{ color: "var(--text2)" }}>Full Value Per Capita <span style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>(Moody&apos;s Key Metric)</span></span>
+                  <span style={{ color: "var(--text2)" }}>Full Value Per Capita <span style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>(industry-standard metric)</span></span>
                   <span style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: ".95rem" }}>$197,200</span>
                 </div>
               </div>
@@ -738,10 +737,10 @@ export default function HomePage() {
         }}>
           <div style={{ position: "absolute", top: -200, right: -200, width: 500, height: 500, background: "radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%)", pointerEvents: "none" }} />
           <h2 style={{ fontSize: "clamp(1.9rem,4vw,3.2rem)", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05, marginBottom: "1rem", position: "relative" }}>
-            Free credit reports. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Right now.</em>
+            Credit research. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Right now.</em>
           </h2>
           <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,.8)", maxWidth: "48ch", margin: "0 auto 2rem", position: "relative" }}>
-            No account needed to start. Search any issuer and get a full AI-powered credit report in minutes.
+            No account needed to start. Search any issuer and generate a research brief in minutes.
           </p>
           <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", position: "relative" }}>
             <Link href="/builder" className="btn btn-lg" style={{ background: "#fff", color: "var(--accent)", fontWeight: 700, border: "none" }}>Start analyzing — free →</Link>

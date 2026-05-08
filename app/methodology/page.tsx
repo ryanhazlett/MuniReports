@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Methodology — MuniReports",
-  description: "How MuniReports generates AI-powered municipal credit analysis.",
+  description: "How MuniReports generates AI-assisted municipal credit research.",
 };
 
 export default function MethodologyPage() {
@@ -10,14 +10,14 @@ export default function MethodologyPage() {
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "4rem 1.5rem" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>Methodology</h1>
       <p style={{ color: "var(--ink-mute)", fontSize: "1.05rem", marginBottom: "2.5rem" }}>
-        How we generate municipal credit analysis reports.
+        How we generate municipal credit research briefs.
       </p>
 
       <section style={{ marginBottom: "2.5rem" }}>
         <h2>How it works</h2>
         <p>
-          MuniReports generates credit analysis using a large language model (Anthropic&apos;s Claude) combined with real-time
-          web search across public data sources. When you request a report, our system searches for the issuer&apos;s most recent
+          MuniReports generates credit research using a large language model (Anthropic&apos;s Claude) combined with web search
+          across public data sources at the time of your request. When you request a report, our system searches for the issuer&apos;s most recent
           Annual Comprehensive Financial Report (ACFR), adopted budget, capital improvement plan, bond disclosures on EMMA, and
           related public records, then synthesizes that information into a structured credit profile.
         </p>
