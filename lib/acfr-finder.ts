@@ -1,16 +1,19 @@
 // Server-side ACFR PDF URL discovery. No model involved.
 // Order of operations:
 //   0. ACFR_OVERRIDES map (immediate return if hit; no HEAD)
-//   1. EMMA Official Statements search (t=OS)
-//   2. EMMA Continuing Disclosures search (t=CP)
-//   3. Google search filetype:pdf
-// Steps 1-3 fetch HTML, regex-extract .pdf hrefs, HEAD-validate, return first valid.
+//   1. DuckDuckGo HTML search (bot-friendly, surfaces both city sites and EMMA PDFs)
+//
+// Note: EMMA's own search (emma.msrb.org/Search/Search.aspx) is ASP.NET WebForms
+// with JS-rendered results — useless for regex scraping. Google's /search blocks
+// headless fetches with a noscript-redirect to /enablejs. DuckDuckGo's HTML
+// endpoint (html.duckduckgo.com/html) renders without JS and returns clean
+// hrefs (wrapped in /l/?uddg=... redirects which we unwrap).
 
 import { ACFR_OVERRIDES } from "./acfr-overrides";
 
 export type FindResult = {
   url: string | null;
-  source: "override" | "EMMA-OS" | "EMMA-CD" | "google" | null;
+  source: "override" | "duckduckgo" | null;
   note: string;
 };
 
@@ -120,45 +123,59 @@ async function pickFirstValidPdf(candidates: string[]): Promise<string | null> {
   return null;
 }
 
-async function searchEmmaOS(name: string, state: string): Promise<string | null> {
-  const q = encodeURIComponent(`${name} ${state}`.trim());
-  const base = `https://emma.msrb.org/Search/Search.aspx?q=${q}&t=OS`;
-  const html = await fetchHtml(base);
-  if (!html) return null;
-  const candidates = extractPdfHrefs(html).map((h) => absolutize(h, base));
-  return await pickFirstValidPdf(candidates);
+// Unwrap a DuckDuckGo result-tracking redirect: //duckduckgo.com/l/?uddg=ENCODED_TARGET&...
+// Returns the decoded target URL, or the input unchanged if it doesn't match.
+function unwrapDuckDuckGo(href: string, base: string): string {
+  try {
+    const abs = absolutize(href, base);
+    const parsed = new URL(abs);
+    if (parsed.hostname.endsWith("duckduckgo.com") && parsed.pathname.startsWith("/l")) {
+      const u = parsed.searchParams.get("uddg");
+      if (u) return u;
+    }
+    return abs;
+  } catch {
+    return href;
+  }
 }
 
-async function searchEmmaCD(name: string): Promise<string | null> {
-  const q = encodeURIComponent(name);
-  const base = `https://emma.msrb.org/Search/Search.aspx?q=${q}&t=CP`;
-  const html = await fetchHtml(base);
-  if (!html) return null;
-  const candidates = extractPdfHrefs(html).map((h) => absolutize(h, base));
-  return await pickFirstValidPdf(candidates);
-}
-
-async function searchGoogle(name: string, state: string): Promise<string | null> {
-  const q = encodeURIComponent(
-    `${name} ${state} annual comprehensive financial report filetype:pdf`
-  );
-  const base = `https://www.google.com/search?q=${q}`;
-  const html = await fetchHtml(base);
-  if (!html) return null;
-  // Google wraps result URLs in tracking redirects (/url?q=...&...) — pull the q= param
-  // out where present, else use the raw href.
-  const raw = extractPdfHrefs(html).map((h) => absolutize(h, base));
-  const unwrapped = raw.map((u) => {
+// EMMA-hosted PDFs (emma.msrb.org) are preferred over city-hosted PDFs because
+// they're SEC-mandated continuing disclosures and the URLs are stable. Sort to
+// put EMMA candidates first, then preserve DDG's relevance order within each group.
+function rankEmmaFirst(urls: string[]): string[] {
+  const emma: string[] = [];
+  const other: string[] = [];
+  for (const u of urls) {
     try {
-      const parsed = new URL(u);
-      if (parsed.hostname.endsWith("google.com") && parsed.pathname === "/url") {
-        const q = parsed.searchParams.get("q");
-        if (q) return q;
-      }
-    } catch {}
-    return u;
-  });
-  return await pickFirstValidPdf(unwrapped);
+      if (new URL(u).hostname.toLowerCase().includes("emma.msrb.org")) emma.push(u);
+      else other.push(u);
+    } catch {
+      other.push(u);
+    }
+  }
+  return [...emma, ...other];
+}
+
+async function searchDuckDuckGo(name: string, state: string): Promise<string | null> {
+  const q = encodeURIComponent(
+    `${name} ${state} annual comprehensive financial report filetype:pdf`.trim()
+  );
+  const base = `https://html.duckduckgo.com/html/?q=${q}`;
+  const html = await fetchHtml(base);
+  if (!html) return null;
+  const raw = extractPdfHrefs(html);
+  const unwrapped = raw.map((h) => unwrapDuckDuckGo(h, base));
+  // De-dupe while preserving order.
+  const seen = new Set<string>();
+  const dedup: string[] = [];
+  for (const u of unwrapped) {
+    if (!seen.has(u)) {
+      seen.add(u);
+      dedup.push(u);
+    }
+  }
+  const ranked = rankEmmaFirst(dedup);
+  return await pickFirstValidPdf(ranked);
 }
 
 export async function findAcfrPdfUrl(
@@ -172,39 +189,24 @@ export async function findAcfrPdfUrl(
     return { url: override, source: "override", note: `override map hit (${key})` };
   }
 
-  // Step 1: EMMA Official Statements
+  // Step 1: DuckDuckGo HTML search (ranks emma.msrb.org PDFs first when present).
   try {
-    const emmaOs = await searchEmmaOS(issuerName, issuerState);
-    if (emmaOs) {
-      return { url: emmaOs, source: "EMMA-OS", note: "found via EMMA Official Statements" };
+    const ddg = await searchDuckDuckGo(issuerName, issuerState);
+    if (ddg) {
+      const isEmma = ddg.toLowerCase().includes("emma.msrb.org");
+      return {
+        url: ddg,
+        source: "duckduckgo",
+        note: isEmma ? "found via DuckDuckGo (EMMA-hosted)" : "found via DuckDuckGo",
+      };
     }
   } catch (e) {
-    console.warn("[acfr-finder] EMMA-OS step error (non-fatal):", e);
-  }
-
-  // Step 2: EMMA Continuing Disclosures
-  try {
-    const emmaCd = await searchEmmaCD(issuerName);
-    if (emmaCd) {
-      return { url: emmaCd, source: "EMMA-CD", note: "found via EMMA Continuing Disclosures" };
-    }
-  } catch (e) {
-    console.warn("[acfr-finder] EMMA-CD step error (non-fatal):", e);
-  }
-
-  // Step 3: Google search filetype:pdf
-  try {
-    const google = await searchGoogle(issuerName, issuerState);
-    if (google) {
-      return { url: google, source: "google", note: "found via Google search" };
-    }
-  } catch (e) {
-    console.warn("[acfr-finder] Google step error (non-fatal):", e);
+    console.warn("[acfr-finder] DuckDuckGo step error (non-fatal):", e);
   }
 
   return {
     url: null,
     source: null,
-    note: "no PDF surfaced from overrides, EMMA, or Google search",
+    note: "no PDF surfaced from overrides or DuckDuckGo search",
   };
 }
