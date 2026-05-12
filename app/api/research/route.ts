@@ -8,27 +8,54 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ===== Prompts =====
 
-// Step 1a: locate the most recent ACFR PDF URL via web_search + web_fetch.
-// The model must NOT construct URLs — web_fetch enforces this server-side
-// (it only accepts URLs that previously appeared in search/fetch results),
-// and the prompt reinforces it explicitly.
+// Step 1a: locate the most recent ACFR PDF URL.
+// Priority order: EMMA (SEC-mandated repo, stable URLs) → issuer's own site → general web.
+// web_fetch is mandatory for sources 2 and 3 (verification step). web_fetch can fetch
+// the EMMA URL pre-supplied in this prompt because URLs in user messages are valid fetch
+// targets per the Anthropic API contract.
 function buildAcfrUrlSearchPrompt(issuerName: string, issuerState: string): string {
-  return `Find the URL of the most recent published Annual Comprehensive Financial Report (ACFR) for "${issuerName}" in ${issuerState || "US"}. The ACFR is typically published on the issuer's own website (often under Finance, Treasury, Auditor, or Investor Relations) as a PDF. Some issuers host the actual PDF on a CDN (e.g., widen.net, AWS S3) linked from their main IR page.
+  const emmaSearchUrl = `https://emma.msrb.org/Search/Search.aspx?q=${encodeURIComponent(
+    `${issuerName} ${issuerState}`.trim()
+  )}`;
+  return `Find the URL of the most recent published Annual Comprehensive Financial Report (ACFR) for "${issuerName}" in ${issuerState || "US"}. Try the three sources below in strict priority order. Stop and return as soon as you have a verifiable .pdf URL.
 
-PROCESS (mandatory, in order):
-1. Use web_search to find the issuer's financial reports / ACFR landing page.
-2. You MUST use web_fetch at least once on a candidate landing page from the search results — the issuer's IR / Finance / Audit page is the typical target — to read its live HTML and locate the actual .pdf href for the most recent ACFR. Returning a URL without first web_fetching a page that contains that URL is not acceptable. Search-result snippets frequently contain stale or cached URL text that does NOT reflect what is currently live on the issuer's site.
-3. The URL you return must appear verbatim in HTML returned by web_fetch (typically in an <a href="..."> link). It is NOT sufficient for the URL to appear only in a web_search result snippet. Do NOT construct, reconstruct, complete, or guess URLs from common naming patterns.
+============================================================
+PRIORITY 1 — EMMA (MSRB) [try first]:
+============================================================
+EMMA is the SEC-mandated municipal disclosure repository. ACFRs are filed there as continuing disclosures (typically under "Annual Financial Information" or "Audited Financial Statements" categories). EMMA URLs are stable, publicly accessible, and host the PDFs directly — making them the most reliable source.
 
+a. web_fetch this EMMA search URL: ${emmaSearchUrl}
+b. From the search results HTML, identify the issuer's continuing-disclosure / financial-filings page (a link into the EMMA "IssuerHomePage" or filings list for this issuer). web_fetch that page.
+c. Locate the most recent "Annual Financial Information" / ACFR filing's .pdf href. EMMA PDFs typically have URLs like https://emma.msrb.org/ER[id].pdf or https://emma.msrb.org/P[id].pdf.
+d. If you find a verifiable .pdf URL in the fetched HTML, return it. Stop here.
+
+If EMMA's search page returns no usable issuer match (e.g., JavaScript-rendered content, no results, or no Annual Financial Information filings located), proceed to PRIORITY 2.
+
+============================================================
+PRIORITY 2 — Issuer's own website [if EMMA fails]:
+============================================================
+The ACFR is typically published on the issuer's own website (often under Finance, Treasury, Auditor, or Investor Relations). Some issuers host the actual PDF on a CDN (widen.net, AWS S3, etc.) linked from their IR page.
+
+a. Use web_search to find the issuer's financial reports / ACFR landing page.
+b. You MUST web_fetch at least one candidate landing page from those search results — the issuer's IR / Finance / Audit page — to read its live HTML and locate the actual .pdf href.
+c. Returning a URL without first web_fetching a page that contains that URL is not acceptable. Search-result snippets frequently contain stale or cached URL text that does NOT reflect what is currently live on the issuer's site.
+
+============================================================
+PRIORITY 3 — General web search [if both above fail]:
+============================================================
+Broader web search for the ACFR PDF, still with mandatory web_fetch verification (same rules as PRIORITY 2).
+
+============================================================
 OUTPUT FORMAT:
-- A single line. Either a direct .pdf URL that you verified is present in HTML returned by web_fetch, OR the literal string NOT_FOUND.
+============================================================
+- A single line. Either a direct .pdf URL you verified is present in HTML returned by web_fetch, OR the literal string NOT_FOUND.
 - No commentary, no markdown, no explanation, no surrounding quotes.
 
 HARD CONSTRAINTS:
 - The URL you return MUST appear verbatim in HTML that you retrieved via web_fetch on this turn. A URL that appears only in a web_search snippet but was not also seen in fetched HTML is rejected. Guessing or pattern-matching from issuer naming conventions is failure.
 - You MUST issue at least one web_fetch call before returning a URL. If your web_fetch budget is exhausted without surfacing a verifiable .pdf href, return NOT_FOUND.
-- Return the most recent ACFR available. If both FY2024 and FY2023 are accessible, prefer FY2024.
-- The PDF may be on the issuer's own domain OR on a CDN they link to (widen.net, AWS, etc.). Avoid MSRB EMMA, state archives, and third-party aggregators.
+- Return the most recent ACFR available. If both FY2024 and FY2023 are accessible, prefer FY2024. For PRIORITY 1, prefer the most recent "Annual Financial Information" filing.
+- For PRIORITY 1, an emma.msrb.org PDF is the preferred answer. For PRIORITY 2/3, the PDF may be on the issuer's own domain OR on a CDN they link to.
 - The URL must end in .pdf or be served with Content-Type application/pdf. If you cannot confirm it's a PDF, return NOT_FOUND.
 - Do not return placeholders, redirects, or login-gated URLs.`;
 }
