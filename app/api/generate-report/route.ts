@@ -421,6 +421,24 @@ Make the JSON complete and valid. Close all braces and brackets.`;
 
     const report = extractJSON(apiResponse);
     if (!report) {
+      // Diagnostics to distinguish truncation from format issues.
+      // One JSON line per failure for easy grepping in Vercel logs.
+      let rawText = "";
+      if (apiResponse?.content) {
+        for (const block of apiResponse.content) {
+          if (block.type === "text") rawText += block.text;
+        }
+      }
+      console.error("[generate-report] JSON parse failure " + JSON.stringify({
+        issuer: cacheKey,
+        stop_reason: apiResponse?.stop_reason ?? null,
+        usage: apiResponse?.usage ?? null,
+        text_length: rawText.length,
+        first_brace_at: rawText.indexOf("{"),
+        last_brace_at: rawText.lastIndexOf("}"),
+        text_head: rawText.slice(0, 500),
+        text_tail: rawText.slice(-500),
+      }));
       return NextResponse.json({ error: "Failed to parse report. Please try again." }, { status: 500 });
     }
 
