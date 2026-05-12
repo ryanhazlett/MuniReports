@@ -344,7 +344,10 @@ async function findAcfrUrl(
     if (/^NOT_FOUND\b/i.test(line)) return { url: null, usage: response?.usage, raw };
     const urlMatch = line.match(/https?:\/\/\S+/);
     if (urlMatch) {
-      const candidate = urlMatch[0].replace(/[)\].,;]+$/, ""); // strip trailing punctuation
+      // Strip trailing punctuation AND code/quote wrappers — the model sometimes
+      // emits URLs inside markdown backticks (`...`) or quotes. Greedy strip until
+      // the URL ends in a path-safe char.
+      const candidate = urlMatch[0].replace(/[)\].,;:`'"<>‘’“”]+$/, "");
       return { url: candidate, usage: response?.usage, raw };
     }
   }
