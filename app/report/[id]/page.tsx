@@ -72,7 +72,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
             </div>
             {r?.financials?.fund_balance_ratio && <div style={{ textAlign: "center" }}><div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Fund Balance</div><div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{r.financials.fund_balance_ratio}</div></div>}
             {r?.financials?.operating_margin && <div style={{ textAlign: "center" }}><div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Op. Margin</div><div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{r.financials.operating_margin}</div></div>}
-            {r?.financials?.debt_to_revenue && <div style={{ textAlign: "center" }}><div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Debt/Revenue</div><div style={{ fontSize: "1.2rem", fontWeight: 700 }}>{r.financials.debt_to_revenue}</div></div>}
+            {r?.scorecard?.scorecard_indicated_outcome && <div style={{ textAlign: "center" }}><div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>Scorecard Outcome</div><div style={{ fontSize: "1.2rem", fontWeight: 700, fontFamily: "var(--mono)", color: "var(--accent)" }}>{r.scorecard.scorecard_indicated_outcome}</div></div>}
           </div>
 
           {/* Summary */}
@@ -101,6 +101,13 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
               <h3 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: ".8rem", marginTop: "2rem" }}>Forward Outlook</h3>
               <p style={{ fontSize: ".95rem", lineHeight: 1.7 }}>{r.forward_outlook}</p>
             </>
+          )}
+
+          {/* Methodology note */}
+          {r?.methodology_note && (
+            <div style={{ marginTop: "2rem", padding: "1rem 1.2rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: ".82rem", color: "var(--text2)", lineHeight: 1.6, fontStyle: "italic" }}>
+              {r.methodology_note}
+            </div>
           )}
 
           {/* Sources */}

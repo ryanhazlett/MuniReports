@@ -37,6 +37,7 @@ export default function BuilderPage() {
   const [showPaywall, setShowPaywall] = useState(false);
   const [reportsUsed, setReportsUsed] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showCalculation, setShowCalculation] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -354,9 +355,9 @@ export default function BuilderPage() {
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>net revenue</div>
               </div>
               <div style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Debt/Revenue</div>
-                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.debt_to_revenue || "N/A"}</div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>leverage ratio</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Debt/Capita</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.debt_per_capita || "N/A"}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>per resident</div>
               </div>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Rating</div>
@@ -445,9 +446,8 @@ export default function BuilderPage() {
                       ["Total Revenue", report.financials.total_revenue, true, "Total Expenditures", report.financials.total_expenditures, true],
                       ["Fund Balance", report.financials.fund_balance, true, "Debt Outstanding", report.financials.debt_outstanding, true],
                       ["Fund Balance Ratio", report.financials.fund_balance_ratio, false, "Operating Margin", report.financials.operating_margin, false],
-                      ["Debt-to-Revenue", report.financials.debt_to_revenue, false, "Debt Per Capita", report.financials.debt_per_capita, false],
-                      ["Pension Funded Ratio", report.financials.pension_funded_ratio, false, "Days Cash on Hand", report.financials.days_cash_on_hand, false],
-                      ["Fixed Costs Ratio", report.financials.fixed_costs_ratio, false, "Available Reserves Ratio", report.financials.available_reserves_ratio, false],
+                      ["Debt Per Capita", report.financials.debt_per_capita, false, "Days Cash on Hand", report.financials.days_cash_on_hand, false],
+                      ["Pension Funded Ratio", report.financials.pension_funded_ratio, false, "Available Reserves Ratio", report.financials.available_reserves_ratio, false],
                       ["Available Reserves", report.financials.available_reserves, true, "Total Tax-Supported Debt", report.financials.debt_outstanding, true],
                     ].filter(([,v,,, v2]) => v != null || v2 != null).map(([l1, v1, c1, l2, v2, c2], i) => (
                       <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
@@ -566,60 +566,119 @@ export default function BuilderPage() {
               </div>
             )}
 
-            {/* ── SECTION 3b: SENTIMENT GAUGE + FINANCIAL HEALTH ── */}
-            {/* ── MUNIREPORTS SCORE ── */}
-            {report.munireports_score && (
+            {/* ── CREDIT SCORECARD (Moody's methodology) ── */}
+            {report.scorecard && report.scorecard.applicable !== false && (
               <div style={{ marginTop: "2.5rem" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
-                  <span style={{ fontSize: "1.1rem" }}>🛡️</span>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>MuniReports Score</h3>
-                  <span style={{ fontSize: ".65rem", padding: ".15rem .45rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "999px", color: "var(--text2)", fontFamily: "var(--mono)" }}>INDICATOR</span>
+                  <span style={{ fontSize: "1.1rem" }}>📊</span>
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Scorecard</h3>
+                  <span style={{ fontSize: ".65rem", padding: ".15rem .45rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "999px", color: "var(--text2)", fontFamily: "var(--mono)" }}>
+                    {report.scorecard.methodology || "Moody's methodology"}
+                  </span>
                 </div>
+
+                {/* Scorecard-Indicated Outcome card */}
                 <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.5rem", marginBottom: "1rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.2rem", paddingBottom: "1.2rem", borderBottom: "1px solid var(--line-soft)" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
                     <div>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Overall Score</div>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: ".6rem" }}>
-                        <span style={{ fontSize: "2rem", fontWeight: 700, fontFamily: "var(--mono)" }}>{report.munireports_score.overall?.toFixed?.(1) || report.munireports_score.overall}</span>
-                        <span style={{ fontSize: "1rem", color: "var(--text2)" }}>/ 5.0</span>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>
+                        Scorecard-Indicated Outcome
                       </div>
-                      <div style={{ fontSize: "1.1rem", marginTop: ".3rem", letterSpacing: ".1em" }}>
-                        {[1,2,3,4,5].map(n => (
-                          <span key={n} style={{ color: n <= Math.round(report.munireports_score.overall || 0) ? "#f59e0b" : "var(--line)" }}>★</span>
-                        ))}
+                      <div style={{ fontSize: "3rem", fontWeight: 700, fontFamily: "var(--mono)", letterSpacing: "-.02em", color: "var(--accent)", lineHeight: 1 }}>
+                        {report.scorecard.scorecard_indicated_outcome || "N/A"}
                       </div>
                     </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Equivalent</div>
-                      <div style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--accent)" }}>{report.munireports_score.letter_equivalent}</div>
-                      <div style={{ fontSize: ".9rem", color: "var(--text2)", marginTop: ".2rem" }}>{report.munireports_score.label}</div>
-                    </div>
+                    {report.scorecard.note && (
+                      <button onClick={() => setShowCalculation(!showCalculation)} style={{ background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".5rem .9rem", fontSize: ".82rem", cursor: "pointer", fontFamily: "var(--sans)", color: "var(--text2)" }}>
+                        {showCalculation ? "▲ Hide calculation" : "▼ Show calculation"}
+                      </button>
+                    )}
                   </div>
-                  {report.munireports_score.factors && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
-                      {[["economy","Economy"],["financial_strength","Financial Strength"],["debt_pension","Debt & Pension"],["forward_outlook","Forward Outlook"]].map(([key, label]) => {
-                        const f = report.munireports_score.factors[key];
-                        if (!f) return null;
-                        return (
-                          <div key={key} style={{ padding: ".8rem", background: "var(--bg2)", borderRadius: "var(--radius)", border: "1px solid var(--line-soft)" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".3rem" }}>
-                              <span style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>{label}</span>
-                              <span style={{ fontFamily: "var(--mono)", fontSize: ".95rem", fontWeight: 700 }}>{f.score?.toFixed?.(1) || f.score}</span>
-                            </div>
-                            <div style={{ fontSize: ".8rem" }}>
-                              {[1,2,3,4,5].map(n => (
-                                <span key={n} style={{ color: n <= Math.round(f.score || 0) ? "#f59e0b" : "var(--line)", marginRight: "1px" }}>★</span>
-                              ))}
-                            </div>
-                            {f.rationale && <div style={{ fontSize: ".78rem", color: "var(--text2)", marginTop: ".4rem", lineHeight: 1.4 }}>{f.rationale}</div>}
-                          </div>
-                        );
-                      })}
+                  {showCalculation && report.scorecard.note && (
+                    <div style={{ marginTop: "1rem", padding: ".9rem 1.1rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontFamily: "var(--mono)", fontSize: ".8rem", color: "var(--text2)", whiteSpace: "pre-wrap", lineHeight: 1.55 }}>
+                      {report.scorecard.note}
                     </div>
                   )}
-                  <div style={{ marginTop: "1rem", paddingTop: ".8rem", borderTop: "1px solid var(--line-soft)", fontSize: ".72rem", color: "var(--text3)", fontStyle: "italic" }}>
-                    ℹ️ {report.munireports_score.disclaimer || "MuniReports Score is an AI-generated indicator from public data, not a credit rating."}
+                  <div style={{ marginTop: "1rem", paddingTop: ".8rem", borderTop: "1px solid var(--line-soft)", fontSize: ".72rem", color: "var(--text3)", fontStyle: "italic", lineHeight: 1.5 }}>
+                    ℹ️ {report.scorecard.disclaimer}
                   </div>
+                </div>
+
+                {/* Sub-factor rows */}
+                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
+                  {(() => {
+                    const labels: Record<string, string> = {
+                      resident_income: "Resident Income",
+                      full_value_per_capita: "Full Value per Capita",
+                      economic_growth: "Economic Growth",
+                      enrollment_trend: "Enrollment Trend",
+                      available_fund_balance_ratio: "Available Fund Balance Ratio",
+                      liquidity_ratio: "Liquidity Ratio",
+                      net_cash_ratio: "Net Cash Ratio",
+                      institutional_framework: "Institutional Framework",
+                      long_term_liabilities_ratio: "Long-Term Liabilities Ratio",
+                      fixed_costs_ratio: "Fixed-Costs Ratio",
+                    };
+                    const factors = report.scorecard.factors || {};
+                    const rows: Array<{ key: string; label: string; value: any; bucket: any; interpretation: any; inputs: any }> = [];
+                    const pushSubFactors = (group: any) => {
+                      if (!group?.sub_factors) return;
+                      for (const [k, sf] of Object.entries<any>(group.sub_factors)) {
+                        rows.push({ key: k, label: labels[k] || k, value: sf?.value, bucket: sf?.bucket, interpretation: sf?.interpretation, inputs: sf?.inputs });
+                      }
+                    };
+                    pushSubFactors(factors.economy);
+                    pushSubFactors(factors.financial_performance);
+                    if (factors.institutional_framework) {
+                      rows.push({
+                        key: "institutional_framework",
+                        label: labels.institutional_framework,
+                        value: factors.institutional_framework.value,
+                        bucket: factors.institutional_framework.bucket,
+                        interpretation: factors.institutional_framework.interpretation,
+                        inputs: null,
+                      });
+                    }
+                    pushSubFactors(factors.leverage);
+
+                    const bucketColor = (b: string) => {
+                      const s = String(b || "");
+                      if (/^Aaa/i.test(s)) return "#047857";
+                      if (/^Aa/i.test(s)) return "#059669";
+                      if (/^A(?![a])/i.test(s)) return "#10b981";
+                      if (/^Baa/i.test(s)) return "#ca8a04";
+                      if (/^Ba(?![a])/i.test(s)) return "#d97706";
+                      if (/^B(?![a])/i.test(s)) return "#dc2626";
+                      if (/^Caa/i.test(s)) return "#991b1b";
+                      if (/^Ca(?![a])/i.test(s)) return "#7f1d1d";
+                      return "var(--text3)";
+                    };
+
+                    return rows.map((row, i) => (
+                      <div key={row.key} style={{ padding: ".9rem 1.2rem", borderBottom: i < rows.length - 1 ? "1px solid var(--line-soft)" : "none" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: ".8rem", marginBottom: row.interpretation ? ".3rem" : 0 }}>
+                          <div style={{ fontWeight: 600, fontSize: ".92rem" }}>{row.label}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: ".7rem", flexShrink: 0 }}>
+                            <span style={{ fontFamily: "var(--mono)", fontSize: ".85rem", color: "var(--text2)" }}>{row.value || "—"}</span>
+                            <span style={{ fontFamily: "var(--mono)", fontSize: ".74rem", fontWeight: 700, padding: ".2rem .6rem", borderRadius: 4, color: "#fff", background: bucketColor(row.bucket), minWidth: "2.4rem", textAlign: "center" }}>{row.bucket || "N/A"}</span>
+                          </div>
+                        </div>
+                        {row.interpretation && (
+                          <div style={{ fontSize: ".82rem", color: "var(--text2)", lineHeight: 1.5 }}>{row.interpretation}</div>
+                        )}
+                        {row.inputs && typeof row.inputs === "object" && Object.keys(row.inputs).length > 0 && (
+                          <details style={{ marginTop: ".5rem" }}>
+                            <summary style={{ fontSize: ".7rem", color: "var(--text3)", cursor: "pointer", fontFamily: "var(--mono)", textTransform: "uppercase", letterSpacing: ".06em" }}>Inputs used</summary>
+                            <div style={{ marginTop: ".35rem", padding: ".55rem .75rem", background: "var(--bg2)", borderRadius: 3, fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text2)", lineHeight: 1.55 }}>
+                              {Object.entries(row.inputs).map(([k, v]) => (
+                                <div key={k}>{k.replace(/_/g, " ")}: {String(v)}</div>
+                              ))}
+                            </div>
+                          </details>
+                        )}
+                      </div>
+                    ));
+                  })()}
                 </div>
               </div>
             )}
@@ -656,7 +715,7 @@ export default function BuilderPage() {
                   {[
                     { label: "Fund Balance", value: report.financials?.fund_balance_ratio, pct: parseFloat(String(report.financials?.fund_balance_ratio || "0")) * (String(report.financials?.fund_balance_ratio || "").includes("%") ? 1 : 100), color: "#059669" },
                     { label: "Operating Margin", value: report.financials?.operating_margin, pct: Math.abs(parseFloat(String(report.financials?.operating_margin || "0"))) * (String(report.financials?.operating_margin || "").includes("%") ? 1 : 100), color: "#1e3a5f" },
-                    { label: "Debt Coverage", value: report.financials?.debt_to_revenue, pct: Math.min(100, (1 / parseFloat(String(report.financials?.debt_to_revenue || "1"))) * 100), color: "#7c3aed" },
+                    { label: "Available Reserves", value: report.financials?.available_reserves_ratio, pct: parseFloat(String(report.financials?.available_reserves_ratio || "0")) * (String(report.financials?.available_reserves_ratio || "").includes("%") ? 1 : 100), color: "#7c3aed" },
                   ].map((ind, i) => (
                     <div key={i} style={{ marginBottom: "1rem" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".3rem" }}>
@@ -831,41 +890,6 @@ export default function BuilderPage() {
                       <div style={{ textAlign: "right" }}>${(d.principal/1e6).toFixed(1)}M</div>
                       <div style={{ textAlign: "right" }}>${(d.interest/1e6).toFixed(1)}M</div>
                       <div style={{ textAlign: "right", fontWeight: 600 }}>${(d.total/1e6).toFixed(1)}M</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ── SECTION 7: PEER COMPARISON ── */}
-            {report.peer_comparison?.length > 0 && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
-                  <span style={{ fontSize: "1.1rem" }}>🏆</span>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Peer Comparison</h3>
-                </div>
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase" }}>
-                    <div>Municipality</div><div style={{textAlign:"right"}}>Pop.</div><div style={{textAlign:"right"}}>Rating</div><div style={{textAlign:"right"}}>Fund Bal.</div><div style={{textAlign:"right"}}>Debt/Cap.</div><div style={{textAlign:"right"}}>Op. Margin</div>
-                  </div>
-                  {/* Subject issuer row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: "1px solid var(--line)", background: "var(--accent-bg)", fontSize: ".85rem" }}>
-                    <div style={{ fontWeight: 700, color: "var(--accent)" }}>{report.issuer_name} ←</div>
-                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.population ? (report.population/1000).toFixed(0) + "K" : "—"}</div>
-                    <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{report.rating}</div>
-                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.fund_balance_ratio || "—"}</div>
-                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.debt_per_capita || "—"}</div>
-                    <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{report.financials?.operating_margin || "—"}</div>
-                  </div>
-                  {/* Peer issuer rows */}
-                  {report.peer_comparison.map((peer: any, idx: number) => (
-                    <div key={idx} style={{ display: "grid", gridTemplateColumns: "1.5fr .8fr .6fr .8fr .8fr .8fr", padding: ".7rem 1rem", borderBottom: idx < report.peer_comparison.length - 1 ? "1px solid var(--line-soft)" : "none", fontSize: ".85rem" }}>
-                      <div>{peer.name || "—"}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{peer.population ? (peer.population/1000).toFixed(0) + "K" : "—"}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{peer.rating || "—"}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{peer.fund_balance_ratio || "—"}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{peer.debt_per_capita || "—"}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{peer.operating_margin || "—"}</div>
                     </div>
                   ))}
                 </div>
@@ -1118,8 +1142,6 @@ export default function BuilderPage() {
               </div>
             )}
 
-            {/* ── PEER COMPARISON ── */}
-
             {/* ── BOND MARKET PERFORMANCE (DIFFERENTIATOR) ── */}
             {report.bond_market && (
               <div className="report-section" style={{ marginTop: "2.5rem" }}>
@@ -1270,72 +1292,19 @@ export default function BuilderPage() {
                 </div>
               )}
 
-              {/* Scenario Analysis Chart */}
-              {report.forecast?.scenarios?.length > 0 && (
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
-                  <div style={{ fontSize: ".88rem", fontWeight: 600, marginBottom: ".15rem" }}>Scenario Analysis — Net Surplus / (Deficit)</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginBottom: ".8rem" }}>Three scenarios · FY2026 – FY2030 · $M</div>
-                  <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
-                    {/* Zero line */}
-                    <line x1="50" y1="100" x2="490" y2="100" stroke="var(--text3)" strokeWidth="0.8" strokeDasharray="4 2" />
-                    <text x="45" y="103" fill="var(--text3)" fontSize="7" textAnchor="end" fontFamily="var(--mono)">$0</text>
-                    {(() => {
-                      const scenarios = report.forecast.scenarios;
-                      const colors = ["#1e3a5f", "#059669", "#dc2626"];
-                      const labels = ["Baseline", "Optimistic", "Cautious"];
-                      const years = ["fy26", "fy27", "fy28", "fy29", "fy30"];
-                      const yearLabels = ["FY2026", "FY2027", "FY2028", "FY2029", "FY2030"];
-                      const allVals = scenarios.flatMap((s: any) => years.map(y => s[y] || 0));
-                      const maxAbs = Math.max(Math.abs(Math.min(...allVals)), Math.abs(Math.max(...allVals)), 1);
-                      const gap = 440 / 5;
-
-                      return (
-                        <>
-                          {scenarios.map((scenario: any, si: number) => {
-                            const points = years.map((y, i) => {
-                              const val = scenario[y] || 0;
-                              const yPos = 100 - (val / maxAbs) * 80;
-                              return `${60 + i * gap + gap * 0.3},${yPos}`;
-                            }).join(" ");
-                            return (
-                              <g key={si}>
-                                <polyline points={points} fill="none" stroke={colors[si]} strokeWidth="2" strokeLinejoin="round" strokeDasharray={si === 2 ? "5 3" : "none"} />
-                                {years.map((y, i) => <circle key={i} cx={60 + i * gap + gap * 0.3} cy={100 - ((scenario[y] || 0) / maxAbs) * 80} r="3" fill={colors[si]} />)}
-                              </g>
-                            );
-                          })}
-                          {yearLabels.map((l, i) => <text key={i} x={60 + i * gap + gap * 0.3} y="195" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{l}</text>)}
-                          {/* Legend */}
-                          {scenarios.map((s: any, i: number) => (
-                            <g key={`leg${i}`}>
-                              <line x1={60 + i * 120} y1="185" x2={72 + i * 120} y2="185" stroke={colors[i]} strokeWidth="2" strokeDasharray={i === 2 ? "4 2" : "none"} />
-                              <text x={77 + i * 120} y="188" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">{s.name || labels[i]}</text>
-                            </g>
-                          ))}
-                        </>
-                      );
-                    })()}
-                  </svg>
-
-                  {/* Scenario table */}
-                  <div style={{ marginTop: ".8rem", background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr 1fr 1fr 1fr", padding: ".6rem .8rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>
-                      <div>Scenario</div><div style={{textAlign:"right"}}>FY26</div><div style={{textAlign:"right"}}>FY27</div><div style={{textAlign:"right"}}>FY28</div><div style={{textAlign:"right"}}>FY29</div><div style={{textAlign:"right"}}>FY30</div>
-                    </div>
-                    {report.forecast.scenarios.map((s: any, i: number) => (
-                      <div key={i} style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr 1fr 1fr 1fr", padding: ".55rem .8rem", borderBottom: "1px solid var(--line-soft)", fontSize: ".85rem" }}>
-                        <div style={{ fontWeight: 600, color: i === 0 ? "#1e3a5f" : i === 1 ? "var(--good)" : "var(--bad)" }}>{s.name || ["Baseline","Optimistic","Cautious"][i]}</div>
-                        {["fy26","fy27","fy28","fy29","fy30"].map(y => (
-                          <div key={y} style={{ textAlign: "right", fontFamily: "var(--mono)", color: (s[y] || 0) >= 0 ? "var(--good)" : "var(--bad)" }}>
-                            {(s[y] || 0) >= 0 ? "+" : ""}{typeof s[y] === "number" ? `$${s[y]}M` : s[y] || "—"}
-                          </div>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
+              {report.forecast?.source && (
+                <div style={{ marginTop: ".6rem", padding: ".55rem .85rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: ".78rem", color: "var(--text2)", fontFamily: "var(--mono)" }}>
+                  Forecast source: {report.forecast.source}
                 </div>
               )}
             </div>
+
+            {/* ── METHODOLOGY NOTE ── */}
+            {report.methodology_note && (
+              <div style={{ marginTop: "2.5rem", padding: "1rem 1.2rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: ".82rem", color: "var(--text2)", lineHeight: 1.6, fontStyle: "italic" }}>
+                {report.methodology_note}
+              </div>
+            )}
 
             {/* ── SECTION 8: SOURCES ── */}
             {report.sources?.length > 0 && (
