@@ -15,22 +15,22 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function buildAcfrUrlSearchPrompt(issuerName: string, issuerState: string): string {
   return `Find the URL of the most recent published Annual Comprehensive Financial Report (ACFR) for "${issuerName}" in ${issuerState || "US"}. The ACFR is typically published on the issuer's own website (often under Finance, Treasury, Auditor, or Investor Relations) as a PDF. Some issuers host the actual PDF on a CDN (e.g., widen.net, AWS S3) linked from their main IR page.
 
-PROCESS:
+PROCESS (mandatory, in order):
 1. Use web_search to find the issuer's financial reports / ACFR landing page.
-2. If the search results show a candidate landing page (not a direct PDF link), use web_fetch on that page to read its HTML and locate the direct .pdf URL for the most recent ACFR.
-3. Confirm the URL is a real link that appeared verbatim in either a web_search result OR HTML returned by web_fetch. Do NOT construct or reconstruct URLs from naming patterns.
+2. You MUST use web_fetch at least once on a candidate landing page from the search results — the issuer's IR / Finance / Audit page is the typical target — to read its live HTML and locate the actual .pdf href for the most recent ACFR. Returning a URL without first web_fetching a page that contains that URL is not acceptable. Search-result snippets frequently contain stale or cached URL text that does NOT reflect what is currently live on the issuer's site.
+3. The URL you return must appear verbatim in HTML returned by web_fetch (typically in an <a href="..."> link). It is NOT sufficient for the URL to appear only in a web_search result snippet. Do NOT construct, reconstruct, complete, or guess URLs from common naming patterns.
 
 OUTPUT FORMAT:
-- A single line. Either a direct .pdf URL that you verified appeared in a search result or fetched page, OR the literal string NOT_FOUND.
+- A single line. Either a direct .pdf URL that you verified is present in HTML returned by web_fetch, OR the literal string NOT_FOUND.
 - No commentary, no markdown, no explanation, no surrounding quotes.
 
 HARD CONSTRAINTS:
-- Return ONLY a URL that appeared verbatim in your web_search results OR in HTML you retrieved via web_fetch. Do NOT construct, complete, or guess URLs from common naming patterns.
+- The URL you return MUST appear verbatim in HTML that you retrieved via web_fetch on this turn. A URL that appears only in a web_search snippet but was not also seen in fetched HTML is rejected. Guessing or pattern-matching from issuer naming conventions is failure.
+- You MUST issue at least one web_fetch call before returning a URL. If your web_fetch budget is exhausted without surfacing a verifiable .pdf href, return NOT_FOUND.
 - Return the most recent ACFR available. If both FY2024 and FY2023 are accessible, prefer FY2024.
 - The PDF may be on the issuer's own domain OR on a CDN they link to (widen.net, AWS, etc.). Avoid MSRB EMMA, state archives, and third-party aggregators.
 - The URL must end in .pdf or be served with Content-Type application/pdf. If you cannot confirm it's a PDF, return NOT_FOUND.
-- Do not return placeholders, redirects, or login-gated URLs.
-- If web_search and web_fetch together do not surface a verifiable PDF URL, return NOT_FOUND. Guessing is failure.`;
+- Do not return placeholders, redirects, or login-gated URLs.`;
 }
 
 // Step 1b: the ACFR is attached as a document block immediately before this text.
