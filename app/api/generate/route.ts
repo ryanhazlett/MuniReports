@@ -9,7 +9,8 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // Step 2 prompt: take the research dossier and produce the structured JSON report.
 // No web search tool in this call — the dossier is the only source of facts.
 function buildGenerationPrompt(issuerName: string, issuerState: string, findings: string): string {
-  return `Generate a structured municipal credit report for "${issuerName}" in ${issuerState || "US"} using ONLY the facts in the RESEARCH DOSSIER below. You have NO web search access in this call. The dossier is your only source. Return ONLY valid JSON. NO markdown. NO backticks. NO explanation outside the JSON.
+  const snapshotDate = new Date().toLocaleString("en-US", { month: "long", year: "numeric" });
+  return `Generate a structured municipal credit report for "${issuerName}" in ${issuerState || "US"} using ONLY the facts in the RESEARCH DOSSIER below. You have NO web search access in this call. The dossier is your only source. Today's snapshot date for purposes of this report: ${snapshotDate}. Return ONLY valid JSON. NO markdown. NO backticks. NO explanation outside the JSON.
 
 ============================================================
 RESEARCH DOSSIER:
@@ -26,6 +27,27 @@ HARD RULES — DO NOT VIOLATE:
 3. NEVER cite a bond CUSIP, par amount, coupon, maturity, yield, price, or spread you cannot trace to a specific EMMA filing or Bond Buyer reference IN THE RESEARCH DOSSIER. Omit any bond entry you cannot fully source from the dossier — do not estimate.
 4. If a required Moody's scorecard input is not present in the RESEARCH DOSSIER, mark the field as "N/A — disclosure not available" and set its bucket to "N/A". Do not interpolate, estimate, or proxy from memory.
 5. Every numeric claim in this report must trace to a fact in the RESEARCH DOSSIER above. Do NOT introduce numbers from training data or general knowledge. If a number is not in the dossier, it does not exist for this report.
+
+============================================================
+FISCAL YEAR DISCLOSURE — MANDATORY:
+============================================================
+Snapshot date for this report: ${snapshotDate} (already declared above).
+
+In the executive_summary AND in the narrative surrounding the financials section, explicitly state the fiscal year of the ACFR used as the primary source. Example phrasing: "Primary financial data is drawn from the City's FY2024 ACFR."
+
+If that fiscal year is NOT (current calendar year − 1) — i.e., a more recent ACFR could plausibly exist but is not yet reflected in the RESEARCH DOSSIER as of ${snapshotDate} — append this disclosure sentence in the executive_summary:
+
+"FY[NEXT_YEAR] financials are not yet publicly available as of ${snapshotDate}; this report uses the most recently published ACFR (FY[DATA_YEAR][, fiscal year ended [PERIOD_END_DATE], released [RELEASE_DATE]])."
+
+Substitution rules:
+- [NEXT_YEAR] = (current calendar year − 1), formatted "FY####". E.g., if snapshot is May 2026 and ACFR used is FY2024, NEXT_YEAR = FY2025.
+- [DATA_YEAR] = the fiscal year of the ACFR you actually drew from, formatted "FY####".
+- [PERIOD_END_DATE] and [RELEASE_DATE] are OPTIONAL clauses inside the bracketed segment. Include them ONLY if the RESEARCH DOSSIER explicitly states the ACFR's fiscal-year-end date and release/publication date. If the dossier does not state these, omit the inner brackets entirely so the sentence reads "...the most recently published ACFR (FY[DATA_YEAR])."
+
+Example (Chicago, snapshot May 2026, using FY2024 ACFR ended Dec 31 2024 released June 30 2025):
+"FY2025 financials are not yet publicly available as of May 2026; this report uses the most recently published ACFR (FY2024, fiscal year ended December 31, 2024, released June 30, 2025)."
+
+If the ACFR's fiscal year IS (current calendar year − 1), do NOT add this disclosure sentence — just state the FY normally in the executive_summary.
 
 ============================================================
 DEFINITIONS — USE THESE EXACTLY (do not improvise):

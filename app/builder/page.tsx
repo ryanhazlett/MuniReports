@@ -447,7 +447,7 @@ export default function BuilderPage() {
                     <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Key Economic Data</div>
                     {[
                       ["Unemployment Rate", report.economy.unemployment_rate],
-                      ["Median Household Income", report.economy.median_household_income ? `$${Number(report.economy.median_household_income).toLocaleString()}` : null],
+                      ["Median Household Income", (typeof report.economy.median_household_income === "number" && Number.isFinite(report.economy.median_household_income) && report.economy.median_household_income > 0) ? `$${report.economy.median_household_income.toLocaleString()}` : "N/A — disclosure not available"],
                       ["Poverty Rate", report.economy.poverty_rate],
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".88rem" }}>
@@ -1192,7 +1192,7 @@ export default function BuilderPage() {
                 {/* Summary metrics */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem", marginBottom: "1rem" }}>
                   {[
-                    { label: "Total Outstanding", value: report.bond_market.total_outstanding_par ? `$${(report.bond_market.total_outstanding_par/1e6).toFixed(0)}M` : "—" },
+                    { label: "Total Outstanding", value: (typeof report.bond_market.total_outstanding_par === "number" && Number.isFinite(report.bond_market.total_outstanding_par) && report.bond_market.total_outstanding_par > 0) ? `$${(report.bond_market.total_outstanding_par/1e6).toFixed(0)}M` : "N/A — disclosure not available" },
                     { label: "Avg Coupon", value: report.bond_market.avg_coupon || "—" },
                     { label: "Avg Yield", value: report.bond_market.avg_yield || "—" },
                     { label: "Avg Spread to AAA", value: report.bond_market.avg_spread || "—", color: parseInt(report.bond_market.avg_spread) <= 25 ? "var(--good)" : parseInt(report.bond_market.avg_spread) <= 75 ? "var(--warn)" : "var(--bad)" },
