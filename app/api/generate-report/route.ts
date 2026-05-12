@@ -13,15 +13,8 @@ function normalizeKey(name: string, state: string): string {
   return `${(name || "").trim().toLowerCase()}|${(state || "").trim().toLowerCase()}`;
 }
 
-async function callClaude(apiKey: string, prompt: string) {
-  const body: any = {
-    model: "claude-sonnet-4-6",
-    max_tokens: 16000,
-    temperature: 0.1,
-    tools: [{ type: "web_search_20250305", name: "web_search" }],
-    messages: [{ role: "user", content: prompt }],
-  };
-
+// Single HTTP call to Anthropic with retry on transient errors (429 / 529 / 5xx).
+async function callClaudeOnce(apiKey: string, body: any) {
   const maxAttempts = 4;
   const backoffs = [3000, 8000, 20000];
   let lastError: any = null;
@@ -69,6 +62,50 @@ async function callClaude(apiKey: string, prompt: string) {
     }
   }
   return lastError || { error: { type: "unknown", message: "All retries failed" } };
+}
+
+// Drives the server-side tool loop. web_search_20250305 is server-executed:
+// Anthropic returns server_tool_use + web_search_tool_result blocks inline and
+// uses stop_reason "pause_turn" to ask us to continue the turn. We echo the
+// assistant content back verbatim and call again until stop_reason !== pause_turn.
+// Docs: https://platform.claude.com/docs/en/agents-and-tools/tool-use/server-tools#the-server-side-loop-and-pause-turn
+async function callClaude(apiKey: string, prompt: string) {
+  const messages: Array<{ role: "user" | "assistant"; content: any }> = [
+    { role: "user", content: prompt },
+  ];
+
+  const MAX_PAUSE_LOOPS = 10;
+  let last: any = null;
+
+  for (let loop = 0; loop < MAX_PAUSE_LOOPS; loop++) {
+    const body: any = {
+      model: "claude-sonnet-4-6",
+      max_tokens: 16000,
+      temperature: 0.1,
+      tools: [{ type: "web_search_20250305", name: "web_search" }],
+      messages,
+    };
+
+    const response = await callClaudeOnce(apiKey, body);
+
+    // Hard API failure (after retries) — surface immediately.
+    if (response?.error) return response;
+
+    last = response;
+
+    if (response?.stop_reason === "pause_turn") {
+      // Continue the turn: append assistant's content (including server_tool_use
+      // and web_search_tool_result blocks) verbatim and call again.
+      messages.push({ role: "assistant", content: response.content });
+      continue;
+    }
+
+    // end_turn, max_tokens, stop_sequence, refusal, etc. — return the final turn.
+    return response;
+  }
+
+  console.error(`callClaude: hit pause_turn loop limit (${MAX_PAUSE_LOOPS}).`);
+  return last || { error: { type: "loop_exhausted", message: "pause_turn continuations exceeded loop limit" } };
 }
 
 function extractJSON(data: any): any {
