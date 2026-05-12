@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { normalizeKey, CACHE_TTL_DAYS } from "@/utils/report-cache";
+import { findAcfrPdfUrl } from "@/lib/acfr-finder";
 
 export const maxDuration = 300;
 
@@ -8,57 +9,8 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ===== Prompts =====
 
-// Step 1a: locate the most recent ACFR PDF URL.
-// Priority order: EMMA (SEC-mandated repo, stable URLs) → issuer's own site → general web.
-// web_fetch is mandatory for sources 2 and 3 (verification step). web_fetch can fetch
-// the EMMA URL pre-supplied in this prompt because URLs in user messages are valid fetch
-// targets per the Anthropic API contract.
-function buildAcfrUrlSearchPrompt(issuerName: string, issuerState: string): string {
-  const emmaSearchUrl = `https://emma.msrb.org/Search/Search.aspx?q=${encodeURIComponent(
-    `${issuerName} ${issuerState}`.trim()
-  )}`;
-  return `Find the URL of the most recent published Annual Comprehensive Financial Report (ACFR) for "${issuerName}" in ${issuerState || "US"}. Try the three sources below in strict priority order. Stop and return as soon as you have a verifiable .pdf URL.
-
-============================================================
-PRIORITY 1 — EMMA (MSRB) [try first]:
-============================================================
-EMMA is the SEC-mandated municipal disclosure repository. ACFRs are filed there as continuing disclosures (typically under "Annual Financial Information" or "Audited Financial Statements" categories). EMMA URLs are stable, publicly accessible, and host the PDFs directly — making them the most reliable source.
-
-a. web_fetch this EMMA search URL: ${emmaSearchUrl}
-b. From the search results HTML, identify the issuer's continuing-disclosure / financial-filings page (a link into the EMMA "IssuerHomePage" or filings list for this issuer). web_fetch that page.
-c. Locate the most recent "Annual Financial Information" / ACFR filing's .pdf href. EMMA PDFs typically have URLs like https://emma.msrb.org/ER[id].pdf or https://emma.msrb.org/P[id].pdf.
-d. If you find a verifiable .pdf URL in the fetched HTML, return it. Stop here.
-
-If EMMA's search page returns no usable issuer match (e.g., JavaScript-rendered content, no results, or no Annual Financial Information filings located), proceed to PRIORITY 2.
-
-============================================================
-PRIORITY 2 — Issuer's own website [if EMMA fails]:
-============================================================
-The ACFR is typically published on the issuer's own website (often under Finance, Treasury, Auditor, or Investor Relations). Some issuers host the actual PDF on a CDN (widen.net, AWS S3, etc.) linked from their IR page.
-
-a. Use web_search to find the issuer's financial reports / ACFR landing page.
-b. You MUST web_fetch at least one candidate landing page from those search results — the issuer's IR / Finance / Audit page — to read its live HTML and locate the actual .pdf href.
-c. Returning a URL without first web_fetching a page that contains that URL is not acceptable. Search-result snippets frequently contain stale or cached URL text that does NOT reflect what is currently live on the issuer's site.
-
-============================================================
-PRIORITY 3 — General web search [if both above fail]:
-============================================================
-Broader web search for the ACFR PDF, still with mandatory web_fetch verification (same rules as PRIORITY 2).
-
-============================================================
-OUTPUT FORMAT:
-============================================================
-- A single line. Either a direct .pdf URL you verified is present in HTML returned by web_fetch, OR the literal string NOT_FOUND.
-- No commentary, no markdown, no explanation, no surrounding quotes.
-
-HARD CONSTRAINTS:
-- The URL you return MUST appear verbatim in HTML that you retrieved via web_fetch on this turn. A URL that appears only in a web_search snippet but was not also seen in fetched HTML is rejected. Guessing or pattern-matching from issuer naming conventions is failure.
-- You MUST issue at least one web_fetch call before returning a URL. If your web_fetch budget is exhausted without surfacing a verifiable .pdf href, return NOT_FOUND.
-- Return the most recent ACFR available. If both FY2024 and FY2023 are accessible, prefer FY2024. For PRIORITY 1, prefer the most recent "Annual Financial Information" filing.
-- For PRIORITY 1, an emma.msrb.org PDF is the preferred answer. For PRIORITY 2/3, the PDF may be on the issuer's own domain OR on a CDN they link to.
-- The URL must end in .pdf or be served with Content-Type application/pdf. If you cannot confirm it's a PDF, return NOT_FOUND.
-- Do not return placeholders, redirects, or login-gated URLs.`;
-}
+// Stage A (ACFR PDF URL discovery) is now handled server-side by lib/acfr-finder.ts
+// — no model involved. See findAcfrPdfUrl() for the EMMA / Google / overrides flow.
 
 // Step 1b: the ACFR is attached as a document block immediately before this text.
 // Extract discrete line-items from the PDF + use web search only for external inputs.
@@ -308,52 +260,6 @@ async function runPauseTurnLoop(
   return last || { error: { type: "loop_exhausted", message: "pause_turn continuations exceeded loop limit" } };
 }
 
-// ===== Stage A: find ACFR PDF URL =====
-
-async function findAcfrUrl(
-  apiKey: string,
-  issuerName: string,
-  issuerState: string
-): Promise<{ url: string | null; usage?: any; raw?: string }> {
-  const prompt = buildAcfrUrlSearchPrompt(issuerName, issuerState);
-  const response = await runPauseTurnLoop(
-    apiKey,
-    prompt,
-    (messages) => ({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1500,
-      temperature: 0.1,
-      tools: [
-        { type: "web_search_20250305", name: "web_search", max_uses: 3 },
-        { type: "web_fetch_20250910", name: "web_fetch", max_uses: 3, max_content_tokens: 50000 },
-      ],
-      messages,
-    }),
-    8
-  );
-
-  if (response?.error) {
-    console.error("[research] findAcfrUrl error:", JSON.stringify(response.error));
-    return { url: null, raw: undefined };
-  }
-
-  const raw = extractText(response).trim();
-  // Pull the first line that looks like an http(s) URL, OR NOT_FOUND.
-  const lines = raw.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
-  for (const line of lines) {
-    if (/^NOT_FOUND\b/i.test(line)) return { url: null, usage: response?.usage, raw };
-    const urlMatch = line.match(/https?:\/\/\S+/);
-    if (urlMatch) {
-      // Strip trailing punctuation AND code/quote wrappers — the model sometimes
-      // emits URLs inside markdown backticks (`...`) or quotes. Greedy strip until
-      // the URL ends in a path-safe char.
-      const candidate = urlMatch[0].replace(/[)\].,;:`'"<>‘’“”]+$/, "");
-      return { url: candidate, usage: response?.usage, raw };
-    }
-  }
-  return { url: null, usage: response?.usage, raw };
-}
-
 // ===== Stage B: HEAD-validate the PDF URL =====
 
 const MAX_PDF_BYTES = 32 * 1024 * 1024;
@@ -481,12 +387,14 @@ async function callResearch(
   issuerName: string,
   issuerState: string
 ): Promise<ResearchResult> {
-  // Stage A: locate the ACFR PDF URL.
-  const urlResult = await findAcfrUrl(apiKey, issuerName, issuerState);
+  // Stage A: locate the ACFR PDF URL — server-side, no model. Order:
+  //   1. ACFR_OVERRIDES map  2. EMMA Official Statements  3. EMMA Continuing Disclosures
+  //   4. Google filetype:pdf
+  const finder = await findAcfrPdfUrl(issuerName, issuerState);
+  console.log(`[research] acfr-finder: source=${finder.source} url=${finder.url ?? "null"} note="${finder.note}"`);
 
-  if (!urlResult.url) {
-    const note = "URL not surfaced";
-    console.log(`[research] PDF fallback: ${note}`);
+  if (!finder.url) {
+    const note = finder.note || "URL not surfaced";
     const r = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
     return {
       findings: r.findings,
@@ -498,11 +406,12 @@ async function callResearch(
     };
   }
 
-  // Stage B: HEAD validate.
-  const validation = await validatePdfUrl(urlResult.url);
+  // Stage B: HEAD validate (enforces 32MB cap; the finder did a basic existence check
+  // but does not check size).
+  const validation = await validatePdfUrl(finder.url);
   if (!validation.ok) {
-    const note = validation.reason;
-    console.log(`[research] PDF fallback: ${note} (url=${urlResult.url})`);
+    const note = `${validation.reason} (finder source: ${finder.source})`;
+    console.log(`[research] Stage B rejected: ${note} url=${finder.url}`);
     const r = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
     return {
       findings: r.findings,
@@ -510,19 +419,19 @@ async function callResearch(
       usage: r.usage,
       stop_reason: r.stop_reason,
       pdfUsed: false,
-      pdfUrl: urlResult.url,
+      pdfUrl: finder.url,
       pdfNote: note,
     };
   }
 
   // Stage C: research with PDF attached.
-  console.log(`[research] PDF parsed (${(validation.bytes / (1024 * 1024)).toFixed(1)}MB) from ${urlResult.url}`);
-  const r = await callResearchWithPdf(apiKey, issuerName, issuerState, urlResult.url);
+  console.log(`[research] PDF parsed (${(validation.bytes / (1024 * 1024)).toFixed(1)}MB, source: ${finder.source}) from ${finder.url}`);
+  const r = await callResearchWithPdf(apiKey, issuerName, issuerState, finder.url);
 
   // Detect page-count / payload overflow → fall back.
   if (r.error && isPdfOverflowError(r.error)) {
-    const note = "page-count overflow";
-    console.log(`[research] PDF fallback after overflow: ${note} (url=${urlResult.url})`);
+    const note = `page-count overflow (finder source: ${finder.source})`;
+    console.log(`[research] PDF fallback after overflow: ${note} url=${finder.url}`);
     const fb = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
     return {
       findings: fb.findings,
@@ -530,7 +439,7 @@ async function callResearch(
       usage: fb.usage,
       stop_reason: fb.stop_reason,
       pdfUsed: false,
-      pdfUrl: urlResult.url,
+      pdfUrl: finder.url,
       pdfNote: note,
     };
   }
@@ -541,8 +450,10 @@ async function callResearch(
     usage: r.usage,
     stop_reason: r.stop_reason,
     pdfUsed: !r.error,
-    pdfUrl: urlResult.url,
-    pdfNote: r.error ? undefined : `PDF parsed (${(validation.bytes / (1024 * 1024)).toFixed(1)}MB)`,
+    pdfUrl: finder.url,
+    pdfNote: r.error
+      ? undefined
+      : `PDF parsed (${(validation.bytes / (1024 * 1024)).toFixed(1)}MB, source: ${finder.source})`,
   };
 }
 
