@@ -16,12 +16,30 @@ function incrementReportCount(): number {
   return count;
 }
 
+// Strict numeric guards. The model puts "N/A — disclosure not available" into
+// number-typed fields when data is missing; truthy checks let that through and
+// then `Number(...)` / arithmetic returns NaN, rendering as "$NaN". These helpers
+// fail closed: anything that isn't a positive finite number falls back.
+const NA_DISCLOSURE = "N/A — disclosure not available";
+function isPositiveFinite(v: any): v is number {
+  return typeof v === "number" && Number.isFinite(v) && v > 0;
+}
+function fmtUSD(v: any, fallback: string = NA_DISCLOSURE): string {
+  return isPositiveFinite(v) ? `$${v.toLocaleString()}` : fallback;
+}
+function fmtUSDMillions(v: any, decimals: number = 1, fallback: string = NA_DISCLOSURE): string {
+  return isPositiveFinite(v) ? `$${(v / 1e6).toFixed(decimals)}M` : fallback;
+}
+function fmtUSDThousands(v: any, decimals: number = 0, fallback: string = NA_DISCLOSURE): string {
+  return isPositiveFinite(v) ? `$${(v / 1e3).toFixed(decimals)}K` : fallback;
+}
+
 function formatStat(label: string, value: any, isCurrency = false): string {
   const isZero =
     (typeof value === "number" && value === 0) ||
     (typeof value === "string" && /^[$]?0+(\.0+)?\s*[%]?$/.test(value.trim()));
   if (isZero && /debt/i.test(label)) return "Debt-free";
-  if (isCurrency && typeof value === "number") return `$${(value / 1e6).toFixed(1)}M`;
+  if (isCurrency) return fmtUSDMillions(value);
   return value != null ? String(value) : "—";
 }
 
@@ -447,7 +465,7 @@ export default function BuilderPage() {
                     <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Key Economic Data</div>
                     {[
                       ["Unemployment Rate", report.economy.unemployment_rate],
-                      ["Median Household Income", (typeof report.economy.median_household_income === "number" && Number.isFinite(report.economy.median_household_income) && report.economy.median_household_income > 0) ? `$${report.economy.median_household_income.toLocaleString()}` : "N/A — disclosure not available"],
+                      ["Median Household Income", fmtUSD(report.economy.median_household_income)],
                       ["Poverty Rate", report.economy.poverty_rate],
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".88rem" }}>
@@ -553,12 +571,12 @@ export default function BuilderPage() {
                             <text x={x + barW + 1} y="200" fill="var(--text)" fontSize="8" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{r.year || ""}</text>
                             {/* Revenue amount on top of bar */}
                             <text x={x + barW/2} y={180 - revH} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">
-                              {typeof r.amount === "number" ? `$${(r.amount/1e6).toFixed(0)}M` : ""}
+                              {fmtUSDMillions(r.amount, 0, "")}
                             </text>
                             {/* Expenditure amount on top of bar */}
                             {expH > 0 && expItem && (
                               <text x={x + barW + 3 + barW/2} y={180 - expH} fill="#7c3aed" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">
-                                {typeof expItem.amount === "number" ? `$${(expItem.amount/1e6).toFixed(0)}M` : ""}
+                                {fmtUSDMillions(expItem.amount, 0, "")}
                               </text>
                             )}
                           </g>
@@ -584,7 +602,7 @@ export default function BuilderPage() {
                         <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)", fontWeight: 600 }}>Revenue</td>
                         {report.revenue_trend.map((r: any, i: number) => (
                           <td key={i} style={{ padding: ".7rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
-                            {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
+                            {fmtUSDMillions(r.amount, 0, "—")}
                           </td>
                         ))}
                       </tr>
@@ -593,7 +611,7 @@ export default function BuilderPage() {
                           <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)", fontWeight: 600 }}>Expenses</td>
                           {report.expenditure_trend.map((r: any, i: number) => (
                             <td key={i} style={{ padding: ".7rem .5rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 500 }}>
-                              {typeof r.amount === "number" ? `$${(r.amount / 1000000).toFixed(0)}M` : r.amount}
+                              {fmtUSDMillions(r.amount, 0, "—")}
                             </td>
                           ))}
                         </tr>
@@ -830,7 +848,7 @@ export default function BuilderPage() {
                         })()}
                         <circle cx="100" cy="100" r="35" fill="var(--panel)" />
                         <text x="100" y="96" textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">Revenue</text>
-                        <text x="100" y="110" textAnchor="middle" fontSize="8" fill="var(--text3)" fontFamily="var(--mono)">{report.financials?.total_revenue ? `$${(report.financials.total_revenue/1e6).toFixed(0)}M` : ""}</text>
+                        <text x="100" y="110" textAnchor="middle" fontSize="8" fill="var(--text3)" fontFamily="var(--mono)">{fmtUSDMillions(report.financials?.total_revenue, 0, "")}</text>
                       </svg>
                       {report.revenue_composition.map((item: any, i: number) => {
                         const colors = ["#1e3a5f", "#2b5278", "#7c3aed", "#059669", "#d97706", "#9ca3af"];
@@ -864,7 +882,7 @@ export default function BuilderPage() {
                         })()}
                         <circle cx="100" cy="100" r="35" fill="var(--panel)" />
                         <text x="100" y="96" textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">Expenses</text>
-                        <text x="100" y="110" textAnchor="middle" fontSize="8" fill="var(--text3)" fontFamily="var(--mono)">{report.financials?.total_expenditures ? `$${(report.financials.total_expenditures/1e6).toFixed(0)}M` : ""}</text>
+                        <text x="100" y="110" textAnchor="middle" fontSize="8" fill="var(--text3)" fontFamily="var(--mono)">{fmtUSDMillions(report.financials?.total_expenditures, 0, "")}</text>
                       </svg>
                       {report.expenditure_composition.map((item: any, i: number) => {
                         const colors = ["#dc2626", "#1e3a5f", "#7c3aed", "#059669", "#d97706", "#9ca3af"];
@@ -925,9 +943,9 @@ export default function BuilderPage() {
                   {report.debt_schedule.map((d: any, i: number) => (
                     <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", padding: ".6rem 1rem", borderBottom: "1px solid var(--line-soft)", fontFamily: "var(--mono)", fontSize: ".85rem" }}>
                       <div>{d.year}</div>
-                      <div style={{ textAlign: "right" }}>${(d.principal/1e6).toFixed(1)}M</div>
-                      <div style={{ textAlign: "right" }}>${(d.interest/1e6).toFixed(1)}M</div>
-                      <div style={{ textAlign: "right", fontWeight: 600 }}>${(d.total/1e6).toFixed(1)}M</div>
+                      <div style={{ textAlign: "right" }}>{fmtUSDMillions(d.principal, 1, "—")}</div>
+                      <div style={{ textAlign: "right" }}>{fmtUSDMillions(d.interest, 1, "—")}</div>
+                      <div style={{ textAlign: "right", fontWeight: 600 }}>{fmtUSDMillions(d.total, 1, "—")}</div>
                     </div>
                   ))}
                 </div>
@@ -1060,8 +1078,8 @@ export default function BuilderPage() {
                   <tbody>
                     {[
                       ["Pension System", report.pension.system_name],
-                      ["Adjusted Net Pension Liability", report.pension.adjusted_net_pension_liability ? `$${(report.pension.adjusted_net_pension_liability/1e6).toFixed(1)}M` : null],
-                      ["Annual Employer Contribution", report.pension.employer_contribution ? `$${(report.pension.employer_contribution/1e6).toFixed(1)}M` : null],
+                      ["Adjusted Net Pension Liability", isPositiveFinite(report.pension.adjusted_net_pension_liability) ? fmtUSDMillions(report.pension.adjusted_net_pension_liability, 1) : null],
+                      ["Annual Employer Contribution", isPositiveFinite(report.pension.employer_contribution) ? fmtUSDMillions(report.pension.employer_contribution, 1) : null],
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
                         <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)" }}>{label}</td>
@@ -1123,7 +1141,7 @@ export default function BuilderPage() {
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem" }}>
                   {[
-                    { label: "Median Home Value", value: report.housing.median_home_value ? `$${(report.housing.median_home_value/1000).toFixed(0)}K` : "—" },
+                    { label: "Median Home Value", value: fmtUSDThousands(report.housing.median_home_value) },
                     { label: "Price-to-Income", value: report.housing.median_home_value_to_income ? `${String(report.housing.median_home_value_to_income).replace(/[xX×]\s*$/, "").trim()}×` : "—", color: parseFloat(report.housing.median_home_value_to_income) > 5 ? "var(--warn)" : "var(--good)" },
                     { label: "5Y AV Growth", value: report.housing.assessed_value_growth_5yr || "—" },
                     { label: "Homeownership", value: report.housing.homeownership_rate || "—" },
@@ -1192,7 +1210,7 @@ export default function BuilderPage() {
                 {/* Summary metrics */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem", marginBottom: "1rem" }}>
                   {[
-                    { label: "Total Outstanding", value: (typeof report.bond_market.total_outstanding_par === "number" && Number.isFinite(report.bond_market.total_outstanding_par) && report.bond_market.total_outstanding_par > 0) ? `$${(report.bond_market.total_outstanding_par/1e6).toFixed(0)}M` : "N/A — disclosure not available" },
+                    { label: "Total Outstanding", value: fmtUSDMillions(report.bond_market.total_outstanding_par, 0) },
                     { label: "Avg Coupon", value: report.bond_market.avg_coupon || "—" },
                     { label: "Avg Yield", value: report.bond_market.avg_yield || "—" },
                     { label: "Avg Spread to AAA", value: report.bond_market.avg_spread || "—", color: parseInt(report.bond_market.avg_spread) <= 25 ? "var(--good)" : parseInt(report.bond_market.avg_spread) <= 75 ? "var(--warn)" : "var(--bad)" },
@@ -1218,7 +1236,7 @@ export default function BuilderPage() {
                       {report.bond_market.outstanding_bonds.map((bond: any, i: number) => (
                         <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
                           <td style={{ padding: ".6rem", fontSize: ".82rem", fontWeight: 500, maxWidth: 180 }}>{bond.description}</td>
-                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.par_amount ? `$${(bond.par_amount/1e6).toFixed(1)}M` : "—"}</td>
+                          <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{fmtUSDMillions(bond.par_amount, 1, "—")}</td>
                           <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.coupon || "—"}</td>
                           <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.maturity || "—"}</td>
                           <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.yield_to_maturity || "—"}</td>
