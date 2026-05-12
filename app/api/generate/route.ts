@@ -324,7 +324,7 @@ Make the JSON complete and valid. Close all braces and brackets.`;
 // Single HTTP call to Anthropic with retry on transient errors (429 / 529 / 5xx).
 async function callClaudeOnce(apiKey: string, body: any) {
   const maxAttempts = 4;
-  const backoffs = [3000, 8000, 20000];
+  const backoffs = [5000, 15000, 45000];
   let lastError: any = null;
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
