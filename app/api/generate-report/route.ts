@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 // TODO: Add server-side paywall enforcement. Currently /api/generate-report is open to anyone
 // who can hit the endpoint directly. Tracked separately from owner-bypass work.
 
-export const maxDuration = 300;
+export const maxDuration = 600;
 
 const CACHE_TTL_DAYS = 90;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -82,7 +82,7 @@ async function callClaude(apiKey: string, prompt: string) {
       model: "claude-sonnet-4-6",
       max_tokens: 16000,
       temperature: 0.1,
-      tools: [{ type: "web_search_20250305", name: "web_search" }],
+      tools: [{ type: "web_search_20250305", name: "web_search", max_uses: 8 }],
       messages,
     };
 
