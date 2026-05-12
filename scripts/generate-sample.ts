@@ -1,13 +1,27 @@
 #!/usr/bin/env node
 // Usage: npx tsx scripts/generate-sample.ts "City of Austin" "TX"
 //
-// Hits the local Next.js /api/generate-report endpoint and writes the JSON report
-// to samples/<slug>.json. Run from the repo root with the dev server already
-// running (npm run dev) and ANTHROPIC_API_KEY present in the server's environment
-// (.env.local). Override the endpoint via MUNIREPORTS_API_URL if needed.
+// Calls /api/research then /api/generate sequentially against the local Next.js
+// dev server. Writes the final report JSON to samples/<slug>.json. Run from
+// the repo root with `npm run dev` already running and ANTHROPIC_API_KEY +
+// Supabase env vars present in .env.local. Override the base URL via
+// MUNIREPORTS_BASE_URL if needed.
 
 import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
+
+async function postJSON(url: string, body: any): Promise<any> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`HTTP ${res.status} from ${url}: ${text}`);
+  }
+  return res.json();
+}
 
 async function main(): Promise<void> {
   const [, , issuerName, issuerState] = process.argv;
@@ -20,11 +34,13 @@ async function main(): Promise<void> {
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.error("ANTHROPIC_API_KEY not set in environment.");
-    console.error("The /api/generate-report route needs it to call Anthropic; the dev server must also have it loaded (.env.local).");
+    console.error("The dev server's /api/* routes need it; ensure .env.local is loaded.");
     process.exit(1);
   }
 
-  const endpoint = process.env.MUNIREPORTS_API_URL || "http://localhost:3000/api/generate-report";
+  const baseUrl = process.env.MUNIREPORTS_BASE_URL || "http://localhost:3000";
+  const researchUrl = `${baseUrl}/api/research`;
+  const generateUrl = `${baseUrl}/api/generate`;
 
   const slug = (issuerName + "-" + issuerState)
     .toLowerCase()
@@ -34,29 +50,39 @@ async function main(): Promise<void> {
   const outPath = resolve(process.cwd(), "samples", `${slug}.json`);
 
   console.log(`Generating sample report for "${issuerName}, ${issuerState}"...`);
-  console.log(`Endpoint: ${endpoint}`);
-  console.log(`Output:   ${outPath}`);
+  console.log(`Output: ${outPath}`);
 
   const startedAt = Date.now();
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ issuerName, issuerState, forceRefresh: true }),
-  });
+  // Step 1: research (with forceRefresh to bypass the 90-day cache).
+  console.log(`Step 1/2: research (${researchUrl})...`);
+  const r1Started = Date.now();
+  const d1 = await postJSON(researchUrl, { issuerName, issuerState, forceRefresh: true });
+  const r1Elapsed = ((Date.now() - r1Started) / 1000).toFixed(1);
 
-  if (!res.ok) {
-    const text = await res.text();
-    console.error(`HTTP ${res.status}: ${text}`);
-    process.exit(1);
+  let finalData: any;
+
+  if (d1.cached) {
+    console.log(`  Cache hit (${r1Elapsed}s). Skipping step 2.`);
+    finalData = { report: d1.report, cached: true, generatedAt: d1.generatedAt };
+  } else {
+    const findings = d1.findings || "";
+    console.log(`  Research done in ${r1Elapsed}s. Findings: ${findings.length} chars. stop_reason=${d1.stop_reason}`);
+
+    // Step 2: generation.
+    console.log(`Step 2/2: generate (${generateUrl})...`);
+    const r2Started = Date.now();
+    const d2 = await postJSON(generateUrl, { issuerName, issuerState, findings, forceRefresh: true });
+    const r2Elapsed = ((Date.now() - r2Started) / 1000).toFixed(1);
+    console.log(`  Generation done in ${r2Elapsed}s.`);
+    finalData = d2;
   }
 
-  const data = await res.json();
   mkdirSync(dirname(outPath), { recursive: true });
-  writeFileSync(outPath, JSON.stringify(data, null, 2));
+  writeFileSync(outPath, JSON.stringify(finalData, null, 2));
 
-  const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-  console.log(`Done in ${elapsed}s. Cached: ${data.cached ?? false}.`);
+  const totalElapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
+  console.log(`Done in ${totalElapsed}s total. Cached: ${finalData.cached ?? false}.`);
 }
 
 main().catch((err) => {

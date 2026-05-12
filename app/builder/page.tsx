@@ -32,6 +32,7 @@ export default function BuilderPage() {
   const [searching, setSearching] = useState(false);
   const [selectedIssuer, setSelectedIssuer] = useState<any>(null);
   const [generating, setGenerating] = useState(false);
+  const [generationStatus, setGenerationStatus] = useState<string>("");
   const [report, setReport] = useState<any>(null);
   const [reportGeneratedAt, setReportGeneratedAt] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -99,21 +100,57 @@ export default function BuilderPage() {
       return;
     }
 
+    const issuerName = selectedIssuer?.name || query;
+    const issuerState = selectedIssuer?.state || "";
+
     setGenerating(true);
+    setGenerationStatus("Researching public sources…");
     try {
-      const res = await fetch("/api/generate-report", {
+      // Step 1: cache lookup + research dossier (web search).
+      const r1 = await fetch("/api/research", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          issuerName: selectedIssuer?.name || query,
-          issuerState: selectedIssuer?.state || "",
-          documents: [],
-        }),
+        body: JSON.stringify({ issuerName, issuerState }),
       });
-      const data = await res.json();
-      if (data.report) {
-        setReport(data.report);
-        setReportGeneratedAt(data.generatedAt || null);
+      const d1 = await r1.json();
+      if (!r1.ok) {
+        console.error("Research failed:", d1?.error);
+        setGenerating(false);
+        setGenerationStatus("");
+        return;
+      }
+
+      let finalReport: any = null;
+      let generatedAt: string | null = null;
+      let savedId: string | null = null;
+
+      if (d1.cached) {
+        // Cache hit — skip step 2.
+        finalReport = d1.report;
+        generatedAt = d1.generatedAt || null;
+      } else {
+        // Step 2: generate structured JSON from the dossier (no tools, no web search).
+        setGenerationStatus("Generating report from sources…");
+        const r2 = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ issuerName, issuerState, findings: d1.findings }),
+        });
+        const d2 = await r2.json();
+        if (!r2.ok) {
+          console.error("Generation failed:", d2?.error);
+          setGenerating(false);
+          setGenerationStatus("");
+          return;
+        }
+        finalReport = d2.report;
+        generatedAt = d2.generatedAt || null;
+        savedId = d2.savedId || null;
+      }
+
+      if (finalReport) {
+        setReport(finalReport);
+        setReportGeneratedAt(generatedAt);
         // Use a purchased credit if available, otherwise count as free (skip for admin)
         if (!isAdmin) {
           if (reportsUsed >= FREE_REPORT_LIMIT && credits > 0) {
@@ -123,14 +160,15 @@ export default function BuilderPage() {
             setReportsUsed(newCount);
           }
         }
-        if (data.savedId) {
-          router.push(`/report/${data.savedId}`);
+        if (savedId) {
+          router.push(`/report/${savedId}`);
         }
       }
     } catch (err) {
       console.error("Generation failed:", err);
     }
     setGenerating(false);
+    setGenerationStatus("");
   };
 
   return (
@@ -265,7 +303,7 @@ export default function BuilderPage() {
           {selectedIssuer && (
             <div style={{ display: "flex", gap: ".6rem", justifyContent: "flex-end", marginTop: "1.5rem" }}>
               <button className="btn btn-accent btn-lg" onClick={generateReport} disabled={generating}>
-                {generating ? "⚡ Generating report… (this takes 30-60 seconds)" : "⚡ Generate Credit Report →"}
+                {generating ? `⚡ ${generationStatus || "Generating report…"} (this can take 2–4 minutes)` : "⚡ Generate Credit Report →"}
               </button>
             </div>
           )}
