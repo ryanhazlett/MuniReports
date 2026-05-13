@@ -33,7 +33,7 @@ export default function HomePage() {
             }}>
               Make{" "}
               <span style={{
-                fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400,
+                fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400,
                 background: "linear-gradient(135deg, var(--accent) 0%, #7c3aed 50%, #059669 100%)",
                 WebkitBackgroundClip: "text", backgroundClip: "text",
                 WebkitTextFillColor: "transparent",
@@ -103,7 +103,7 @@ export default function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 1: Search</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Search any issuer — let AI <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>find the documents.</em></h3>
+              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Search any issuer — let AI <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>find the documents.</em></h3>
               <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Type an issuer name and MuniReports surfaces public filings from EMMA, state comptroller sites, and the issuer&apos;s own website to assemble credit research in minutes.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
                 {["Search 22,400 issuers — AI finds public filings online", "Surfaces public filings from EMMA, state archives, city websites"].map(item => (
@@ -195,7 +195,7 @@ export default function HomePage() {
             </div>
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 2: AI Analysis</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Five-year history. Forward projections. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Risk flags.</em></h3>
+              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Five-year history. Forward projections. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>Risk flags.</em></h3>
               <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Once documents are parsed, MuniReports builds a financial overview: standardized 5-year statements, three-scenario forecast, CIP analysis, and a five-pillar credit sentiment score.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
                 {["5-year revenue, expenditure & fund balance trends", "3-scenario forecast (baseline, optimistic, cautious)", "Capital plan with project roster & funding sources", "Sensitivity analysis on key inputs"].map(item => (
@@ -212,7 +212,7 @@ export default function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
             <div>
               <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 3: Credit Research</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Credit research. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Citations provided.</em></h3>
+              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Credit research. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>Citations provided.</em></h3>
               <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>MuniReports generates multi-section research: executive summary, financial analysis, capital plan review, debt profile, forward projections, and risk assessment.</p>
               <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
                 {["12–25 page research with executive summary", "Charts auto-generated from public source data", "Citations provided for source documents", "Export PDF · Share link · Print-ready"].map(item => (
@@ -374,8 +374,8 @@ export default function HomePage() {
             <div style={{ padding: "2rem 2.2rem", maxWidth: 860, margin: "0 auto" }}>
               {/* Header */}
               <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>AI-Assisted Municipal Credit Research</div>
-              <h3 style={{ fontFamily: "var(--serif)", fontSize: "1.8rem", fontWeight: 400, marginBottom: ".3rem" }}>City of Austin, Texas</h3>
-              <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: ".95rem", color: "var(--text2)", marginBottom: "1.2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>General Obligation / Municipal Utility · TX · Rating: AAA / Aaa · Outlook: Stable</div>
+              <h3 style={{ fontFamily: "var(--sans)", fontSize: "1.8rem", fontWeight: 400, marginBottom: ".3rem" }}>City of Austin, Texas</h3>
+              <div style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontSize: ".95rem", color: "var(--text2)", marginBottom: "1.2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>General Obligation / Municipal Utility · TX · Rating: AAA / Aaa · Outlook: Stable</div>
 
               {/* KPIs */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: ".5rem", margin: "1rem 0 1.5rem", padding: "1.2rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
@@ -737,7 +737,7 @@ export default function HomePage() {
         }}>
           <div style={{ position: "absolute", top: -200, right: -200, width: 500, height: 500, background: "radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%)", pointerEvents: "none" }} />
           <h2 style={{ fontSize: "clamp(1.9rem,4vw,3.2rem)", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05, marginBottom: "1rem", position: "relative" }}>
-            Credit research. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400 }}>Right now.</em>
+            Credit research. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>Right now.</em>
           </h2>
           <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,.8)", maxWidth: "48ch", margin: "0 auto 2rem", position: "relative" }}>
             No account needed to start. Search any issuer and generate a research brief in minutes.

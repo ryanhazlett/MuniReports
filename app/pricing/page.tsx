@@ -23,7 +23,7 @@ export default function PricingPage() {
       <div style={{ textAlign: "center", marginBottom: "3rem" }}>
         <div style={{ fontFamily: "var(--mono)", fontSize: ".76rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".16em", marginBottom: ".8rem" }}>Pricing</div>
         <h1 style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.1, marginBottom: ".8rem" }}>
-          Credit research, on demand. <em style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>Fair pricing.</em>
+          Credit research, on demand. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>Fair pricing.</em>
         </h1>
         <p style={{ fontSize: "1.05rem", color: "var(--text2)", maxWidth: "50ch", margin: "0 auto" }}>
           Compile public financial data into a structured research brief in minutes. A starting point for credit analysis at a price point professional services can&apos;t match.

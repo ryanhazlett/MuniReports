@@ -409,10 +409,10 @@ export default function BuilderPage() {
             <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent-soft)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>
               AI-Assisted Municipal Issuer Brief
             </div>
-            <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.2rem", fontWeight: 400, marginBottom: ".4rem", lineHeight: 1.1 }}>
+            <h2 style={{ fontFamily: "var(--sans)", fontSize: "2.2rem", fontWeight: 400, marginBottom: ".4rem", lineHeight: 1.1 }}>
               {report.issuer_name}
             </h2>
-            <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1.05rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1.2rem", borderBottom: "2px solid var(--accent)" }}>
+            <div style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontSize: "1.05rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1.2rem", borderBottom: "2px solid var(--accent)" }}>
               {report.type} · {report.state} · Rating: {report.rating}
             </div>
 

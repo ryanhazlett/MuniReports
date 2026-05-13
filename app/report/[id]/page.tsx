@@ -40,10 +40,10 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 600, marginBottom: ".5rem" }}>
             AI-Assisted Municipal Issuer Brief
           </div>
-          <h2 style={{ fontFamily: "var(--serif)", fontSize: "2rem", fontWeight: 500, marginBottom: ".4rem" }}>
+          <h2 style={{ fontFamily: "var(--sans)", fontSize: "2rem", fontWeight: 500, marginBottom: ".4rem" }}>
             {r?.issuer_name || report.issuer_name}
           </h2>
-          <div style={{ fontFamily: "var(--serif)", fontStyle: "italic", fontSize: "1rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>
+          <div style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontSize: "1rem", color: "var(--text2)", marginBottom: "1.5rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>
             {r?.type || report.issuer_type} · {r?.state || report.state} · Rating: {r?.rating || report.rating}
           </div>
 
