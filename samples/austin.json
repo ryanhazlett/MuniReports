@@ -294,53 +294,88 @@
       "contribution_to_adc": "N/A — disclosure not available"
     },
     "bond_market": {
-  "avg_yield": "N/A",
-  "avg_coupon": "N/A",
-  "avg_spread": "N/A",
-  "market_commentary": "Austin issued $682M in combined Series 2025 tax-supported obligations in October 2025, following $422M in Series 2024 obligations in December 2024. The City's triple-AAA ratings from Fitch, Moody's, and S&P support very tight spreads to the AAA benchmark curve. Per-maturity coupon and yield data available via the official statements on EMMA (issuer base CUSIP 052397).",
+  "total_outstanding_par": 1864172000,
+  "avg_coupon": "5.06%",
+  "avg_yield": "4.41%",
+  "avg_spread": "+44 bp vs AAA MMD",
+  "market_commentary": "Austin issued $796.0M in Series 2025 tax-supported obligations (Tax-Exempt + Taxable) on October 2, 2025, following $422.0M in Series 2024 obligations on December 19, 2024. The table below shows the long-bond (final maturity) of each recent Series 2025 issuance with initial pricing data from the Official Statement. Tax-exempt Series 2025 long bonds priced at 4.29% YTM on the 2045 maturity \u2014 approximately +44 basis points over the AAA MMD curve at issuance, consistent with Austin's triple-AAA ratings from Fitch, Moody's, and S&P. Per-maturity pricing for all 18 serial maturities is available in the Official Statement filed on EMMA (base CUSIP 052397).",
   "outstanding_bonds": [
     {
-      "series": "Public Improvement & Refunding Bonds, Series 2025",
+      "series": "Public Improvement & Refunding Bonds, Series 2025 (Tax-Exempt)",
       "par_amount": 377765000,
-      "dated_date": "October 2025",
+      "long_bond_par": 18980000,
+      "coupon": "5.000%",
+      "yield_to_maturity": "4.290%",
+      "maturity": "9/1/2045",
+      "price": "104.5",
+      "spread_to_aaa": "+44 bp",
+      "dated_date": "October 2, 2025",
       "base_cusip": "052397",
-      "purpose": "Public improvements + refunding",
-      "type": "General Obligation"
+      "cusip": "0523973X2",
+      "type": "General Obligation",
+      "purpose": "Public improvements + refunding"
     },
     {
-      "series": "Certificates of Obligation, Series 2025",
+      "series": "Certificates of Obligation, Series 2025 (Tax-Exempt)",
       "par_amount": 266630000,
-      "dated_date": "October 2025",
+      "long_bond_par": 20300000,
+      "coupon": "5.000%",
+      "yield_to_maturity": "4.290%",
+      "maturity": "9/1/2045",
+      "price": "104.5",
+      "spread_to_aaa": "+44 bp",
+      "dated_date": "October 2, 2025",
       "base_cusip": "052397",
-      "purpose": "Various capital projects (no bond election required)",
-      "type": "Certificate of Obligation"
+      "cusip": "0523975H5",
+      "type": "Certificate of Obligation",
+      "purpose": "Various capital projects (no bond election required)"
     },
     {
-      "series": "Contractual Obligations, Series 2025",
+      "series": "Public Improvement Bonds, Taxable Series 2025",
+      "par_amount": 84220000,
+      "long_bond_par": 29360000,
+      "coupon": "5.327%",
+      "yield_to_maturity": "5.327%",
+      "maturity": "9/1/2045",
+      "price": "100.0",
+      "spread_to_aaa": "+148 bp",
+      "dated_date": "October 2, 2025",
+      "base_cusip": "052397",
+      "cusip": "0523975Z5",
+      "type": "Taxable General Obligation",
+      "purpose": "Public improvements (taxable - federal AMT)"
+    },
+    {
+      "series": "Certificates of Obligation, Taxable Series 2025",
+      "par_amount": 29710000,
+      "long_bond_par": 8165000,
+      "coupon": "5.327%",
+      "yield_to_maturity": "5.327%",
+      "maturity": "9/1/2045",
+      "price": "100.0",
+      "spread_to_aaa": "+148 bp",
+      "dated_date": "October 2, 2025",
+      "base_cusip": "052397",
+      "cusip": "0523976R2",
+      "type": "Taxable Certificate of Obligation",
+      "purpose": "Various capital projects (taxable - no bond election required)"
+    },
+    {
+      "series": "Public Property Finance Contractual Obligations, Series 2025",
       "par_amount": 37720000,
-      "dated_date": "October 2025",
+      "long_bond_par": 5805000,
+      "coupon": "5.000%",
+      "yield_to_maturity": "2.830%",
+      "maturity": "11/1/2032",
+      "price": "112.3",
+      "spread_to_aaa": "+18 bp",
+      "dated_date": "October 2, 2025",
       "base_cusip": "052397",
-      "purpose": "Equipment and contractual purchases",
-      "type": "Contractual Obligation"
-    },
-    {
-      "series": "Public Improvement & Refunding Bonds, Series 2024",
-      "par_amount": 292600000,
-      "dated_date": "December 2024",
-      "base_cusip": "052397",
-      "purpose": "Public improvements + refunding",
-      "type": "General Obligation"
-    },
-    {
-      "series": "Certificates of Obligation, Series 2024",
-      "par_amount": 100325000,
-      "dated_date": "December 2024",
-      "base_cusip": "052397",
-      "purpose": "Various capital projects (no bond election required)",
-      "type": "Certificate of Obligation"
+      "cusip": "0523974M5",
+      "type": "Contractual Obligation",
+      "purpose": "Equipment + personal property for City departments"
     }
-  ],
-  "total_outstanding_par": 1864172000
+  ]
 },
     "tax_burden": {
       "property_tax_rate": "$0.4776 per $100 assessed value (FY2025); $0.5740 per $100 assessed value (FY2026)",
