@@ -115,7 +115,7 @@
       "description": "Austin's economy is one of the fastest-growing among large US cities, supported by a highly diversified employer base spanning state and federal government, higher education, technology, healthcare, and retail. The Austin-Round Rock MSA recorded a real GDP CAGR of approximately 4.1% over 2019–2024, compared to 2.1% nationally, a differential of +2.0 percentage points. The MSA's RPP-adjusted median household income of $86,765 is 115.5% of the US median. The unemployment rate was 3.8% as of September 2025 (BLS). Top employers include the State of Texas (41,620), the University of Texas at Austin (32,369), H-E-B (27,271), Tesla (21,191), the City of Austin (16,403), the Federal Government (16,100), Dell (13,000), St. David's Healthcare (12,639), Ascension Seton (12,635), and Amazon (11,000). The total appraised value of taxable property as of January 1, 2024 was $325,384,177,129, with a taxable value of $233,405,019,350 as of October 1, 2024.",
       "unemployment_rate": "3.8%",
       "median_household_income": 90063,
-      "poverty_rate": "N/A — disclosure not available",
+      "poverty_rate": "Not reported in FY2025 ACFR",
       "top_employers": [
         "State Government — 41,620 employees",
         "University of Texas at Austin — 32,369 employees",
@@ -305,14 +305,133 @@
       "property_tax_rate": "$0.4776 per $100 assessed value (FY2025); $0.5740 per $100 assessed value (FY2026)",
       "property_tax_rate_vs_state": "N/A — disclosure not available",
       "total_tax_burden_per_capita": "N/A — disclosure not available",
-      "sales_tax_rate": "N/A — disclosure not available",
-      "homestead_exemption": "Not itemized in ACFR. FY2025 total exemptions: $91.98B against $325.38B appraised value. City of Austin offers 20% local-option general homestead exemption (verify with Travis CAD)."
+      "sales_tax_rate": "8.25%",
+      "homestead_exemption": "Not itemized in ACFR. FY2025 total exemptions: $91.98B against $325.38B appraised value. City of Austin offers 20% local-option general homestead exemption (verify with Travis CAD).",
+      "sales_tax_components": {
+        "city": 1.00,
+        "transit_capital_metro": 1.00,
+        "state_texas": 6.25
+      },
+      "top_taxpayers": [
+        {
+          "rank": 1,
+          "name": "Samsung Austin Semiconductor LLC",
+          "type": "Manufacturing",
+          "assessed_value": 840039193,
+          "pct_of_total": 0.36
+        },
+        {
+          "rank": 2,
+          "name": "Columbia/St. Davids Health Care",
+          "type": "Hospital/Medical",
+          "assessed_value": 654453637,
+          "pct_of_total": 0.28
+        },
+        {
+          "rank": 3,
+          "name": "BPP Alphabet MF Riata LP",
+          "type": "Commercial",
+          "assessed_value": 478961230,
+          "pct_of_total": 0.21
+        },
+        {
+          "rank": 4,
+          "name": "110 E 2nd Series",
+          "type": "Commercial",
+          "assessed_value": 437823880,
+          "pct_of_total": 0.19
+        },
+        {
+          "rank": 5,
+          "name": "Oracle America Inc",
+          "type": "Manufacturing",
+          "assessed_value": 423234378,
+          "pct_of_total": 0.18
+        },
+        {
+          "rank": 6,
+          "name": "Waller Creek Eleven LTD",
+          "type": "Commercial",
+          "assessed_value": 415497000,
+          "pct_of_total": 0.18
+        },
+        {
+          "rank": 7,
+          "name": "University of Texas",
+          "type": "Education",
+          "assessed_value": 389995000,
+          "pct_of_total": 0.17
+        },
+        {
+          "rank": 8,
+          "name": "Alpine Guadalupe LLC",
+          "type": "Commercial",
+          "assessed_value": 385835696,
+          "pct_of_total": 0.17
+        },
+        {
+          "rank": 9,
+          "name": "Apple",
+          "type": "Manufacturing",
+          "assessed_value": 381282795,
+          "pct_of_total": 0.16
+        },
+        {
+          "rank": 10,
+          "name": "HEB Grocery Company LP",
+          "type": "Retail",
+          "assessed_value": 373067948,
+          "pct_of_total": 0.16
+        }
+      ],
+      "assessed_value_history": [
+        {
+          "fiscal_year": 2016,
+          "total_taxable_value": 110526026399
+        },
+        {
+          "fiscal_year": 2017,
+          "total_taxable_value": 125371654656
+        },
+        {
+          "fiscal_year": 2018,
+          "total_taxable_value": 138418647260
+        },
+        {
+          "fiscal_year": 2019,
+          "total_taxable_value": 152147505769
+        },
+        {
+          "fiscal_year": 2020,
+          "total_taxable_value": 165194107887
+        },
+        {
+          "fiscal_year": 2021,
+          "total_taxable_value": 176671783309
+        },
+        {
+          "fiscal_year": 2022,
+          "total_taxable_value": 181435268760
+        },
+        {
+          "fiscal_year": 2023,
+          "total_taxable_value": 216893650976
+        },
+        {
+          "fiscal_year": 2024,
+          "total_taxable_value": 234256551594
+        },
+        {
+          "fiscal_year": 2025,
+          "total_taxable_value": 233405019350
+        }
+      ]
     },
     "housing": {
-      "median_home_value": 0,
+      "median_home_value": 512937,
       "median_home_value_to_income": "N/A — disclosure not available",
-      "assessed_value_growth_5yr": "N/A — disclosure not available",
-      "homeownership_rate": "N/A — disclosure not available"
+      "assessed_value_growth_5yr": "41.29%",
+      "homeownership_rate": "43.4%"
     },
     "climate_risk": {
       "flood_risk": "Specific flood risk metrics for the City of Austin are not provided in the research dossier.",
@@ -320,7 +439,10 @@
       "hurricane_risk": "Austin is an inland city and is not directly exposed to hurricane landfall risk, though it may experience tropical storm remnants; specific metrics are not provided in the research dossier.",
       "heat_risk": "Specific heat risk metrics for the City of Austin are not provided in the research dossier.",
       "overall_score": "Moderate",
-      "description": "Austin's central Texas location exposes it to heat, drought, and periodic flooding risk, consistent with a moderate overall climate risk profile for an inland Texas city. Specific quantitative climate risk scores are not available in the research dossier."
+      "description": "Austin's central Texas location exposes it to heat, drought, and periodic flooding risk, consistent with a moderate overall climate risk profile for an inland Texas city. Specific quantitative climate risk scores are not available in the research dossier.",
+      "fema_nri_score": 22.92,
+      "fema_nri_rating": "Relatively Moderate",
+      "fema_nri_geography": "Travis County, TX"
     },
     "forecast": {
       "source": "N/A — issuer does not publish a multi-year forecast",
