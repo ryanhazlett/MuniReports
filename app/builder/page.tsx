@@ -1375,7 +1375,7 @@ export default function BuilderPage() {
                     <tbody>
                       {report.bond_market.outstanding_bonds.map((bond: any, i: number) => (
                         <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
-                          <td style={{ padding: ".6rem", fontSize: ".82rem", fontWeight: 500, maxWidth: 180 }}>{bond.description}</td>
+                          <td style={{ padding: ".6rem", fontSize: ".82rem", fontWeight: 500, maxWidth: 180 }}>{bond.series || bond.description || bond.name || "—"}</td>
                           <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{fmtUSDMillions(bond.par_amount, 1, "—")}</td>
                           <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.coupon || "—"}</td>
                           <td style={{ padding: ".6rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{bond.maturity || "—"}</td>
