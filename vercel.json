@@ -3,7 +3,8 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
-    "app/api/research/route.ts": { "maxDuration": 300 },
+    "app/api/find-acfr/route.ts": { "maxDuration": 300 },
+    "app/api/read-acfr/route.ts": { "maxDuration": 300 },
     "app/api/generate/route.ts": { "maxDuration": 300 }
   }
 }

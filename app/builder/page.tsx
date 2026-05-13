@@ -122,17 +122,17 @@ export default function BuilderPage() {
     const issuerState = selectedIssuer?.state || "";
 
     setGenerating(true);
-    setGenerationStatus("Researching public sources…");
+    setGenerationStatus("Finding ACFR…");
     try {
-      // Step 1: cache lookup + research dossier (web search).
-      const r1 = await fetch("/api/research", {
+      // Step 1: cache lookup + ACFR URL discovery + HEAD validate.
+      const r1 = await fetch("/api/find-acfr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ issuerName, issuerState }),
       });
       const d1 = await r1.json();
       if (!r1.ok) {
-        console.error("Research failed:", d1?.error);
+        console.error("find-acfr failed:", d1?.error);
         setGenerating(false);
         setGenerationStatus("");
         return;
@@ -143,27 +143,48 @@ export default function BuilderPage() {
       let savedId: string | null = null;
 
       if (d1.cached) {
-        // Cache hit — skip step 2.
+        // Cache hit — skip steps 2 and 3 entirely.
         finalReport = d1.report;
         generatedAt = d1.generatedAt || null;
       } else {
-        // Step 2: generate structured JSON from the dossier (no tools, no web search).
-        setGenerationStatus("Generating report from sources…");
-        const r2 = await fetch("/api/generate", {
+        // Step 2: read the ACFR (attached PDF if available, else web-only).
+        const pdfUrl = d1.attachable ? d1.pdfUrl : null;
+        setGenerationStatus(pdfUrl ? "Reading ACFR…" : "Researching public sources…");
+        const r2 = await fetch("/api/read-acfr", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ issuerName, issuerState, findings: d1.findings }),
+          body: JSON.stringify({
+            issuerName,
+            issuerState,
+            pdfUrl,
+            pdfNote: d1.note,
+          }),
         });
         const d2 = await r2.json();
         if (!r2.ok) {
-          console.error("Generation failed:", d2?.error);
+          console.error("read-acfr failed:", d2?.error);
           setGenerating(false);
           setGenerationStatus("");
           return;
         }
-        finalReport = d2.report;
-        generatedAt = d2.generatedAt || null;
-        savedId = d2.savedId || null;
+
+        // Step 3: generate structured JSON from the dossier.
+        setGenerationStatus("Generating report…");
+        const r3 = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ issuerName, issuerState, findings: d2.findings }),
+        });
+        const d3 = await r3.json();
+        if (!r3.ok) {
+          console.error("Generation failed:", d3?.error);
+          setGenerating(false);
+          setGenerationStatus("");
+          return;
+        }
+        finalReport = d3.report;
+        generatedAt = d3.generatedAt || null;
+        savedId = d3.savedId || null;
       }
 
       if (finalReport) {

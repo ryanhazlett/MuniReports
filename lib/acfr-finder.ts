@@ -118,10 +118,15 @@ async function fetchHtml(url: string): Promise<string | null> {
   }
 }
 
+// Parallel HEAD validation. All candidates HEAD-checked concurrently; we walk
+// the input order and return the first one that succeeded. Caps total time at
+// one HEAD_TIMEOUT_MS (10s) regardless of candidate count.
 async function pickFirstValidPdf(candidates: string[]): Promise<string | null> {
-  for (const c of candidates) {
-    if (!looksUsable(c)) continue;
-    if (await headIsPdf(c)) return c;
+  const usable = candidates.filter(looksUsable);
+  if (usable.length === 0) return null;
+  const results = await Promise.all(usable.map((c) => headIsPdf(c).catch(() => false)));
+  for (let i = 0; i < usable.length; i++) {
+    if (results[i]) return usable[i];
   }
   return null;
 }
@@ -171,7 +176,10 @@ async function searchBrave(name: string, state: string): Promise<string | null> 
   const q = encodeURIComponent(
     `${name} ${state} annual comprehensive financial report filetype:pdf`.trim()
   );
-  const apiUrl = `https://api.search.brave.com/res/v1/web/search?q=${q}&count=10`;
+  const apiUrl = `https://api.search.brave.com/res/v1/web/search?q=${q}&count=5`;
+  const tStart = Date.now();
+  let tApi = 0;
+  let candidateCount = 0;
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
@@ -189,8 +197,9 @@ async function searchBrave(name: string, state: string): Promise<string | null> 
     } finally {
       clearTimeout(timer);
     }
+    tApi = Date.now() - tStart;
     if (!response.ok) {
-      console.warn(`[acfr-finder] Brave search HTTP ${response.status}`);
+      console.warn(`[acfr-finder] brave api=${tApi}ms http=${response.status} result=miss`);
       return null;
     }
     const data: any = await response.json();
@@ -198,11 +207,20 @@ async function searchBrave(name: string, state: string): Promise<string | null> 
     const candidates = results
       .map((r: any) => r?.url)
       .filter((u: any): u is string => typeof u === "string" && /\.pdf($|\?)/i.test(u));
-    if (candidates.length === 0) return null;
+    candidateCount = candidates.length;
+    if (candidates.length === 0) {
+      console.log(`[acfr-finder] brave api=${tApi}ms candidates=0 result=miss`);
+      return null;
+    }
     const ranked = rankEmmaFirst(candidates);
-    return await pickFirstValidPdf(ranked);
+    const tHeadStart = Date.now();
+    const winner = await pickFirstValidPdf(ranked);
+    const tHead = Date.now() - tHeadStart;
+    console.log(`[acfr-finder] brave api=${tApi}ms head=${tHead}ms candidates=${candidateCount} result=${winner ? "hit" : "miss"}`);
+    return winner;
   } catch (err) {
-    console.warn("[acfr-finder] Brave search error:", err);
+    const tElapsed = Date.now() - tStart;
+    console.warn(`[acfr-finder] brave elapsed=${tElapsed}ms error: ${err}`);
     return null;
   }
 }
@@ -212,8 +230,13 @@ async function searchDuckDuckGo(name: string, state: string): Promise<string | n
     `${name} ${state} annual comprehensive financial report filetype:pdf`.trim()
   );
   const base = `https://html.duckduckgo.com/html/?q=${q}`;
+  const tStart = Date.now();
   const html = await fetchHtml(base);
-  if (!html) return null;
+  const tApi = Date.now() - tStart;
+  if (!html) {
+    console.log(`[acfr-finder] ddg api=${tApi}ms result=miss (fetch failed)`);
+    return null;
+  }
   const raw = extractPdfHrefs(html);
   const unwrapped = raw.map((h) => unwrapDuckDuckGo(h, base));
   // De-dupe while preserving order.
@@ -225,18 +248,29 @@ async function searchDuckDuckGo(name: string, state: string): Promise<string | n
       dedup.push(u);
     }
   }
+  if (dedup.length === 0) {
+    console.log(`[acfr-finder] ddg api=${tApi}ms candidates=0 result=miss`);
+    return null;
+  }
   const ranked = rankEmmaFirst(dedup);
-  return await pickFirstValidPdf(ranked);
+  const tHeadStart = Date.now();
+  const winner = await pickFirstValidPdf(ranked);
+  const tHead = Date.now() - tHeadStart;
+  console.log(`[acfr-finder] ddg api=${tApi}ms head=${tHead}ms candidates=${dedup.length} result=${winner ? "hit" : "miss"}`);
+  return winner;
 }
 
 export async function findAcfrPdfUrl(
   issuerName: string,
   issuerState: string
 ): Promise<FindResult> {
+  const tStart = Date.now();
   // Step 0: overrides map — trusted, no HEAD.
   const key = normalizeKey(issuerName, issuerState);
   const override = ACFR_OVERRIDES[key];
   if (override) {
+    const dt = Date.now() - tStart;
+    console.log(`[acfr-finder] total=${dt}ms source=override url=${override}`);
     return { url: override, source: "override", note: `override map hit (${key})` };
   }
 
@@ -245,6 +279,8 @@ export async function findAcfrPdfUrl(
     const brave = await searchBrave(issuerName, issuerState);
     if (brave) {
       const isEmma = brave.toLowerCase().includes("emma.msrb.org");
+      const dt = Date.now() - tStart;
+      console.log(`[acfr-finder] total=${dt}ms source=brave url=${brave}`);
       return {
         url: brave,
         source: "brave",
@@ -262,6 +298,8 @@ export async function findAcfrPdfUrl(
     const ddg = await searchDuckDuckGo(issuerName, issuerState);
     if (ddg) {
       const isEmma = ddg.toLowerCase().includes("emma.msrb.org");
+      const dt = Date.now() - tStart;
+      console.log(`[acfr-finder] total=${dt}ms source=duckduckgo url=${ddg}`);
       return {
         url: ddg,
         source: "duckduckgo",
@@ -272,6 +310,8 @@ export async function findAcfrPdfUrl(
     console.warn("[acfr-finder] DuckDuckGo step error (non-fatal):", e);
   }
 
+  const dt = Date.now() - tStart;
+  console.log(`[acfr-finder] total=${dt}ms source=none result=miss`);
   return {
     url: null,
     source: null,

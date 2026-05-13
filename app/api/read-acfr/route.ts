@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { normalizeKey, CACHE_TTL_DAYS } from "@/utils/report-cache";
-import { findAcfrPdfUrl } from "@/lib/acfr-finder";
 
 export const maxDuration = 300;
 
@@ -9,11 +6,8 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ===== Prompts =====
 
-// Stage A (ACFR PDF URL discovery) is now handled server-side by lib/acfr-finder.ts
-// — no model involved. See findAcfrPdfUrl() for the EMMA / Google / overrides flow.
-
-// Step 1b: the ACFR is attached as a document block immediately before this text.
-// Extract discrete line-items from the PDF + use web search only for external inputs.
+// PDF-attached mode: extract discrete line-items from the attached ACFR PDF
+// + use web search only for external inputs (BEA, BLS, ACS, FEMA, ratings).
 function buildResearchPromptWithPdf(issuerName: string, issuerState: string): string {
   return `The most recent ACFR for "${issuerName}" in ${issuerState || "US"} is attached as a PDF document (above). You also have web search access for inputs that are not in the ACFR. Compile a plain-text research dossier with citations. NO JSON, NO scorecard, NO bucket assignments — the next pipeline step does scoring.
 
@@ -98,9 +92,9 @@ OUTPUT FORMAT:
 DO NOT produce JSON. Do NOT assign Moody's buckets. Do NOT invent peer comparisons, scenario projections, or numbers you cannot trace to either the ACFR or a cited web source.`;
 }
 
-// Step 1c (fallback): web search only, with a disclaimer preamble. Same body as the
-// original buildResearchPrompt — the model is told to lead with a disclaimer that
-// the ACFR PDF wasn't directly parsed.
+// Web-only mode: PDF is unavailable (no URL, oversize, or HEAD failed).
+// The model is told to lead the dossier with a disclaimer so the generation
+// step knows scorecard inputs may be incomplete.
 function buildResearchPromptWebOnly(issuerName: string, issuerState: string, pdfNote: string): string {
   return `PDF FALLBACK MODE: ${pdfNote}. Begin your output with this disclaimer line, before category 1:
 
@@ -199,11 +193,11 @@ async function callClaudeOnce(apiKey: string, body: any) {
 
       lastError = data;
       if (!isRetryable) {
-        console.error(`[research] Non-retryable error (${response.status}):`, JSON.stringify(data.error));
+        console.error(`[read-acfr] Non-retryable error (${response.status}):`, JSON.stringify(data.error));
         return data;
       }
       if (attempt === maxAttempts - 1) {
-        console.error(`[research] All ${maxAttempts} attempts exhausted.`, JSON.stringify(data.error));
+        console.error(`[read-acfr] All ${maxAttempts} attempts exhausted.`, JSON.stringify(data.error));
         return data;
       }
       await sleep(backoffs[attempt]);
@@ -218,7 +212,6 @@ async function callClaudeOnce(apiKey: string, body: any) {
   return lastError || { error: { type: "unknown", message: "All retries failed" } };
 }
 
-// Extract concatenated text from an Anthropic message response.
 function extractText(response: any): string {
   let out = "";
   if (response?.content) {
@@ -229,9 +222,8 @@ function extractText(response: any): string {
   return out;
 }
 
-// Generic pause_turn loop. Builds the request body for each iteration via
-// `buildBody(messages)`; on pause_turn appends the assistant's content verbatim
-// and continues. Returns the final response (or an error envelope).
+// Generic pause_turn loop. On pause_turn, appends the assistant's content
+// verbatim and continues. Returns the final response (or error envelope).
 async function runPauseTurnLoop(
   apiKey: string,
   initialUserContent: any,
@@ -256,52 +248,11 @@ async function runPauseTurnLoop(
     return response;
   }
 
-  console.error(`[research] hit pause_turn loop limit (${maxLoops}).`);
+  console.error(`[read-acfr] hit pause_turn loop limit (${maxLoops}).`);
   return last || { error: { type: "loop_exhausted", message: "pause_turn continuations exceeded loop limit" } };
 }
 
-// ===== Stage B: HEAD-validate the PDF URL =====
-
-// Anthropic documents a 32 MB request-size cap for inline PDFs. URL-sourced PDFs
-// are fetched server-side by Anthropic and the documented cap may not apply the
-// same way; raised to 100 MB so we can attach larger ACFRs (Austin's FY2025 is
-// 78.9 MB). If Anthropic rejects URL-fetched PDFs over its real cap, the
-// generation step will surface an error and we'll fall back to web-only research.
-const MAX_PDF_BYTES = 100 * 1024 * 1024;
-
-async function validatePdfUrl(
-  url: string
-): Promise<{ ok: true; bytes: number; contentType: string } | { ok: false; reason: string }> {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10_000);
-    let response: Response;
-    try {
-      response = await fetch(url, { method: "HEAD", signal: controller.signal, redirect: "follow" });
-    } finally {
-      clearTimeout(timeout);
-    }
-    if (!response.ok) return { ok: false, reason: `HEAD ${response.status}` };
-    const contentType = (response.headers.get("content-type") || "").toLowerCase();
-    if (!contentType.includes("application/pdf")) {
-      return { ok: false, reason: `Content-Type was ${contentType || "missing"}` };
-    }
-    const lenHeader = response.headers.get("content-length");
-    if (!lenHeader) return { ok: false, reason: "Content-Length missing" };
-    const bytes = parseInt(lenHeader, 10);
-    if (!Number.isFinite(bytes) || bytes <= 0) return { ok: false, reason: "Content-Length unparseable" };
-    if (bytes > MAX_PDF_BYTES) {
-      const mb = (bytes / (1024 * 1024)).toFixed(1);
-      return { ok: false, reason: `size ${mb}MB exceeds 100MB cap` };
-    }
-    return { ok: true, bytes, contentType };
-  } catch (err: any) {
-    if (err?.name === "AbortError") return { ok: false, reason: "validation timeout (10s)" };
-    return { ok: false, reason: `HEAD error: ${String(err?.message || err)}` };
-  }
-}
-
-// ===== Stage C: full research with PDF document attached =====
+// ===== Research callers =====
 
 async function callResearchWithPdf(
   apiKey: string,
@@ -336,8 +287,6 @@ async function callResearchWithPdf(
   };
 }
 
-// ===== Stage C-fallback: web search only =====
-
 async function callResearchWebOnly(
   apiKey: string,
   issuerName: string,
@@ -366,169 +315,81 @@ async function callResearchWebOnly(
   };
 }
 
-// ===== Orchestrator =====
-
-type ResearchResult = {
-  findings?: string;
-  pdfUsed: boolean;
-  pdfUrl?: string;
-  pdfNote?: string;
-  error?: any;
-  usage?: any;
-  stop_reason?: string;
-};
-
 // Detect Anthropic errors that indicate the PDF was too large or too many pages.
-// We don't have a stable error code; pattern-match the message defensively.
 function isPdfOverflowError(err: any): boolean {
   const msg = String(err?.message || err?.type || "").toLowerCase();
   return (
-    msg.includes("page") && (msg.includes("limit") || msg.includes("exceed") || msg.includes("too many"))
-  ) || msg.includes("too large") || msg.includes("payload") || msg.includes("max tokens") && msg.includes("context");
-}
-
-async function callResearch(
-  apiKey: string,
-  issuerName: string,
-  issuerState: string
-): Promise<ResearchResult> {
-  // Stage A: locate the ACFR PDF URL — server-side, no model. Order:
-  //   1. ACFR_OVERRIDES map  2. EMMA Official Statements  3. EMMA Continuing Disclosures
-  //   4. Google filetype:pdf
-  const finder = await findAcfrPdfUrl(issuerName, issuerState);
-  console.log(`[research] acfr-finder: source=${finder.source} url=${finder.url ?? "null"} note="${finder.note}"`);
-
-  if (!finder.url) {
-    const note = finder.note || "URL not surfaced";
-    const r = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
-    return {
-      findings: r.findings,
-      error: r.error,
-      usage: r.usage,
-      stop_reason: r.stop_reason,
-      pdfUsed: false,
-      pdfNote: note,
-    };
-  }
-
-  // Stage B: HEAD validate (enforces 32MB cap; the finder did a basic existence check
-  // but does not check size).
-  const validation = await validatePdfUrl(finder.url);
-  if (!validation.ok) {
-    const note = `${validation.reason} (finder source: ${finder.source})`;
-    console.log(`[research] Stage B rejected: ${note} url=${finder.url}`);
-    const r = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
-    return {
-      findings: r.findings,
-      error: r.error,
-      usage: r.usage,
-      stop_reason: r.stop_reason,
-      pdfUsed: false,
-      pdfUrl: finder.url,
-      pdfNote: note,
-    };
-  }
-
-  // Stage C: research with PDF attached.
-  console.log(`[research] PDF parsed (${(validation.bytes / (1024 * 1024)).toFixed(1)}MB, source: ${finder.source}) from ${finder.url}`);
-  const r = await callResearchWithPdf(apiKey, issuerName, issuerState, finder.url);
-
-  // Detect page-count / payload overflow → fall back.
-  if (r.error && isPdfOverflowError(r.error)) {
-    const note = `page-count overflow (finder source: ${finder.source})`;
-    console.log(`[research] PDF fallback after overflow: ${note} url=${finder.url}`);
-    const fb = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
-    return {
-      findings: fb.findings,
-      error: fb.error,
-      usage: fb.usage,
-      stop_reason: fb.stop_reason,
-      pdfUsed: false,
-      pdfUrl: finder.url,
-      pdfNote: note,
-    };
-  }
-
-  return {
-    findings: r.findings,
-    error: r.error,
-    usage: r.usage,
-    stop_reason: r.stop_reason,
-    pdfUsed: !r.error,
-    pdfUrl: finder.url,
-    pdfNote: r.error
-      ? undefined
-      : `PDF parsed (${(validation.bytes / (1024 * 1024)).toFixed(1)}MB, source: ${finder.source})`,
-  };
+    (msg.includes("page") && (msg.includes("limit") || msg.includes("exceed") || msg.includes("too many"))) ||
+    msg.includes("too large") ||
+    msg.includes("payload") ||
+    (msg.includes("max tokens") && msg.includes("context"))
+  );
 }
 
 // ===== POST handler =====
 
 export async function POST(req: NextRequest) {
   try {
-    const { issuerName, issuerState, forceRefresh } = await req.json();
+    const { issuerName, issuerState, pdfUrl, pdfNote: pdfNoteIn } = await req.json();
     const apiKey = process.env.ANTHROPIC_API_KEY || "";
-    const supabase = await createClient();
 
-    const cacheKey = normalizeKey(issuerName, issuerState);
+    if (typeof issuerName !== "string" || !issuerName) {
+      return NextResponse.json({ error: "issuerName (string) required" }, { status: 400 });
+    }
 
-    // Cache lookup: if a fresh full report exists, short-circuit step 2.
-    if (!forceRefresh && cacheKey && cacheKey !== "|") {
-      try {
-        const { data: cached } = await supabase
-          .from("cached_reports")
-          .select("report_data, generated_at")
-          .eq("issuer_key", cacheKey)
-          .maybeSingle();
+    // pdfUrl may be a string (attach PDF) or null/undefined (web-only fallback).
+    const hasPdf = typeof pdfUrl === "string" && pdfUrl.length > 0;
+    const fallbackNote = typeof pdfNoteIn === "string" && pdfNoteIn.length > 0
+      ? pdfNoteIn
+      : "no PDF URL provided";
 
-        if (cached) {
-          const ageMs = Date.now() - new Date(cached.generated_at).getTime();
-          const ageDays = ageMs / (1000 * 60 * 60 * 24);
-          if (ageDays < CACHE_TTL_DAYS) {
-            console.log(`[research] Cache hit: ${cacheKey} (age ${ageDays.toFixed(1)}d)`);
-            return NextResponse.json({
-              cached: true,
-              report: cached.report_data,
-              generatedAt: cached.generated_at,
-            });
-          }
+    if (hasPdf) {
+      const r = await callResearchWithPdf(apiKey, issuerName, issuerState, pdfUrl);
+      // If the model errored on page-count / payload overflow, fall back to web-only.
+      if (r.error && isPdfOverflowError(r.error)) {
+        const note = "page-count overflow on attached PDF";
+        console.log(`[read-acfr] fallback to web-only: ${note} url=${pdfUrl}`);
+        const fb = await callResearchWebOnly(apiKey, issuerName, issuerState, note);
+        if (fb.error) {
+          console.error("[read-acfr] web-only fallback also failed:", JSON.stringify(fb.error));
+          return NextResponse.json({ error: fb.error.message || "Read failed" }, { status: 500 });
         }
-      } catch (cacheErr) {
-        console.warn("[research] Cache lookup failed (non-fatal):", cacheErr);
+        return NextResponse.json({
+          findings: fb.findings,
+          pdfUsed: false,
+          stop_reason: fb.stop_reason ?? null,
+          usage: fb.usage ?? null,
+          note,
+        });
       }
+      if (r.error) {
+        console.error("[read-acfr] PDF read failed:", JSON.stringify(r.error));
+        return NextResponse.json({ error: r.error.message || "Read failed" }, { status: 500 });
+      }
+      return NextResponse.json({
+        findings: r.findings,
+        pdfUsed: true,
+        stop_reason: r.stop_reason ?? null,
+        usage: r.usage ?? null,
+        note: "PDF read successfully",
+      });
     }
 
-    const research = await callResearch(apiKey, issuerName, issuerState);
-    if (research.error) {
-      console.error("[research] failed:", JSON.stringify(research.error));
-      return NextResponse.json({ error: research.error.message || "Research failed" }, { status: 500 });
+    // No PDF — web-only research.
+    const fb = await callResearchWebOnly(apiKey, issuerName, issuerState, fallbackNote);
+    if (fb.error) {
+      console.error("[read-acfr] web-only read failed:", JSON.stringify(fb.error));
+      return NextResponse.json({ error: fb.error.message || "Read failed" }, { status: 500 });
     }
-
-    const findings = research.findings || "";
-    if (findings.length < 500) {
-      console.error("[research] insufficient findings " + JSON.stringify({
-        issuer: cacheKey,
-        text_length: findings.length,
-        text_head: findings.slice(0, 500),
-        stop_reason: research.stop_reason ?? null,
-        usage: research.usage ?? null,
-        pdfUsed: research.pdfUsed,
-        pdfNote: research.pdfNote ?? null,
-      }));
-      return NextResponse.json({ error: "Research phase returned no usable findings" }, { status: 500 });
-    }
-
     return NextResponse.json({
-      cached: false,
-      findings,
-      pdfUsed: research.pdfUsed,
-      pdfUrl: research.pdfUrl ?? null,
-      pdfNote: research.pdfNote ?? null,
-      stop_reason: research.stop_reason ?? null,
-      usage: research.usage ?? null,
+      findings: fb.findings,
+      pdfUsed: false,
+      stop_reason: fb.stop_reason ?? null,
+      usage: fb.usage ?? null,
+      note: fallbackNote,
     });
   } catch (error) {
-    console.error("[research] route error:", error);
-    return NextResponse.json({ error: "Research route failed" }, { status: 500 });
+    console.error("[read-acfr] route error:", error);
+    return NextResponse.json({ error: "Read route failed" }, { status: 500 });
   }
 }

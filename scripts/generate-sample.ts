@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Usage: npx tsx scripts/generate-sample.ts "City of Austin" "TX"
 //
-// Calls /api/research then /api/generate sequentially against the local Next.js
-// dev server. Writes the final report JSON to samples/<slug>.json. Run from
-// the repo root with `npm run dev` already running and ANTHROPIC_API_KEY +
-// Supabase env vars present in .env.local. Override the base URL via
-// MUNIREPORTS_BASE_URL if needed.
+// Calls /api/find-acfr → /api/read-acfr → /api/generate sequentially against
+// the local Next.js dev server. Writes the final report JSON to
+// samples/<slug>.json. Run from the repo root with `npm run dev` already
+// running and ANTHROPIC_API_KEY + BRAVE_API_KEY + Supabase env vars present
+// in .env.local. Override the base URL via MUNIREPORTS_BASE_URL if needed.
 
 import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -39,7 +39,8 @@ async function main(): Promise<void> {
   }
 
   const baseUrl = process.env.MUNIREPORTS_BASE_URL || "http://localhost:3000";
-  const researchUrl = `${baseUrl}/api/research`;
+  const findUrl = `${baseUrl}/api/find-acfr`;
+  const readUrl = `${baseUrl}/api/read-acfr`;
   const generateUrl = `${baseUrl}/api/generate`;
 
   const slug = (issuerName + "-" + issuerState)
@@ -54,35 +55,72 @@ async function main(): Promise<void> {
 
   const startedAt = Date.now();
 
-  // Step 1: research (with forceRefresh to bypass the 90-day cache).
-  console.log(`Step 1/2: research (${researchUrl})...`);
-  const r1Started = Date.now();
-  const d1 = await postJSON(researchUrl, { issuerName, issuerState, forceRefresh: true });
-  const r1Elapsed = ((Date.now() - r1Started) / 1000).toFixed(1);
+  // Step 1: find-acfr (cache lookup + URL discovery + HEAD validation).
+  console.log(`Step 1/3: find-acfr (${findUrl})...`);
+  const t1 = Date.now();
+  const d1 = await postJSON(findUrl, { issuerName, issuerState, forceRefresh: true });
+  const dt1 = ((Date.now() - t1) / 1000).toFixed(1);
 
   let finalData: any;
 
   if (d1.cached) {
-    console.log(`  Cache hit (${r1Elapsed}s). Skipping step 2.`);
+    console.log(`  find: ${dt1}s (cache hit). Skipping steps 2-3.`);
     finalData = { report: d1.report, cached: true, generatedAt: d1.generatedAt };
   } else {
-    const findings = d1.findings || "";
-    console.log(`  Research done in ${r1Elapsed}s. Findings: ${findings.length} chars. stop_reason=${d1.stop_reason}`);
+    const pdfUrl = d1.attachable ? d1.pdfUrl : null;
+    console.log(
+      `  find: ${dt1}s pdfUrl=${d1.pdfUrl ?? "null"} pdfSource=${d1.pdfSource ?? "null"} ` +
+        `pdfBytes=${d1.pdfBytes ?? "null"} attachable=${d1.attachable} note="${d1.note}"`
+    );
 
-    // Step 2: generation.
-    console.log(`Step 2/2: generate (${generateUrl})...`);
-    const r2Started = Date.now();
-    const d2 = await postJSON(generateUrl, { issuerName, issuerState, findings, forceRefresh: true });
-    const r2Elapsed = ((Date.now() - r2Started) / 1000).toFixed(1);
-    console.log(`  Generation done in ${r2Elapsed}s.`);
-    finalData = d2;
+    // Step 2: read-acfr (PDF-attached or web-only).
+    console.log(`Step 2/3: read-acfr (${readUrl})${pdfUrl ? " [PDF mode]" : " [web-only mode]"}...`);
+    const t2 = Date.now();
+    const d2 = await postJSON(readUrl, {
+      issuerName,
+      issuerState,
+      pdfUrl,
+      pdfNote: d1.note,
+    });
+    const dt2 = ((Date.now() - t2) / 1000).toFixed(1);
+    const findings: string = d2.findings || "";
+    console.log(
+      `  read: ${dt2}s pdfUsed=${d2.pdfUsed} findings_length=${findings.length} ` +
+        `stop_reason=${d2.stop_reason ?? "null"}`
+    );
+
+    // Step 3: generate the structured JSON report.
+    console.log(`Step 3/3: generate (${generateUrl})...`);
+    const t3 = Date.now();
+    const d3 = await postJSON(generateUrl, {
+      issuerName,
+      issuerState,
+      findings,
+      forceRefresh: true,
+    });
+    const dt3 = ((Date.now() - t3) / 1000).toFixed(1);
+    console.log(`  generate: ${dt3}s savedId=${d3.savedId ?? "null"}`);
+
+    finalData = {
+      report: d3.report,
+      cached: false,
+      generatedAt: d3.generatedAt,
+      savedId: d3.savedId,
+      pdf: {
+        url: d1.pdfUrl,
+        source: d1.pdfSource,
+        bytes: d1.pdfBytes,
+        attachable: d1.attachable,
+        used: d2.pdfUsed,
+      },
+    };
   }
 
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(finalData, null, 2));
 
   const totalElapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-  console.log(`Done in ${totalElapsed}s total. Cached: ${finalData.cached ?? false}.`);
+  console.log(`Done in ${totalElapsed}s total.`);
 }
 
 main().catch((err) => {
