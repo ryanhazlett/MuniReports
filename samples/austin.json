@@ -306,7 +306,7 @@
       "property_tax_rate_vs_state": "N/A — disclosure not available",
       "total_tax_burden_per_capita": "N/A — disclosure not available",
       "sales_tax_rate": "N/A — disclosure not available",
-      "homestead_exemption": "N/A — disclosure not available"
+      "homestead_exemption": "Not itemized in ACFR. FY2025 total exemptions: $91.98B against $325.38B appraised value. City of Austin offers 20% local-option general homestead exemption (verify with Travis CAD)."
     },
     "housing": {
       "median_home_value": 0,
@@ -354,7 +354,149 @@
       "Austin Fire Fighters Relief and Retirement Fund (AFRS), pension data as of December 31, 2024, per FY2025 ACFR Note 10",
       "Texas HB 2802, Fire Fighters plan reforms effective January 1, 2026, referenced in FY2025 ACFR",
       "Texas SB2, property tax revenue cap legislation, referenced in FY2025 ACFR and Moody's institutional framework assessment"
-    ]
+    ],
+    "statistical_section": {
+      "poverty_rate_pct": null,
+      "poverty_rate_note": "Not reported in Austin FY2025 ACFR",
+      "sales_tax_rate_pct": 8.25,
+      "sales_tax_components": {
+        "city": 1.00,
+        "transit_capital_metro": 1.00,
+        "state_texas": 6.25
+      },
+      "sales_tax_source_page": 290,
+      "homestead_exemption": "Not itemized in ACFR. FY2025 total exemptions: $91.98B against $325.38B appraised value. City of Austin offers 20% local-option general homestead exemption (verify with Travis CAD).",
+      "homestead_source_page": 286,
+      "top_property_taxpayers": [
+        {
+          "rank": 1,
+          "name": "Samsung Austin Semiconductor LLC",
+          "type": "Manufacturing",
+          "assessed_value": 840039193,
+          "pct_of_total": 0.36
+        },
+        {
+          "rank": 2,
+          "name": "Columbia/St. Davids Health Care",
+          "type": "Hospital/Medical",
+          "assessed_value": 654453637,
+          "pct_of_total": 0.28
+        },
+        {
+          "rank": 3,
+          "name": "BPP Alphabet MF Riata LP",
+          "type": "Commercial",
+          "assessed_value": 478961230,
+          "pct_of_total": 0.21
+        },
+        {
+          "rank": 4,
+          "name": "110 E 2nd Series",
+          "type": "Commercial",
+          "assessed_value": 437823880,
+          "pct_of_total": 0.19
+        },
+        {
+          "rank": 5,
+          "name": "Oracle America Inc",
+          "type": "Manufacturing",
+          "assessed_value": 423234378,
+          "pct_of_total": 0.18
+        },
+        {
+          "rank": 6,
+          "name": "Waller Creek Eleven LTD",
+          "type": "Commercial",
+          "assessed_value": 415497000,
+          "pct_of_total": 0.18
+        },
+        {
+          "rank": 7,
+          "name": "University of Texas",
+          "type": "Education",
+          "assessed_value": 389995000,
+          "pct_of_total": 0.17
+        },
+        {
+          "rank": 8,
+          "name": "Alpine Guadalupe LLC",
+          "type": "Commercial",
+          "assessed_value": 385835696,
+          "pct_of_total": 0.17
+        },
+        {
+          "rank": 9,
+          "name": "Apple",
+          "type": "Manufacturing",
+          "assessed_value": 381282795,
+          "pct_of_total": 0.16
+        },
+        {
+          "rank": 10,
+          "name": "HEB Grocery Company LP",
+          "type": "Retail",
+          "assessed_value": 373067948,
+          "pct_of_total": 0.16
+        }
+      ],
+      "top_property_taxpayers_source_page": 289,
+      "assessed_value_history": [
+        {
+          "fiscal_year": 2016,
+          "total_taxable_value": 110526026399
+        },
+        {
+          "fiscal_year": 2017,
+          "total_taxable_value": 125371654656
+        },
+        {
+          "fiscal_year": 2018,
+          "total_taxable_value": 138418647260
+        },
+        {
+          "fiscal_year": 2019,
+          "total_taxable_value": 152147505769
+        },
+        {
+          "fiscal_year": 2020,
+          "total_taxable_value": 165194107887
+        },
+        {
+          "fiscal_year": 2021,
+          "total_taxable_value": 176671783309
+        },
+        {
+          "fiscal_year": 2022,
+          "total_taxable_value": 181435268760
+        },
+        {
+          "fiscal_year": 2023,
+          "total_taxable_value": 216893650976
+        },
+        {
+          "fiscal_year": 2024,
+          "total_taxable_value": 234256551594
+        },
+        {
+          "fiscal_year": 2025,
+          "total_taxable_value": 233405019350
+        }
+      ],
+      "assessed_value_5yr_growth_pct": 41.29,
+      "assessed_value_source_page": 286,
+      "median_home_value_acfr": 435000,
+      "median_home_value_acfr_note": "Austin-area median single-family sales price, 2025 (ACFR transmittal letter, p. IV)",
+      "homeownership_rate_pct": 43.4,
+      "homeownership_rate_source": "U.S. Census Bureau ACS 1-year, 2024 (city of Austin, TX)",
+      "median_home_value_census": 555300,
+      "median_home_value_census_source": "U.S. Census Bureau ACS 1-year, 2024 (city of Austin, TX, owner-occupied median property value)",
+      "median_home_value_zillow": 512937,
+      "median_home_value_zillow_source": "Zillow Home Value Index, Austin TX, July 2025",
+      "fema_nri_score": 22.92,
+      "fema_nri_rating": "Relatively Moderate",
+      "fema_nri_geography": "Travis County, TX",
+      "fema_nri_source": "FEMA National Risk Index"
+    }
   },
   "cached": false,
   "generatedAt": "2026-05-13T01:57:27.593Z",
