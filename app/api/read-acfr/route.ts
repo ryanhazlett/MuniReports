@@ -68,7 +68,21 @@ J. Statistical section:
    - Top 10 taxpayers
    - Property tax rate(s) per $1,000 or %, by overlapping jurisdiction
 
-For each value, cite the printed PDF page number. If a value is genuinely not in the ACFR, write "Not in ACFR" — do NOT estimate.
+For each value above, cite the printed PDF page number. If a value is genuinely not in the ACFR, write "Not in ACFR" — do NOT estimate.
+
+K. Statistical Section Data — REQUIRED (ACFR-first, then research; N/A only if both fail):
+
+For EACH field in this section: first attempt to locate the value in the attached ACFR. If it is NOT present in the ACFR, you MUST use web_search to find it before returning N/A. Only mark a field "N/A — not located in ACFR or via web search" after both the ACFR and a web search have failed. Cite the source (ACFR page or web source + date) for every value.
+
+   K1. Poverty rate — ACFR demographic / statistical table preferred; fall back to Census ACS 5-year for the issuer's geography.
+   K2. Sales tax rate (total combined %) — sum of state + local + transit/special-purpose components for the issuer's jurisdiction. ACFR statistical section or state comptroller / Tax Foundation if not in ACFR.
+   K3. Homestead exemption details — amount (state minimum + local optional %), age/disability adders, and the over-65 freeze if applicable. ACFR notes / budget / appraisal-district materials.
+   K4. Total tax-supported debt outstanding — must equal the figure in section F (governmental-activities tax-supported debt). Restate the dollar amount here with its ACFR page cite for cross-check.
+   K5. 10-year history of total assessed (or full taxable) value, year-by-year. Compute 5-year AV growth percentage: (AV_latest / AV_five_years_prior − 1) × 100, formatted "XX.X%". Show your arithmetic in one line.
+   K6. Median home value — ACFR housing statistics table if shown; otherwise Census ACS 5-year for the issuer's geography.
+   K7. Homeownership rate — almost always Census ACS 5-year (% of occupied housing units that are owner-occupied) for the issuer's geography. Cite ACS vintage.
+   K8. Top 10 principal property taxpayers — name, taxable AV, % of total AV. Almost always in the ACFR statistical section (overlap with J — reproduce here in tabular order if J already captured this).
+   K9. Climate risk — FEMA National Risk Index composite score for the issuer's county (or the issuer's primary county if it spans multiple). Include the score, percentile rating ("Very Low" / "Relatively Low" / "Relatively Moderate" / "Relatively High" / "Very High"), and the top 1–2 individual hazard drivers (e.g., "drought + heat wave"). FEMA NRI is at hazards.fema.gov/nri.
 
 FROM WEB SEARCH — external inputs not in the ACFR:
 
@@ -84,10 +98,11 @@ FROM WEB SEARCH — external inputs not in the ACFR:
 10. EMMA / Bond Buyer — recent yield / price / spread observations for outstanding series if not already captured in the ACFR bond detail table.
 
 OUTPUT FORMAT:
-- Plain text. Use section headers A–J (ACFR) then 1–10 (web).
-- Cite every numeric fact: "(FY___ ACFR p. ___)" for ACFR-sourced; "(BEA RPP 2023)" / "(BLS LAUS Apr 2026)" / "(Census ACS 2019-2023 5-year)" for web-sourced.
-- For values you cannot find in the ACFR or via web search, write "Not located in available public sources."
-- Maximum length: about 12,000 tokens.
+- Plain text. Use section headers A–J (ACFR direct extraction), K (Statistical Section Data, ACFR-first with research fallback), then 1–10 (web search externals).
+- Cite every numeric fact: "(FY___ ACFR p. ___)" for ACFR-sourced; "(Census ACS 2019-2023 5-year)" / "(BEA RPP 2023)" / "(FEMA NRI 2024)" / "(Tax Foundation 2025)" etc. for web-sourced.
+- For section K only: never return a bare "Not located" — you must attempt web_search before returning N/A. Mark such fields "N/A — not located in ACFR or via web search" so the generation step can distinguish a genuinely unavailable field from one we didn't try.
+- For other sections, "Not located in available public sources" is acceptable for fields you cannot find.
+- Maximum length: about 13,000 tokens.
 
 DO NOT produce JSON. Do NOT assign Moody's buckets. Do NOT invent peer comparisons, scenario projections, or numbers you cannot trace to either the ACFR or a cited web source.`;
 }
