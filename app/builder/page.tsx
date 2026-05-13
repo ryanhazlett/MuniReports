@@ -34,6 +34,16 @@ function fmtUSDThousands(v: any, decimals: number = 0, fallback: string = NA_DIS
   return isPositiveFinite(v) ? `$${(v / 1e3).toFixed(decimals)}K` : fallback;
 }
 
+// Stat-card values: if the value is a disclosure-style N/A string it should render
+// in a smaller muted style so it doesn't blow out the card. isNA matches "N/A",
+// "N/A — disclosure not available", "not available", etc.
+function isNA(v: any): boolean {
+  if (v == null) return false;
+  const s = String(v).trim().toLowerCase();
+  return s === "n/a" || s.startsWith("n/a") || s.includes("disclosure not available") || s.includes("not available");
+}
+const STAT_VALUE_NA_STYLE = { fontSize: ".82rem", fontWeight: 500, color: "var(--text3)", lineHeight: 1.35 };
+
 function formatStat(label: string, value: any, isCurrency = false): string {
   const isZero =
     (typeof value === "number" && value === 0) ||
@@ -441,17 +451,17 @@ export default function BuilderPage() {
               </div>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Fund Balance</div>
-                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.fund_balance_ratio || "N/A"}</div>
+                <div style={isNA(report.financials?.fund_balance_ratio || "N/A") ? STAT_VALUE_NA_STYLE : { fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.fund_balance_ratio || "N/A"}</div>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>of expenditures</div>
               </div>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Op. Margin</div>
-                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.operating_margin || "N/A"}</div>
+                <div style={isNA(report.financials?.operating_margin || "N/A") ? STAT_VALUE_NA_STYLE : { fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.operating_margin || "N/A"}</div>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>net revenue</div>
               </div>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Debt/Capita</div>
-                <div style={{ fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.debt_per_capita || "N/A"}</div>
+                <div style={isNA(report.financials?.debt_per_capita || "N/A") ? STAT_VALUE_NA_STYLE : { fontSize: "1.3rem", fontWeight: 700 }}>{report.financials?.debt_per_capita || "N/A"}</div>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>per resident</div>
               </div>
               <div style={{ textAlign: "center" }}>
@@ -1109,7 +1119,7 @@ export default function BuilderPage() {
                   ].map((m, i) => (
                     <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
                       <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>{m.label}</div>
-                      <div style={{ fontSize: "1.5rem", fontWeight: 700, color: m.color }}>{m.value || "—"}</div>
+                      <div style={isNA(m.value) ? STAT_VALUE_NA_STYLE : { fontSize: "1.5rem", fontWeight: 700, color: m.color }}>{m.value || "—"}</div>
                     </div>
                   ))}
                 </div>
@@ -1166,28 +1176,62 @@ export default function BuilderPage() {
                     ))}
                   </div>
                 </div>
+                {report.tax_burden.top_taxpayers?.length > 0 && (
+                  <div style={{ marginTop: "1rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".5rem" }}>Top 10 Property Taxpayers</div>
+                    <table style={{ width: "100%", borderCollapse: "collapse", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
+                      <thead>
+                        <tr style={{ borderBottom: "1px solid var(--line)" }}>
+                          <th style={{ padding: ".55rem .65rem", textAlign: "left", fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase" }}>Rank</th>
+                          <th style={{ padding: ".55rem .65rem", textAlign: "left", fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase" }}>Taxpayer</th>
+                          <th style={{ padding: ".55rem .65rem", textAlign: "left", fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase" }}>Type</th>
+                          <th style={{ padding: ".55rem .65rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase" }}>Assessed Value</th>
+                          <th style={{ padding: ".55rem .65rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase" }}>% of Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {report.tax_burden.top_taxpayers.map((t: any, i: number) => (
+                          <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
+                            <td style={{ padding: ".55rem .65rem", fontFamily: "var(--mono)", fontSize: ".82rem", color: "var(--text2)" }}>{t.rank}</td>
+                            <td style={{ padding: ".55rem .65rem", fontSize: ".84rem", fontWeight: 500 }}>{t.name}</td>
+                            <td style={{ padding: ".55rem .65rem", fontSize: ".82rem", color: "var(--text2)" }}>{t.type}</td>
+                            <td style={{ padding: ".55rem .65rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem", fontWeight: 600 }}>{fmtUSDMillions(t.assessed_value, 1, "—")}</td>
+                            <td style={{ padding: ".55rem .65rem", textAlign: "right", fontFamily: "var(--mono)", fontSize: ".82rem" }}>{typeof t.pct_of_total === "number" ? `${t.pct_of_total.toFixed(2)}%` : "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
 
             {/* ── HOUSING & TAX BASE (DIFFERENTIATOR) ── */}
             {report.housing && (
               <div className="report-section" style={{ marginTop: "2.5rem" }}>
-                {console.log("DEBUG price-to-income raw:", JSON.stringify(report.housing.median_home_value_to_income))}
                 <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid #059669" }}>
                   <span style={{ fontSize: "1.1rem" }}>🏠</span>
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Housing & Tax Base Stability</h3>
                   <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem" }}>
-                  {[
-                    { label: "Median Home Value", value: fmtUSDThousands(report.housing.median_home_value) },
-                    { label: "Price-to-Income", value: report.housing.median_home_value_to_income ? `${String(report.housing.median_home_value_to_income).replace(/[xX×]\s*$/, "").trim()}×` : "—", color: parseFloat(report.housing.median_home_value_to_income) > 5 ? "var(--warn)" : "var(--good)" },
-                    { label: "5Y AV Growth", value: report.housing.assessed_value_growth_5yr || "—" },
-                    { label: "Homeownership", value: report.housing.homeownership_rate || "—" },
-                  ].map((m, i) => (
+                  {(() => {
+                    const ptiRaw = report.housing.median_home_value_to_income;
+                    const ptiNum = parseFloat(String(ptiRaw));
+                    const ptiIsNumeric = !isNA(ptiRaw) && Number.isFinite(ptiNum);
+                    const ptiValue = ptiIsNumeric
+                      ? `${String(ptiRaw).replace(/[xX×]\s*$/, "").trim()}×`
+                      : (ptiRaw || "—");
+                    return [
+                      { label: "Median Home Value", value: fmtUSDThousands(report.housing.median_home_value) },
+                      { label: "Price-to-Income", value: ptiValue, color: ptiIsNumeric && ptiNum > 5 ? "var(--warn)" : ptiIsNumeric ? "var(--good)" : undefined },
+                      { label: "5Y AV Growth", value: report.housing.assessed_value_growth_5yr || "—" },
+                      { label: "Homeownership", value: report.housing.homeownership_rate || "—" },
+                    ];
+                  })().map((m, i) => (
                     <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
                       <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>{m.label}</div>
-                      <div style={{ fontSize: "1.3rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
+                      <div style={isNA(m.value) ? STAT_VALUE_NA_STYLE : { fontSize: "1.3rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
                     </div>
                   ))}
                 </div>
@@ -1198,6 +1242,47 @@ export default function BuilderPage() {
                       <span style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", marginLeft: ".5rem" }}>(industry-standard metric)</span>
                     </div>
                     <span style={{ fontFamily: "var(--mono)", fontSize: "1.1rem", fontWeight: 700 }}>{report.financials.full_value_per_capita}</span>
+                  </div>
+                )}
+                {report.tax_burden?.assessed_value_history?.length > 0 && (
+                  <div style={{ marginTop: ".8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem 1.2rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".8rem" }}>10-Year Assessed Value History</div>
+                    <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
+                      {[0,1,2,3].map(i => <line key={i} x1="60" y1={30+i*40} x2="490" y2={30+i*40} stroke="var(--line)" strokeWidth="0.5" />)}
+                      {(() => {
+                        const data = report.tax_burden.assessed_value_history;
+                        const vals = data.map((d: any) => d.total_taxable_value).filter((v: any) => typeof v === "number" && Number.isFinite(v));
+                        if (vals.length === 0) return null;
+                        const maxV = Math.max(...vals);
+                        const minV = Math.min(...vals);
+                        const range = maxV - minV || 1;
+                        const plotTop = 30, plotBottom = 170;
+                        const gap = data.length > 1 ? 430 / (data.length - 1) : 0;
+                        const pts = data.map((d: any, i: number) => {
+                          const x = 60 + i * gap;
+                          const y = plotBottom - ((d.total_taxable_value - minV) / range) * (plotBottom - plotTop);
+                          return { x, y, v: d.total_taxable_value, fy: d.fiscal_year };
+                        });
+                        const linePath = pts.map((p: any) => `${p.x},${p.y}`).join(" ");
+                        const areaPath = `60,${plotBottom} ${linePath} ${pts[pts.length-1].x},${plotBottom}`;
+                        const fmtB = (n: number) => `$${(n / 1e9).toFixed(1)}B`;
+                        return (
+                          <>
+                            <text x="55" y={plotTop + 4} fill="var(--text3)" fontSize="8.5" textAnchor="end" fontFamily="var(--mono)">{fmtB(maxV)}</text>
+                            <text x="55" y={plotBottom + 3} fill="var(--text3)" fontSize="8.5" textAnchor="end" fontFamily="var(--mono)">{fmtB(minV)}</text>
+                            <polygon points={areaPath} fill="#1e3a5f" opacity="0.12" />
+                            <polyline points={linePath} fill="none" stroke="#1e3a5f" strokeWidth="2.5" strokeLinejoin="round" />
+                            {pts.map((p: any, i: number) => (
+                              <g key={i}>
+                                <circle cx={p.x} cy={p.y} r="3" fill="#1e3a5f" />
+                                <text x={p.x} y={p.y - 7} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{fmtB(p.v)}</text>
+                                <text x={p.x} y="190" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{`'${String(p.fy).slice(-2)}`}</text>
+                              </g>
+                            ))}
+                          </>
+                        );
+                      })()}
+                    </svg>
                   </div>
                 )}
               </div>
@@ -1234,6 +1319,22 @@ export default function BuilderPage() {
                     <p style={{ fontSize: ".85rem", color: "var(--text2)", margin: 0, lineHeight: 1.5 }}>{report.climate_risk.description}</p>
                   </div>
                 </div>
+                {report.climate_risk.fema_nri_score != null && (
+                  <div style={{ marginTop: ".8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                    <div style={{ flex: "0 0 auto", textAlign: "left" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>FEMA National Risk Index</div>
+                      <div style={{ fontSize: "2rem", fontWeight: 700, lineHeight: 1, color: "var(--text)" }}>{report.climate_risk.fema_nri_score}</div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      {report.climate_risk.fema_nri_rating && (
+                        <div style={{ fontSize: "1rem", fontWeight: 600, color: "var(--text)", marginBottom: ".25rem" }}>{report.climate_risk.fema_nri_rating}</div>
+                      )}
+                      {report.climate_risk.fema_nri_geography && (
+                        <div style={{ fontFamily: "var(--mono)", fontSize: ".78rem", color: "var(--text3)" }}>{report.climate_risk.fema_nri_geography}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1256,7 +1357,7 @@ export default function BuilderPage() {
                   ].map((m, i) => (
                     <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".9rem", textAlign: "center" }}>
                       <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".3rem" }}>{m.label}</div>
-                      <div style={{ fontSize: "1.2rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
+                      <div style={isNA(m.value) ? STAT_VALUE_NA_STYLE : { fontSize: "1.2rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
                     </div>
                   ))}
                 </div>
