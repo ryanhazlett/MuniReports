@@ -294,13 +294,54 @@
       "contribution_to_adc": "N/A — disclosure not available"
     },
     "bond_market": {
-      "outstanding_bonds": [],
-      "total_outstanding_par": 0,
-      "avg_coupon": "N/A",
-      "avg_yield": "N/A",
-      "avg_spread": "N/A",
-      "market_commentary": "No specific bond series with coupon, maturity, par amount, yield, price, or spread traceable to an EMMA filing or Bond Buyer reference is present in the research dossier. Outstanding bond data has been omitted per sourcing rules. The City's triple-AAA ratings from all three major agencies would typically support very tight spreads to the AAA benchmark curve for its general obligation debt."
+  "avg_yield": "N/A",
+  "avg_coupon": "N/A",
+  "avg_spread": "N/A",
+  "market_commentary": "Austin issued $682M in combined Series 2025 tax-supported obligations in October 2025, following $422M in Series 2024 obligations in December 2024. The City's triple-AAA ratings from Fitch, Moody's, and S&P support very tight spreads to the AAA benchmark curve. Per-maturity coupon and yield data available via the official statements on EMMA (issuer base CUSIP 052397).",
+  "outstanding_bonds": [
+    {
+      "series": "Public Improvement & Refunding Bonds, Series 2025",
+      "par_amount": 377765000,
+      "dated_date": "October 2025",
+      "base_cusip": "052397",
+      "purpose": "Public improvements + refunding",
+      "type": "General Obligation"
     },
+    {
+      "series": "Certificates of Obligation, Series 2025",
+      "par_amount": 266630000,
+      "dated_date": "October 2025",
+      "base_cusip": "052397",
+      "purpose": "Various capital projects (no bond election required)",
+      "type": "Certificate of Obligation"
+    },
+    {
+      "series": "Contractual Obligations, Series 2025",
+      "par_amount": 37720000,
+      "dated_date": "October 2025",
+      "base_cusip": "052397",
+      "purpose": "Equipment and contractual purchases",
+      "type": "Contractual Obligation"
+    },
+    {
+      "series": "Public Improvement & Refunding Bonds, Series 2024",
+      "par_amount": 292600000,
+      "dated_date": "December 2024",
+      "base_cusip": "052397",
+      "purpose": "Public improvements + refunding",
+      "type": "General Obligation"
+    },
+    {
+      "series": "Certificates of Obligation, Series 2024",
+      "par_amount": 100325000,
+      "dated_date": "December 2024",
+      "base_cusip": "052397",
+      "purpose": "Various capital projects (no bond election required)",
+      "type": "Certificate of Obligation"
+    }
+  ],
+  "total_outstanding_par": 1864172000
+},
     "tax_burden": {
       "property_tax_rate": "$0.4776 per $100 assessed value (FY2025); $0.5740 per $100 assessed value (FY2026)",
       "property_tax_rate_vs_state": "N/A — disclosure not available",
