@@ -123,7 +123,7 @@ export default function BuilderPage() {
   const generateReport = async () => {
     // Check usage limit - allow if they have purchased credits
     const credits = parseInt(localStorage.getItem("muni_credits") || "0", 10);
-    if (!isAdmin && reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
+    if (process.env.NODE_ENV !== "development" && !isAdmin && reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
       setShowPaywall(true);
       return;
     }
@@ -218,8 +218,8 @@ export default function BuilderPage() {
       if (finalReport) {
         setReport(finalReport);
         setReportGeneratedAt(generatedAt);
-        // Use a purchased credit if available, otherwise count as free (skip for admin)
-        if (!isAdmin) {
+        // Use a purchased credit if available, otherwise count as free (skip for admin and in dev)
+        if (!isAdmin && process.env.NODE_ENV !== "development") {
           if (reportsUsed >= FREE_REPORT_LIMIT && credits > 0) {
             localStorage.setItem("muni_credits", String(credits - 1));
           } else {
