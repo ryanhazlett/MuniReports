@@ -6,10 +6,8 @@
 // Austin TX was previously listed here but removed:
 //   - FY2025 Widen share URL serves text/html (viewer page, not the PDF)
 //   - FY2024 austintexas.gov path 404s
-//   - Even the correct direct FY2025 Widen PDF is 78.9 MB — exceeds the
-//     32 MB request-size cap that Anthropic documents.
-// DuckDuckGo discovery surfaces Austin's URLs; if it returns the 78.9 MB
-// FY2025 the size check will reject and we fall back to web-only research.
-// Re-add an override here only if/when we have a working URL under 32 MB.
+//   - FY2025 Widen direct PDF is 78.9 MB — fit under the bumped 100 MB cap;
+//     test whether URL-fetched ACFRs over 32 MB are accepted by Anthropic
+//     before re-adding an override here.
 
 export const ACFR_OVERRIDES: Record<string, string> = {};

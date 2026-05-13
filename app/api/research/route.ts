@@ -262,7 +262,12 @@ async function runPauseTurnLoop(
 
 // ===== Stage B: HEAD-validate the PDF URL =====
 
-const MAX_PDF_BYTES = 32 * 1024 * 1024;
+// Anthropic documents a 32 MB request-size cap for inline PDFs. URL-sourced PDFs
+// are fetched server-side by Anthropic and the documented cap may not apply the
+// same way; raised to 100 MB so we can attach larger ACFRs (Austin's FY2025 is
+// 78.9 MB). If Anthropic rejects URL-fetched PDFs over its real cap, the
+// generation step will surface an error and we'll fall back to web-only research.
+const MAX_PDF_BYTES = 100 * 1024 * 1024;
 
 async function validatePdfUrl(
   url: string
@@ -287,7 +292,7 @@ async function validatePdfUrl(
     if (!Number.isFinite(bytes) || bytes <= 0) return { ok: false, reason: "Content-Length unparseable" };
     if (bytes > MAX_PDF_BYTES) {
       const mb = (bytes / (1024 * 1024)).toFixed(1);
-      return { ok: false, reason: `size ${mb}MB exceeds 32MB cap` };
+      return { ok: false, reason: `size ${mb}MB exceeds 100MB cap` };
     }
     return { ok: true, bytes, contentType };
   } catch (err: any) {

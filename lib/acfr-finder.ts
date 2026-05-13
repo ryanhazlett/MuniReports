@@ -1,19 +1,22 @@
 // Server-side ACFR PDF URL discovery. No model involved.
 // Order of operations:
 //   0. ACFR_OVERRIDES map (immediate return if hit; no HEAD)
-//   1. DuckDuckGo HTML search (bot-friendly, surfaces both city sites and EMMA PDFs)
+//   1. Brave Search API (primary; structured JSON, no IP/bot issues, has free tier;
+//      requires BRAVE_API_KEY in env)
+//   2. DuckDuckGo HTML fallback (best-effort; aggressively rate-limits server IPs
+//      so it's unreliable from Vercel, but kept as a backup for when Brave key is
+//      missing or its quota is exhausted)
 //
-// Note: EMMA's own search (emma.msrb.org/Search/Search.aspx) is ASP.NET WebForms
-// with JS-rendered results — useless for regex scraping. Google's /search blocks
-// headless fetches with a noscript-redirect to /enablejs. DuckDuckGo's HTML
-// endpoint (html.duckduckgo.com/html) renders without JS and returns clean
-// hrefs (wrapped in /l/?uddg=... redirects which we unwrap).
+// Search engines we tried and abandoned:
+//   - EMMA's own search (Search.aspx) — ASP.NET WebForms with JS-rendered results
+//   - Google /search — serves noscript-redirect to /enablejs against headless fetches
+//   - Bing /search — wraps result URLs in /ck/a? redirects + JS rendering
 
 import { ACFR_OVERRIDES } from "./acfr-overrides";
 
 export type FindResult = {
   url: string | null;
-  source: "override" | "duckduckgo" | null;
+  source: "override" | "brave" | "duckduckgo" | null;
   note: string;
 };
 
@@ -156,6 +159,54 @@ function rankEmmaFirst(urls: string[]): string[] {
   return [...emma, ...other];
 }
 
+// Brave Search API. Free tier exists; subscription token in BRAVE_API_KEY env var.
+// Returns structured JSON, no scraping; URLs are direct (no /url? wrappers).
+// Doc: https://api-dashboard.search.brave.com/app/documentation/web-search/responses
+async function searchBrave(name: string, state: string): Promise<string | null> {
+  const apiKey = process.env.BRAVE_API_KEY;
+  if (!apiKey) {
+    console.warn("[acfr-finder] BRAVE_API_KEY not set; skipping Brave search");
+    return null;
+  }
+  const q = encodeURIComponent(
+    `${name} ${state} annual comprehensive financial report filetype:pdf`.trim()
+  );
+  const apiUrl = `https://api.search.brave.com/res/v1/web/search?q=${q}&count=10`;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+    let response: Response;
+    try {
+      response = await fetch(apiUrl, {
+        method: "GET",
+        signal: ctrl.signal,
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip",
+          "X-Subscription-Token": apiKey,
+        },
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (!response.ok) {
+      console.warn(`[acfr-finder] Brave search HTTP ${response.status}`);
+      return null;
+    }
+    const data: any = await response.json();
+    const results: any[] = Array.isArray(data?.web?.results) ? data.web.results : [];
+    const candidates = results
+      .map((r: any) => r?.url)
+      .filter((u: any): u is string => typeof u === "string" && /\.pdf($|\?)/i.test(u));
+    if (candidates.length === 0) return null;
+    const ranked = rankEmmaFirst(candidates);
+    return await pickFirstValidPdf(ranked);
+  } catch (err) {
+    console.warn("[acfr-finder] Brave search error:", err);
+    return null;
+  }
+}
+
 async function searchDuckDuckGo(name: string, state: string): Promise<string | null> {
   const q = encodeURIComponent(
     `${name} ${state} annual comprehensive financial report filetype:pdf`.trim()
@@ -189,7 +240,24 @@ export async function findAcfrPdfUrl(
     return { url: override, source: "override", note: `override map hit (${key})` };
   }
 
-  // Step 1: DuckDuckGo HTML search (ranks emma.msrb.org PDFs first when present).
+  // Step 1: Brave Search API (primary — structured JSON, no IP/bot issues).
+  try {
+    const brave = await searchBrave(issuerName, issuerState);
+    if (brave) {
+      const isEmma = brave.toLowerCase().includes("emma.msrb.org");
+      return {
+        url: brave,
+        source: "brave",
+        note: isEmma ? "found via Brave Search (EMMA-hosted)" : "found via Brave Search",
+      };
+    }
+  } catch (e) {
+    console.warn("[acfr-finder] Brave step error (non-fatal):", e);
+  }
+
+  // Step 2: DuckDuckGo HTML fallback (if Brave key missing, quota exhausted, or no result).
+  // DDG aggressively rate-limits server IPs but sometimes still returns useful results
+  // — kept as best-effort backup.
   try {
     const ddg = await searchDuckDuckGo(issuerName, issuerState);
     if (ddg) {
@@ -207,6 +275,6 @@ export async function findAcfrPdfUrl(
   return {
     url: null,
     source: null,
-    note: "no PDF surfaced from overrides or DuckDuckGo search",
+    note: "no PDF surfaced from overrides, Brave, or DuckDuckGo search",
   };
 }
