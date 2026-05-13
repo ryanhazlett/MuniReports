@@ -1,11 +1,17 @@
 #!/usr/bin/env node
-// Usage: npx tsx scripts/generate-sample.ts "City of Austin" "TX"
+// Usage:
+//   npx tsx scripts/generate-sample.ts "City of Austin" "TX"
+//   npx tsx scripts/generate-sample.ts --web-only "City of Austin" "TX"
 //
 // Calls /api/find-acfr → /api/read-acfr → /api/generate sequentially against
 // the local Next.js dev server. Writes the final report JSON to
 // samples/<slug>.json. Run from the repo root with `npm run dev` already
 // running and ANTHROPIC_API_KEY + BRAVE_API_KEY + Supabase env vars present
 // in .env.local. Override the base URL via MUNIREPORTS_BASE_URL if needed.
+//
+// With --web-only: skips /api/find-acfr entirely and goes straight to
+// /api/read-acfr in web-search-only mode + /api/generate. Useful for
+// seeding the cache when the PDF pipeline times out.
 
 import { writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -24,11 +30,17 @@ async function postJSON(url: string, body: any): Promise<any> {
 }
 
 async function main(): Promise<void> {
-  const [, , issuerName, issuerState] = process.argv;
+  // Parse positional args, allowing an optional --web-only flag anywhere.
+  const argv = process.argv.slice(2);
+  const webOnlyIdx = argv.indexOf("--web-only");
+  const forceWebOnly = webOnlyIdx >= 0;
+  if (forceWebOnly) argv.splice(webOnlyIdx, 1);
+  const [issuerName, issuerState] = argv;
 
   if (!issuerName || !issuerState) {
-    console.error('Usage: generate-sample.ts "<issuer name>" "<state code>"');
+    console.error('Usage: generate-sample.ts [--web-only] "<issuer name>" "<state code>"');
     console.error('Example: generate-sample.ts "City of Austin" "TX"');
+    console.error('         generate-sample.ts --web-only "City of Austin" "TX"');
     process.exit(1);
   }
 
@@ -50,71 +62,87 @@ async function main(): Promise<void> {
 
   const outPath = resolve(process.cwd(), "samples", `${slug}.json`);
 
-  console.log(`Generating sample report for "${issuerName}, ${issuerState}"...`);
+  console.log(`Generating sample report for "${issuerName}, ${issuerState}"${forceWebOnly ? " [web-only mode]" : ""}...`);
   console.log(`Output: ${outPath}`);
 
   const startedAt = Date.now();
 
-  // Step 1: find-acfr (cache lookup + URL discovery + HEAD validation).
-  console.log(`Step 1/3: find-acfr (${findUrl})...`);
-  const t1 = Date.now();
-  const d1 = await postJSON(findUrl, { issuerName, issuerState, forceRefresh: true });
-  const dt1 = ((Date.now() - t1) / 1000).toFixed(1);
+  let pdfUrl: string | null = null;
+  let pdfNote = "";
+  let findFields: any = null;
 
-  let finalData: any;
-
-  if (d1.cached) {
-    console.log(`  find: ${dt1}s (cache hit). Skipping steps 2-3.`);
-    finalData = { report: d1.report, cached: true, generatedAt: d1.generatedAt };
+  if (forceWebOnly) {
+    pdfNote = "web-only mode (--web-only flag)";
+    console.log("Step 1/3: find-acfr SKIPPED (--web-only).");
   } else {
-    const pdfUrl = d1.attachable ? d1.pdfUrl : null;
+    // Step 1: find-acfr (cache lookup + URL discovery + HEAD validation).
+    console.log(`Step 1/3: find-acfr (${findUrl})...`);
+    const t1 = Date.now();
+    const d1 = await postJSON(findUrl, { issuerName, issuerState, forceRefresh: true });
+    const dt1 = ((Date.now() - t1) / 1000).toFixed(1);
+
+    if (d1.cached) {
+      console.log(`  find: ${dt1}s (cache hit). Skipping steps 2-3.`);
+      const finalData = { report: d1.report, cached: true, generatedAt: d1.generatedAt };
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, JSON.stringify(finalData, null, 2));
+      const totalElapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
+      console.log(`Done in ${totalElapsed}s total.`);
+      return;
+    }
+
+    pdfUrl = d1.attachable ? d1.pdfUrl : null;
+    pdfNote = d1.note || "";
+    findFields = d1;
     console.log(
       `  find: ${dt1}s pdfUrl=${d1.pdfUrl ?? "null"} pdfSource=${d1.pdfSource ?? "null"} ` +
         `pdfBytes=${d1.pdfBytes ?? "null"} attachable=${d1.attachable} note="${d1.note}"`
     );
-
-    // Step 2: read-acfr (PDF-attached or web-only).
-    console.log(`Step 2/3: read-acfr (${readUrl})${pdfUrl ? " [PDF mode]" : " [web-only mode]"}...`);
-    const t2 = Date.now();
-    const d2 = await postJSON(readUrl, {
-      issuerName,
-      issuerState,
-      pdfUrl,
-      pdfNote: d1.note,
-    });
-    const dt2 = ((Date.now() - t2) / 1000).toFixed(1);
-    const findings: string = d2.findings || "";
-    console.log(
-      `  read: ${dt2}s pdfUsed=${d2.pdfUsed} findings_length=${findings.length} ` +
-        `stop_reason=${d2.stop_reason ?? "null"}`
-    );
-
-    // Step 3: generate the structured JSON report.
-    console.log(`Step 3/3: generate (${generateUrl})...`);
-    const t3 = Date.now();
-    const d3 = await postJSON(generateUrl, {
-      issuerName,
-      issuerState,
-      findings,
-      forceRefresh: true,
-    });
-    const dt3 = ((Date.now() - t3) / 1000).toFixed(1);
-    console.log(`  generate: ${dt3}s savedId=${d3.savedId ?? "null"}`);
-
-    finalData = {
-      report: d3.report,
-      cached: false,
-      generatedAt: d3.generatedAt,
-      savedId: d3.savedId,
-      pdf: {
-        url: d1.pdfUrl,
-        source: d1.pdfSource,
-        bytes: d1.pdfBytes,
-        attachable: d1.attachable,
-        used: d2.pdfUsed,
-      },
-    };
   }
+
+  // Step 2: read-acfr (PDF-attached or web-only).
+  console.log(`Step 2/3: read-acfr (${readUrl})${pdfUrl ? " [PDF mode]" : " [web-only mode]"}...`);
+  const t2 = Date.now();
+  const d2 = await postJSON(readUrl, {
+    issuerName,
+    issuerState,
+    pdfUrl,
+    pdfNote,
+  });
+  const dt2 = ((Date.now() - t2) / 1000).toFixed(1);
+  const findings: string = d2.findings || "";
+  console.log(
+    `  read: ${dt2}s pdfUsed=${d2.pdfUsed} findings_length=${findings.length} ` +
+      `stop_reason=${d2.stop_reason ?? "null"}`
+  );
+
+  // Step 3: generate the structured JSON report.
+  console.log(`Step 3/3: generate (${generateUrl})...`);
+  const t3 = Date.now();
+  const d3 = await postJSON(generateUrl, {
+    issuerName,
+    issuerState,
+    findings,
+    forceRefresh: true,
+  });
+  const dt3 = ((Date.now() - t3) / 1000).toFixed(1);
+  console.log(`  generate: ${dt3}s savedId=${d3.savedId ?? "null"}`);
+
+  const finalData: any = {
+    report: d3.report,
+    cached: false,
+    generatedAt: d3.generatedAt,
+    savedId: d3.savedId,
+    pdf: findFields
+      ? {
+          url: findFields.pdfUrl,
+          source: findFields.pdfSource,
+          bytes: findFields.pdfBytes,
+          attachable: findFields.attachable,
+          used: d2.pdfUsed,
+        }
+      : { url: null, source: null, bytes: null, attachable: false, used: false },
+  };
 
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, JSON.stringify(finalData, null, 2));

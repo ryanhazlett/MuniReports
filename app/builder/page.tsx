@@ -121,34 +121,53 @@ export default function BuilderPage() {
     const issuerName = selectedIssuer?.name || query;
     const issuerState = selectedIssuer?.state || "";
 
-    setGenerating(true);
-    setGenerationStatus("Finding ACFR…");
-    try {
-      // Step 1: cache lookup + ACFR URL discovery + HEAD validate.
-      const r1 = await fetch("/api/find-acfr", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ issuerName, issuerState }),
-      });
-      const d1 = await r1.json();
-      if (!r1.ok) {
-        console.error("find-acfr failed:", d1?.error);
-        setGenerating(false);
-        setGenerationStatus("");
-        return;
-      }
+    // Escape hatch: ?webOnly=true in the URL skips find-acfr entirely (no PDF
+    // attachment) and goes straight to read-acfr in web-search-only mode +
+    // generate. Useful for seeding cache with web-only reports when the
+    // PDF pipeline times out.
+    const forceWebOnly =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("webOnly") === "true";
 
+    setGenerating(true);
+    try {
       let finalReport: any = null;
       let generatedAt: string | null = null;
       let savedId: string | null = null;
+      let pdfUrl: string | null = null;
+      let pdfNote = "";
 
-      if (d1.cached) {
-        // Cache hit — skip steps 2 and 3 entirely.
-        finalReport = d1.report;
-        generatedAt = d1.generatedAt || null;
+      if (forceWebOnly) {
+        // Skip find-acfr; treat as if no PDF was located.
+        pdfNote = "web-only mode (forceWebOnly=true via ?webOnly=true)";
       } else {
-        // Step 2: read the ACFR (attached PDF if available, else web-only).
-        const pdfUrl = d1.attachable ? d1.pdfUrl : null;
+        // Step 1: cache lookup + ACFR URL discovery + HEAD validate.
+        setGenerationStatus("Finding ACFR…");
+        const r1 = await fetch("/api/find-acfr", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ issuerName, issuerState }),
+        });
+        const d1 = await r1.json();
+        if (!r1.ok) {
+          console.error("find-acfr failed:", d1?.error);
+          setGenerating(false);
+          setGenerationStatus("");
+          return;
+        }
+
+        if (d1.cached) {
+          // Cache hit — skip steps 2 and 3 entirely.
+          finalReport = d1.report;
+          generatedAt = d1.generatedAt || null;
+        } else {
+          pdfUrl = d1.attachable ? d1.pdfUrl : null;
+          pdfNote = d1.note || "";
+        }
+      }
+
+      // Steps 2-3 (skipped on cache hit): read-acfr (with or without PDF) → generate.
+      if (!finalReport) {
         setGenerationStatus(pdfUrl ? "Reading ACFR…" : "Researching public sources…");
         const r2 = await fetch("/api/read-acfr", {
           method: "POST",
@@ -157,7 +176,7 @@ export default function BuilderPage() {
             issuerName,
             issuerState,
             pdfUrl,
-            pdfNote: d1.note,
+            pdfNote,
           }),
         });
         const d2 = await r2.json();
@@ -168,7 +187,6 @@ export default function BuilderPage() {
           return;
         }
 
-        // Step 3: generate structured JSON from the dossier.
         setGenerationStatus("Generating report…");
         const r3 = await fetch("/api/generate", {
           method: "POST",
