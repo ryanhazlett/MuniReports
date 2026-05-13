@@ -174,12 +174,18 @@ footer{background:var(--bg2);padding:3.5rem 0 1.5rem;border-top:1px solid var(--
     box-shadow: none !important;
   }
   h2, h3, h4 { break-after: avoid; }
-  svg { break-inside: avoid; }
-  .report-section { break-inside: avoid; }
+  svg { break-inside: avoid-page; max-height: 9in; }
+  .report-section { break-inside: auto; }
+  .report-section > * { break-inside: avoid; }
+  table { break-inside: auto; }
+  table thead { display: table-header-group; }
+  tr { break-inside: avoid; }
   @page {
     margin: 0.5in 0.6in;
     size: letter;
   }
+  .report-section { page-break-before: auto; }
+  h2 { break-before: auto; }
 }
 @media not print {
   .report-print-header { display: none !important; }
