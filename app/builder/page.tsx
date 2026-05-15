@@ -42,7 +42,7 @@ function fmtUSDThousands(v: any, decimals: number = 0, fallback: string = NA_DIS
 function isNA(v: any): boolean {
   if (v == null) return false;
   const s = String(v).trim().toLowerCase();
-  return s === "n/a" || s.startsWith("n/a") || s.includes("disclosure not available") || s.includes("not available") || s.includes("not provided");
+  return s === "n/a" || s.startsWith("n/a") || s.includes("disclosure not available") || s.includes("not available") || s.includes("not provided") || s.includes("not reported");
 }
 const STAT_VALUE_NA_STYLE = { fontSize: ".82rem", fontWeight: 500, color: "var(--text3)", lineHeight: 1.35 };
 
@@ -550,7 +550,7 @@ export default function BuilderPage() {
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: ".8rem", marginBottom: "1.2rem" }}>
                     {report.economy.economic_indicators.map((ind: any, i: number) => (
                       <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
-                        <div title={ind.name} style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ind.name}</div>
+                        <div title={ind.name} style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{ind.name}</div>
                         <div style={{ fontSize: "1.4rem", fontWeight: 700, color: ind.trend === "up" ? "var(--good)" : ind.trend === "down" ? "var(--bad)" : "var(--text)" }}>{ind.value}</div>
                         <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: ind.trend === "up" ? "var(--good)" : ind.trend === "down" ? "var(--bad)" : "var(--text3)" }}>
                           {ind.trend === "up" ? "▲ Growing" : ind.trend === "down" ? "▼ Declining" : "— Stable"}
@@ -1163,7 +1163,7 @@ export default function BuilderPage() {
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".86rem" }}>
                         <span style={{ color: "var(--text2)" }}>{label}</span>
-                        <span style={{ fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontWeight: 600, color: String(value).toLowerCase().includes("below") ? "var(--good)" : "var(--text)" }}>{value}</span>
+                        {isNA(value) ? <span style={STAT_VALUE_NA_STYLE}>{value}</span> : <span style={{ fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontWeight: 600, color: String(value).toLowerCase().includes("below") ? "var(--good)" : "var(--text)" }}>{value}</span>}
                       </div>
                     ))}
                   </div>
@@ -1175,7 +1175,7 @@ export default function BuilderPage() {
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".86rem" }}>
                         <span style={{ color: "var(--text2)" }}>{label}</span>
-                        <span style={{ fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontWeight: 600 }}>{value}</span>
+                        {isNA(value) ? <span style={STAT_VALUE_NA_STYLE}>{value}</span> : <span style={{ fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontWeight: 600 }}>{value}</span>}
                       </div>
                     ))}
                   </div>
@@ -1279,7 +1279,9 @@ export default function BuilderPage() {
                             {pts.map((p: any, i: number) => (
                               <g key={i}>
                                 <circle cx={p.x} cy={p.y} r="3" fill="#1e3a5f" />
-                                <text x={p.x} y={p.y - 7} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{fmtB(p.v)}</text>
+                                {!(i === 0 && p.v === minV) && (
+                                  <text x={p.x} y={p.y - 7} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor={i === pts.length - 1 ? "end" : "middle"} fontFamily="var(--mono)">{fmtB(p.v)}</text>
+                                )}
                                 <text x={p.x} y="190" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{`'${String(p.fy).slice(-2)}`}</text>
                               </g>
                             ))}
