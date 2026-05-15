@@ -1496,11 +1496,9 @@ export default function BuilderPage() {
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", marginBottom: ".5rem", textTransform: "uppercase", letterSpacing: ".08em" }}>
                   Sources & References
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem" }}>
-                  {report.sources.map((s: string, i: number) => (
-                    <span key={i} style={{ display: "inline-block", padding: ".25rem .6rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: 4, fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--text2)" }}>{s}</span>
-                  ))}
-                </div>
+                <p style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", margin: 0 }}>
+                  {report.sources.map((s: string) => s.trim().replace(/\.$/, "")).join(". ") + "."}
+                </p>
               </div>
             )}
 
