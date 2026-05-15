@@ -42,7 +42,7 @@ function fmtUSDThousands(v: any, decimals: number = 0, fallback: string = NA_DIS
 function isNA(v: any): boolean {
   if (v == null) return false;
   const s = String(v).trim().toLowerCase();
-  return s === "n/a" || s.startsWith("n/a") || s.includes("disclosure not available") || s.includes("not available");
+  return s === "n/a" || s.startsWith("n/a") || s.includes("disclosure not available") || s.includes("not available") || s.includes("not provided");
 }
 const STAT_VALUE_NA_STYLE = { fontSize: ".82rem", fontWeight: 500, color: "var(--text3)", lineHeight: 1.35 };
 
