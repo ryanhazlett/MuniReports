@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { normalizeKey } from "@/utils/report-cache";
+import { createClient } from "@/utils/supabase/client";
 
 const FREE_REPORT_LIMIT = 1;
 
@@ -138,15 +140,37 @@ export default function BuilderPage() {
   };
 
   const generateReport = async () => {
+    const issuerName = selectedIssuer?.name || query;
+    const issuerState = selectedIssuer?.state || "";
+    const issuerKey = normalizeKey(issuerName, issuerState);
+
+    // Cache-first: if a hand-curated or previously generated report exists in
+    // cached_reports, load it directly and skip the entire generate pipeline.
+    // No spinner, no paywall, no usage accounting on cache hits.
+    if (issuerKey && issuerKey !== "|") {
+      try {
+        const supabase = createClient();
+        const { data: cached } = await supabase
+          .from("cached_reports")
+          .select("report_data, generated_at")
+          .eq("issuer_key", issuerKey)
+          .maybeSingle();
+        if (cached?.report_data) {
+          setReport(cached.report_data);
+          setReportGeneratedAt(cached.generated_at);
+          return;
+        }
+      } catch (cacheErr) {
+        console.warn("[builder] cache lookup failed (non-fatal):", cacheErr);
+      }
+    }
+
     // Check usage limit - allow if they have purchased credits
     const credits = parseInt(localStorage.getItem("muni_credits") || "0", 10);
     if (process.env.NODE_ENV !== "development" && !isAdmin && reportsUsed >= FREE_REPORT_LIMIT && credits <= 0) {
       setShowPaywall(true);
       return;
     }
-
-    const issuerName = selectedIssuer?.name || query;
-    const issuerState = selectedIssuer?.state || "";
 
     // Escape hatch: ?webOnly=true in the URL skips find-acfr entirely (no PDF
     // attachment) and goes straight to read-acfr in web-search-only mode +
