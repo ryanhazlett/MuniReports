@@ -1313,21 +1313,6 @@ export default function BuilderPage() {
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Climate & Natural Hazard Risk</h3>
                   <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "#fff", background: "#059669", padding: ".15rem .45rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
-                    {[
-                      { label: "Flood Risk", value: report.climate_risk.flood_risk, icon: "🌊" },
-                      { label: "Wildfire Risk", value: report.climate_risk.wildfire_risk, icon: "🔥" },
-                      { label: "Hurricane Risk", value: report.climate_risk.hurricane_risk, icon: "🌀" },
-                      { label: "Heat Risk", value: report.climate_risk.heat_risk, icon: "🌡️" },
-                    ].map((r, i) => (
-                      <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "1.2rem", marginBottom: ".3rem" }}>{r.icon}</div>
-                        <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>{r.label}</div>
-                        <div style={isNA(r.value) ? STAT_VALUE_NA_STYLE : { fontWeight: 700, fontSize: ".9rem", color: r.value === "low" ? "var(--good)" : r.value === "moderate" ? "var(--warn)" : "var(--bad)" }}>{r.value || "—"}</div>
-                      </div>
-                    ))}
-                  </div>
                   <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
                     <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>Overall Climate Risk Score</div>
                     <div style={{ marginBottom: ".8rem" }}>
@@ -1335,7 +1320,6 @@ export default function BuilderPage() {
                     </div>
                     <p style={{ fontSize: ".85rem", color: "var(--text2)", margin: 0, lineHeight: 1.5 }}>{report.climate_risk.description}</p>
                   </div>
-                </div>
                 {report.climate_risk.fema_nri_score != null && (
                   <div style={{ marginTop: ".8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", display: "flex", alignItems: "center", gap: "1.5rem" }}>
                     <div style={{ flex: "0 0 auto", textAlign: "left" }}>
@@ -1454,11 +1438,6 @@ export default function BuilderPage() {
                   {report.forward_outlook}
                 </div>
               )}
-              {report.forecast?.description && (
-                <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", marginBottom: "1.2rem", whiteSpace: "pre-wrap" }}>
-                  {report.forecast.description}
-                </div>
-              )}
 
               {/* Revenue vs Expenditure Forecast Chart */}
               {report.forecast?.revenue_forecast?.length > 0 && (
@@ -1505,11 +1484,6 @@ export default function BuilderPage() {
                 </div>
               )}
 
-              {report.forecast?.source && (
-                <div style={{ marginTop: ".6rem", padding: ".55rem .85rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: ".78rem", color: "var(--text2)", fontFamily: "var(--mono)" }}>
-                  Forecast source: {report.forecast.source}
-                </div>
-              )}
             </div>
 
             {/* ── METHODOLOGY NOTE ── */}
