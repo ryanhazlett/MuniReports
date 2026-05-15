@@ -836,41 +836,6 @@ export default function BuilderPage() {
               </div>
             </div>
 
-            {/* ── SECTION 4: MOODY'S-STYLE CREDIT SCORECARD ── */}
-            {report.scorecard && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
-                  <span style={{ fontSize: "1.1rem" }}>📊</span>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Credit Scorecard</h3>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  {(["economy", "finances", "management", "debt_profile"] as const).map((pillar) => {
-                    const data = (report.scorecard as any)?.[pillar];
-                    if (!data) return null;
-                    const labels: any = { economy: "Economy & Tax Base", finances: "Financial Performance", management: "Management & Governance", debt_profile: "Debt & Pensions" };
-                    const icons: any = { economy: "🏙️", finances: "💵", management: "🏛️", debt_profile: "📉" };
-                    return (
-                      <div key={pillar} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-                        <div style={{ padding: ".8rem 1rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg2)" }}>
-                          <div style={{ fontWeight: 600, fontSize: ".9rem", display: "flex", alignItems: "center", gap: ".4rem" }}>{icons[pillar]} {labels[pillar]}</div>
-                          <span style={{ fontFamily: "var(--mono)", fontSize: ".85rem", fontWeight: 700, color: "var(--accent)", background: "var(--accent-bg)", padding: ".2rem .6rem", borderRadius: 4 }}>{data.score}</span>
-                        </div>
-                        {data.factors?.map((f: any, j: number) => (
-                          <div key={j} style={{ padding: ".6rem 1rem", borderBottom: "1px solid var(--line-soft)", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: ".85rem" }}>
-                            <span style={{ color: "var(--text2)" }}>{f.name}</span>
-                            <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-                              <span style={{ fontFamily: "var(--mono)", fontSize: ".82rem" }}>{f.value}</span>
-                              <span style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", background: "var(--accent-bg)", padding: ".1rem .35rem", borderRadius: 3 }}>{f.score}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* ── SECTION 5: REVENUE & EXPENDITURE COMPOSITION ── */}
             {(report.revenue_composition?.length > 0 || report.expenditure_composition?.length > 0) && (
               <div style={{ marginTop: "2.5rem" }}>
