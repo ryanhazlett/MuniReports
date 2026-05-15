@@ -388,7 +388,7 @@
     "tax_burden": {
       "property_tax_rate": "$0.4776 per $100 assessed value (FY2025); $0.5740 per $100 assessed value (FY2026)",
       "property_tax_rate_vs_state": "Below Texas major-city average (~$0.65/$100)",
-      "total_tax_burden_per_capita": "N/A \u2014 disclosure not available",
+      "total_tax_burden_per_capita": "$1,032 (property + sales tax, FY2025 GF basis \u2014 MuniReports-computed)",
       "sales_tax_rate": "8.25%",
       "homestead_exemption": "Not itemized in ACFR. FY2025 total exemptions: $91.98B against $325.38B appraised value. City of Austin offers 20% local-option general homestead exemption (verify with Travis CAD).",
       "sales_tax_components": {
@@ -555,9 +555,7 @@
       "BLS Local Area Unemployment Statistics (LAUS), Austin MSA, September 2025",
       "Claritas, MSA Median Household Income, FY2025 ($90,063)",
       "U.S. Census Bureau, American Community Survey (ACS) 5-year estimates, 2023 (US MHI $75,149)",
-      "City of Austin Employees' Retirement System (COAERS), pension data as of December 31, 2024, per FY2025 ACFR Note 10",
-      "Austin Police Retirement System (AUPRS), pension data as of December 31, 2024, per FY2025 ACFR Note 10",
-      "Austin Fire Fighters Relief and Retirement Fund (AFRS), pension data as of December 31, 2024, per FY2025 ACFR Note 10",
+      "City of Austin defined-benefit pension plans (COAERS, AUPRS, AFRS), valuation data as of December 31, 2024, per FY2025 ACFR Note 10",
       "Texas HB 2802, Fire Fighters plan reforms effective January 1, 2026, referenced in FY2025 ACFR",
       "Texas SB2, property tax revenue cap legislation, referenced in FY2025 ACFR and Moody's institutional framework assessment"
     ],
