@@ -1107,19 +1107,6 @@ export default function BuilderPage() {
               </div>
             )}
 
-            {/* ── SECTION 6: CAPITAL IMPROVEMENT PLAN ── */}
-            {report.capital_plan_summary && (
-              <div style={{ marginTop: "2.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
-                  <span style={{ fontSize: "1.1rem" }}>🏗️</span>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Capital Improvement Plan</h3>
-                </div>
-                <div style={{ fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap" }}>
-                  {report.capital_plan_summary}
-                </div>
-              </div>
-            )}
-
             {/* ── PENSION & OPEB ANALYSIS ── */}
             {report.pension && (
               <div className="report-section" style={{ marginTop: "2.5rem" }}>
@@ -1425,66 +1412,74 @@ export default function BuilderPage() {
               </div>
             )}
 
-            {/* ── FORWARD OUTLOOK WITH CHARTS ── */}
-            <div style={{ marginTop: "2.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
-                <span style={{ fontSize: "1.1rem" }}>🔮</span>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Forward Outlook & Projections</h3>
-              </div>
-
-              {/* Outlook text */}
-              {report.forward_outlook && (
-                <div style={{ padding: "1.2rem 1.4rem", background: "var(--accent-bg)", border: "1px solid var(--accent-line)", borderRadius: "var(--radius)", fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap", marginBottom: "1.2rem" }}>
-                  {report.forward_outlook}
-                </div>
-              )}
-
-              {/* Revenue vs Expenditure Forecast Chart */}
-              {report.forecast?.revenue_forecast?.length > 0 && (
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: ".8rem" }}>
-                    <div>
-                      <div style={{ fontSize: ".88rem", fontWeight: 600 }}>Projected Revenue vs. Expenditures</div>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
-                        {report.forecast.revenue_forecast[0]?.year} – {report.forecast.revenue_forecast[report.forecast.revenue_forecast.length - 1]?.year} · Baseline scenario · $M
-                      </div>
-                    </div>
-                    <div style={{ display: "flex", gap: "1rem", fontFamily: "var(--mono)", fontSize: ".72rem" }}>
-                      <span><span style={{ display: "inline-block", width: 10, height: 2, background: "#1e3a5f", marginRight: 4, verticalAlign: "middle" }}></span>Revenue</span>
-                      <span><span style={{ display: "inline-block", width: 10, height: 2, background: "#dc2626", marginRight: 4, verticalAlign: "middle", borderTop: "1px dashed #dc2626" }}></span>Expenditures</span>
-                    </div>
+            {/* ── CAPITAL PLAN & FORWARD OUTLOOK ── */}
+            {(() => {
+              const capitalAndOutlook = report.capital_and_outlook
+                || [report.capital_plan_summary, report.forward_outlook].filter(Boolean).join("\n\n")
+                || null;
+              if (!capitalAndOutlook) return null;
+              return (
+                <div style={{ marginTop: "2.5rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: ".6rem", marginBottom: "1rem", paddingBottom: ".6rem", borderBottom: "2px solid var(--accent)" }}>
+                    <span style={{ fontSize: "1.1rem" }}>🏗️</span>
+                    <h3 style={{ fontSize: "1.15rem", fontWeight: 700 }}>Capital Plan & Forward Outlook</h3>
                   </div>
-                  <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
-                    {[0,1,2,3].map(i => <line key={i} x1="50" y1={20+i*42} x2="490" y2={20+i*42} stroke="var(--line)" strokeWidth="0.5" />)}
-                    {(() => {
-                      const rev = report.forecast.revenue_forecast;
-                      const exp = report.forecast.expenditure_forecast || [];
-                      const all = [...rev, ...exp].map((d: any) => d.amount).filter((a: any) => typeof a === "number");
-                      const maxV = Math.max(...all, 1);
-                      const gap = 440 / rev.length;
-                      // Line chart
-                      const revPoints = rev.map((r: any, i: number) => `${60 + i * gap + gap * 0.3},${175 - (r.amount / maxV) * 145}`).join(" ");
-                      const expPoints = exp.map((r: any, i: number) => `${60 + i * gap + gap * 0.3},${175 - (r.amount / maxV) * 145}`).join(" ");
-                      return (
-                        <>
-                          <polyline points={revPoints} fill="none" stroke="#1e3a5f" strokeWidth="2.5" strokeLinejoin="round" />
-                          {rev.map((r: any, i: number) => <circle key={`r${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#1e3a5f" />)}
-                          {exp.length > 0 && <polyline points={expPoints} fill="none" stroke="#dc2626" strokeWidth="2.5" strokeDasharray="6 3" strokeLinejoin="round" />}
-                          {exp.map((r: any, i: number) => <circle key={`e${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#dc2626" />)}
-                          {rev.map((r: any, i: number) => (
-                            <g key={`l${i}`}>
-                              <text x={60 + i * gap + gap * 0.3} y="190" fill="var(--text)" fontSize="8" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{r.year || ""}</text>
-                              <text x={60 + i * gap + gap * 0.3} y={165 - (r.amount / maxV) * 145} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">${(r.amount / 1e6).toFixed(0)}M</text>
-                            </g>
-                          ))}
-                        </>
-                      );
-                    })()}
-                  </svg>
-                </div>
-              )}
 
-            </div>
+                  <div style={{ padding: "1.2rem 1.4rem", background: "var(--accent-bg)", border: "1px solid var(--accent-line)", borderRadius: "var(--radius)", fontSize: ".95rem", lineHeight: 1.75, color: "var(--text)", whiteSpace: "pre-wrap", marginBottom: "1.2rem" }}>
+                    {capitalAndOutlook}
+                  </div>
+
+                  {report.capital_and_outlook_source && (
+                    <div style={{ marginTop: ".6rem", padding: ".55rem .85rem", background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: "var(--radius)", fontSize: ".78rem", color: "var(--text2)", fontFamily: "var(--mono)", marginBottom: "1rem" }}>
+                      Source: {report.capital_and_outlook_source}
+                    </div>
+                  )}
+
+                  {report.forecast?.revenue_forecast?.length > 0 && (
+                    <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1.2rem", marginBottom: "1rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: ".8rem" }}>
+                        <div>
+                          <div style={{ fontSize: ".88rem", fontWeight: 600 }}>Projected Revenue vs. Expenditures</div>
+                          <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
+                            {report.forecast.revenue_forecast[0]?.year} – {report.forecast.revenue_forecast[report.forecast.revenue_forecast.length - 1]?.year} · Baseline scenario · $M
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", gap: "1rem", fontFamily: "var(--mono)", fontSize: ".72rem" }}>
+                          <span><span style={{ display: "inline-block", width: 10, height: 2, background: "#1e3a5f", marginRight: 4, verticalAlign: "middle" }}></span>Revenue</span>
+                          <span><span style={{ display: "inline-block", width: 10, height: 2, background: "#dc2626", marginRight: 4, verticalAlign: "middle", borderTop: "1px dashed #dc2626" }}></span>Expenditures</span>
+                        </div>
+                      </div>
+                      <svg viewBox="0 0 500 200" style={{ width: "100%", height: "auto" }}>
+                        {[0,1,2,3].map(i => <line key={i} x1="50" y1={20+i*42} x2="490" y2={20+i*42} stroke="var(--line)" strokeWidth="0.5" />)}
+                        {(() => {
+                          const rev = report.forecast.revenue_forecast;
+                          const exp = report.forecast.expenditure_forecast || [];
+                          const all = [...rev, ...exp].map((d: any) => d.amount).filter((a: any) => typeof a === "number");
+                          const maxV = Math.max(...all, 1);
+                          const gap = 440 / rev.length;
+                          const revPoints = rev.map((r: any, i: number) => `${60 + i * gap + gap * 0.3},${175 - (r.amount / maxV) * 145}`).join(" ");
+                          const expPoints = exp.map((r: any, i: number) => `${60 + i * gap + gap * 0.3},${175 - (r.amount / maxV) * 145}`).join(" ");
+                          return (
+                            <>
+                              <polyline points={revPoints} fill="none" stroke="#1e3a5f" strokeWidth="2.5" strokeLinejoin="round" />
+                              {rev.map((r: any, i: number) => <circle key={`r${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#1e3a5f" />)}
+                              {exp.length > 0 && <polyline points={expPoints} fill="none" stroke="#dc2626" strokeWidth="2.5" strokeDasharray="6 3" strokeLinejoin="round" />}
+                              {exp.map((r: any, i: number) => <circle key={`e${i}`} cx={60 + i * gap + gap * 0.3} cy={175 - (r.amount / maxV) * 145} r="4" fill="#dc2626" />)}
+                              {rev.map((r: any, i: number) => (
+                                <g key={`l${i}`}>
+                                  <text x={60 + i * gap + gap * 0.3} y="190" fill="var(--text)" fontSize="8" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{r.year || ""}</text>
+                                  <text x={60 + i * gap + gap * 0.3} y={165 - (r.amount / maxV) * 145} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">${(r.amount / 1e6).toFixed(0)}M</text>
+                                </g>
+                              ))}
+                            </>
+                          );
+                        })()}
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* ── METHODOLOGY NOTE ── */}
             {report.methodology_note && (
