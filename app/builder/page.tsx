@@ -1280,7 +1280,7 @@ export default function BuilderPage() {
                               <g key={i}>
                                 <circle cx={p.x} cy={p.y} r="3" fill="#1e3a5f" />
                                 {!(i === 0 && p.v === minV) && (
-                                  <text x={p.x} y={p.y - 7} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor={i === pts.length - 1 ? "end" : "middle"} fontFamily="var(--mono)">{fmtB(p.v)}</text>
+                                  <text x={p.x} y={p.y - 7} dx={i === pts.length - 1 ? -10 : 0} fill="#1e3a5f" fontSize="7.5" fontWeight="600" textAnchor="middle" fontFamily="var(--mono)">{fmtB(p.v)}</text>
                                 )}
                                 <text x={p.x} y="190" fill="var(--text3)" fontSize="8" textAnchor="middle" fontFamily="var(--mono)">{`'${String(p.fy).slice(-2)}`}</text>
                               </g>
