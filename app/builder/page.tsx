@@ -44,6 +44,23 @@ function isNA(v: any): boolean {
 }
 const STAT_VALUE_NA_STYLE = { fontSize: ".82rem", fontWeight: 500, color: "var(--text3)", lineHeight: 1.35 };
 
+// Front-page Rating cell shows e.g. "AAA / Aaa / AAA" instead of the full
+// agency-tagged string. Split on ";", and within each part take the text
+// before the first "(" — that's the grade letters. Join with " / ".
+function parseRatingShort(rating: string | undefined): string {
+  if (!rating) return "NR";
+  const s = String(rating).trim();
+  if (!s || /^n\/?r$/i.test(s)) return "NR";
+  const parts = s.split(";").map(p => p.trim()).filter(Boolean);
+  const grades = parts
+    .map(p => {
+      const paren = p.indexOf("(");
+      return (paren >= 0 ? p.slice(0, paren) : p).trim();
+    })
+    .filter(g => g.length > 0);
+  return grades.length > 0 ? grades.join(" / ") : "NR";
+}
+
 function formatStat(label: string, value: any, isCurrency = false): string {
   const isZero =
     (typeof value === "number" && value === 0) ||
@@ -441,7 +458,7 @@ export default function BuilderPage() {
             </div>
 
             {/* ── SENTIMENT + TOP KPIs ── */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: ".6rem", margin: "1.5rem 0", padding: "1.4rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: ".6rem", margin: "1.5rem 0", padding: "1.4rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", minHeight: "5.5rem" }}>
               <div style={{ textAlign: "center", borderRight: "1px solid var(--line)", paddingRight: ".6rem" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>AI Sentiment</div>
                 <div style={{ fontSize: "1.3rem", fontWeight: 700, color: report.sentiment === "Positive" ? "var(--good)" : report.sentiment === "Negative" ? "var(--bad)" : "var(--warn)" }}>
@@ -466,8 +483,10 @@ export default function BuilderPage() {
               </div>
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".4rem" }}>Rating</div>
-                <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--accent-soft)" }}>{report.rating || "NR"}</div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)" }}>credit rating</div>
+                <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--accent-soft)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{parseRatingShort(report.rating)}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", lineHeight: 1.3, marginTop: ".25rem", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {report.rating && !/^n\/?r$/i.test(String(report.rating).trim()) ? report.rating : "credit rating"}
+                </div>
               </div>
             </div>
 
