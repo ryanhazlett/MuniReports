@@ -13,7 +13,7 @@
       "methodology": "US Cities and Counties",
       "scorecard_indicated_outcome": "Aaa",
       "disclaimer": "Scorecard-Indicated Outcome is the result of applying Moody's published scorecard formulas and thresholds to public source data. It is not a Moody's rating and MuniReports is not affiliated with Moody's Investors Service.",
-      "note": "Sub-factor scores and factor averages: ECONOMY — Resident Income: bucket Aa, value 115.5%. Score interpolation: Aa bucket [100–120%], score range [1.5, 4.5]. score = 4.5 + (1.5 − 4.5) × (115.5 − 100) / (120 − 100) = 4.5 − 3.0 × 0.775 = 4.5 − 2.325 = 2.175. Full Value per Capita: bucket Aaa, value $322,000. Clamped to best edge → score = 0.5. Economic Growth: bucket Aaa, value +2.0 pp. Clamped to best edge → score = 0.5. Economy factor score = (2.175 + 0.5 + 0.5) / 3 = 1.058. FINANCIAL PERFORMANCE — Available Fund Balance Ratio: bucket Aaa, value 43.3%. Clamped to best edge → score = 0.5. Liquidity Ratio: bucket Aa, value 35.9%. Aa bucket [30–40%], score range [1.5, 4.5]. score = 4.5 + (1.5 − 4.5) × (35.9 − 30) / (40 − 30) = 4.5 − 3.0 × 0.59 = 4.5 − 1.77 = 2.73. Financial Performance factor score = (0.5 + 2.73) / 2 = 1.615. INSTITUTIONAL FRAMEWORK — bucket Aa. Midpoint of Aa score range = (1.5 + 4.5) / 2 = 3.0. Assigned score = 3.0. LEVERAGE — Long-Term Liabilities Ratio: bucket Aaa, value 93.1%. Aaa threshold ≤100%; value is within Aaa. Clamped to best edge → score = 0.5. Fixed-Costs Ratio: bucket Aaa, value 9.99%. Aaa threshold ≤10%; value is within Aaa. Clamped to best edge → score = 0.5. Leverage factor score = (0.5 + 0.5) / 2 = 0.5. AGGREGATE = 0.30 × 1.058 + 0.30 × 1.615 + 0.10 × 3.0 + 0.30 × 0.5 = 0.3174 + 0.4845 + 0.300 + 0.150 = 1.252. Aggregate score 1.252 ≤ 1.5 → Scorecard-Indicated Outcome: Aaa. NOTE: The dossier states the scorecard-indicated outcome is Aaa with aggregate weighted score ~1.30, consistent with this computation. NPL used is GASB-reported basis; Moody's adjusted NPL is not publicly available per the dossier.",
+      "note": "Sub-factor scores and factor averages: ECONOMY \u2014 Resident Income: bucket Aa, value 115.5%. Score interpolation: Aa bucket [100\u2013120%], score range [1.5, 4.5]. score = 4.5 + (1.5 \u2212 4.5) \u00d7 (115.5 \u2212 100) / (120 \u2212 100) = 4.5 \u2212 3.0 \u00d7 0.775 = 4.5 \u2212 2.325 = 2.175. Full Value per Capita: bucket Aaa, value $322,000. Clamped to best edge \u2192 score = 0.5. Economic Growth: bucket Aaa, value +2.0 pp. Clamped to best edge \u2192 score = 0.5. Economy factor score = (2.175 + 0.5 + 0.5) / 3 = 1.058. FINANCIAL PERFORMANCE \u2014 Available Fund Balance Ratio: bucket Aaa, value 43.3%. Clamped to best edge \u2192 score = 0.5. Liquidity Ratio: bucket Aa, value 35.9%. Aa bucket [30\u201340%], score range [1.5, 4.5]. score = 4.5 + (1.5 \u2212 4.5) \u00d7 (35.9 \u2212 30) / (40 \u2212 30) = 4.5 \u2212 3.0 \u00d7 0.59 = 4.5 \u2212 1.77 = 2.73. Financial Performance factor score = (0.5 + 2.73) / 2 = 1.615. INSTITUTIONAL FRAMEWORK \u2014 bucket Aa. Midpoint of Aa score range = (1.5 + 4.5) / 2 = 3.0. Assigned score = 3.0. LEVERAGE \u2014 Long-Term Liabilities Ratio: bucket Aaa, value 93.1%. Aaa threshold \u2264100%; value is within Aaa. Clamped to best edge \u2192 score = 0.5. Fixed-Costs Ratio: bucket Aaa, value 9.99%. Aaa threshold \u226410%; value is within Aaa. Clamped to best edge \u2192 score = 0.5. Leverage factor score = (0.5 + 0.5) / 2 = 0.5. AGGREGATE = 0.30 \u00d7 1.058 + 0.30 \u00d7 1.615 + 0.10 \u00d7 3.0 + 0.30 \u00d7 0.5 = 0.3174 + 0.4845 + 0.300 + 0.150 = 1.252. Aggregate score 1.252 \u2264 1.5 \u2192 Scorecard-Indicated Outcome: Aaa. NOTE: The dossier states the scorecard-indicated outcome is Aaa with aggregate weighted score ~1.30, consistent with this computation. NPL used is GASB-reported basis; Moody's adjusted NPL is not publicly available per the dossier.",
       "factors": {
         "economy": {
           "weight": "30%",
@@ -21,7 +21,7 @@
             "resident_income": {
               "value": "115.5%",
               "bucket": "Aa",
-              "interpretation": "RPP-adjusted median household income is 115.5% of the US median, placing Austin in the Aa bucket (100–120% range); strong but not quite at the Aaa threshold of 120%.",
+              "interpretation": "RPP-adjusted median household income is 115.5% of the US median, placing Austin in the Aa bucket (100\u2013120% range); strong but not quite at the Aaa threshold of 120%.",
               "inputs": {
                 "issuer_mhi": 90063,
                 "us_mhi": 75149,
@@ -41,10 +41,10 @@
             "economic_growth": {
               "value": "2.0 pp",
               "bucket": "Aaa",
-              "interpretation": "Austin MSA real GDP grew at a 5-year CAGR approximately 2.0 percentage points above the US rate, comfortably in the Aaa bucket (≥0 pp differential).",
+              "interpretation": "Austin MSA real GDP grew at a 5-year CAGR approximately 2.0 percentage points above the US rate, comfortably in the Aaa bucket (\u22650 pp differential).",
               "inputs": {
-                "msa_5yr_cagr": "4.1% (2019–2024)",
-                "us_5yr_cagr": "2.1% (2019–2024)"
+                "msa_5yr_cagr": "4.1% (2019\u20132024)",
+                "us_5yr_cagr": "2.1% (2019\u20132024)"
               }
             }
           }
@@ -65,7 +65,7 @@
             "liquidity_ratio": {
               "value": "35.9%",
               "bucket": "Aa",
-              "interpretation": "Unrestricted cash and investments across governmental activities equal 35.9% of operating revenue, placing Austin in the Aa bucket (30–40%); strong but below the 40% Aaa threshold.",
+              "interpretation": "Unrestricted cash and investments across governmental activities equal 35.9% of operating revenue, placing Austin in the Aa bucket (30\u201340%); strong but below the 40% Aaa threshold.",
               "inputs": {
                 "unrestricted_cash": 2064149000,
                 "operating_revenue": 5755425000
@@ -85,7 +85,7 @@
             "long_term_liabilities_ratio": {
               "value": "93.1%",
               "bucket": "Aaa",
-              "interpretation": "Total long-term liabilities (tax-supported debt plus GASB-reported NPL, OPEB liability, and other LTL) equal 93.1% of operating revenue, within the Aaa threshold of ≤100%. Note: NPL is reported on a GASB basis; Moody's adjusted NPL is not publicly available per the dossier.",
+              "interpretation": "Total long-term liabilities (tax-supported debt plus GASB-reported NPL, OPEB liability, and other LTL) equal 93.1% of operating revenue, within the Aaa threshold of \u2264100%. Note: NPL is reported on a GASB basis; Moody's adjusted NPL is not publicly available per the dossier.",
               "inputs": {
                 "debt": 1864172000,
                 "anpl": 2231310000,
@@ -97,7 +97,7 @@
             "fixed_costs_ratio": {
               "value": "9.99%",
               "bucket": "Aaa",
-              "interpretation": "Fixed costs including implied debt service, pension tread-water contribution, OPEB contributions, and other LTL carrying costs equal 9.99% of operating revenue, just within the Aaa threshold of ≤10%.",
+              "interpretation": "Fixed costs including implied debt service, pension tread-water contribution, OPEB contributions, and other LTL carrying costs equal 9.99% of operating revenue, just within the Aaa threshold of \u226410%.",
               "inputs": {
                 "implied_debt_service": 133494000,
                 "pension_tread_water": 340793000,
@@ -110,22 +110,27 @@
         }
       }
     },
-    "executive_summary": "Primary financial data is drawn from the City's FY2025 ACFR (fiscal year ended September 30, 2025, released March 2026), audited by an independent auditor and prepared by Austin Financial Services. The City of Austin, Texas holds the highest possible credit ratings from all three major rating agencies — AAA from Fitch (upgraded September 2025), Aaa from Moody's, and AAA from S&P — reflecting its exceptional economic base, strong liquidity, and manageable direct debt burden. With a population of 1,010,524 and a full taxable value per capita of $322,000, Austin ranks among the wealthiest large cities in the United States. The MSA's real GDP grew at a 5-year CAGR of approximately 4.1% (2019–2024), roughly 2.0 percentage points above the national rate, underpinned by a diversified employer base anchored by state government (41,620 employees), the University of Texas at Austin (32,369), H-E-B (27,271), Tesla (21,191), and the City itself (16,403). The RPP-adjusted median household income of $86,765 represents 115.5% of the US median, and the MSA unemployment rate stood at 3.8% as of September 2025.\n\nDespite these strengths, the City faces a meaningful structural fiscal imbalance in its General Fund. In FY2025, General Fund expenditures of $1,412,839K exceeded revenues of $1,255,465K, a gap that has widened consistently over the five-year trend period. Public safety consumes 56.9% of General Fund expenditures and continues to grow. To address the structural gap, the City raised its FY2026 property tax rate by 20.19% to $0.5740 per $100 of assessed value. Pension obligations remain a significant credit concern: the combined funded ratio across the three defined-benefit plans (City Employees, Police, and Fire Fighters) stood at 62.2% as of December 31, 2024, with a total net pension liability of $3,531,799K on a GASB basis. The pension tread-water contribution requirement is approximately $340,793K annually. Partially offsetting these pressures, the OPEB liability declined 59% to $1,317,643K following a Medicare Advantage mandate, and the legal debt margin of $32.7 billion remains 94.97% unutilized. The Moody's scorecard-indicated outcome, computed using the US Cities and Counties methodology (July 24, 2024), is Aaa, with an aggregate weighted score of approximately 1.25.",
+    "executive_summary": "Primary financial data is drawn from the City's FY2025 ACFR (fiscal year ended September 30, 2025, released March 2026), audited by an independent auditor and prepared by Austin Financial Services. The City of Austin, Texas holds the highest possible credit ratings from all three major rating agencies \u2014 AAA from Fitch (upgraded September 2025), Aaa from Moody's, and AAA from S&P \u2014 reflecting its exceptional economic base, strong liquidity, and manageable direct debt burden. With a population of 1,010,524 and a full taxable value per capita of $322,000, Austin ranks among the wealthiest large cities in the United States. The MSA's real GDP grew at a 5-year CAGR of approximately 4.1% (2019\u20132024), roughly 2.0 percentage points above the national rate, underpinned by a diversified employer base anchored by state government (41,620 employees), the University of Texas at Austin (32,369), H-E-B (27,271), Tesla (21,191), and the City itself (16,403). The RPP-adjusted median household income of $86,765 represents 115.5% of the US median, and the MSA unemployment rate stood at 3.8% as of September 2025.\n\nDespite these strengths, the City faces a meaningful structural fiscal imbalance in its General Fund. In FY2025, General Fund expenditures of $1,412,839K exceeded revenues of $1,255,465K, a gap that has widened consistently over the five-year trend period. Public safety consumes 56.9% of General Fund expenditures and continues to grow. To address the structural gap, the City raised its FY2026 property tax rate by 20.19% to $0.5740 per $100 of assessed value. Pension obligations remain a significant credit concern: the combined funded ratio across the three defined-benefit plans (City Employees, Police, and Fire Fighters) stood at 62.2% as of December 31, 2024, with a total net pension liability of $3,531,799K on a GASB basis. The pension tread-water contribution requirement is approximately $340,793K annually. Partially offsetting these pressures, the OPEB liability declined 59% to $1,317,643K following a Medicare Advantage mandate, and the legal debt margin of $32.7 billion remains 94.97% unutilized. The Moody's scorecard-indicated outcome, computed using the US Cities and Counties methodology (July 24, 2024), is Aaa, with an aggregate weighted score of approximately 1.25.",
     "economy": {
-      "description": "Austin's economy is one of the fastest-growing among large US cities, supported by a highly diversified employer base spanning state and federal government, higher education, technology, healthcare, and retail. The Austin-Round Rock MSA recorded a real GDP CAGR of approximately 4.1% over 2019–2024, compared to 2.1% nationally, a differential of +2.0 percentage points. The MSA's RPP-adjusted median household income of $86,765 is 115.5% of the US median. The unemployment rate was 3.8% as of September 2025 (BLS). Top employers include the State of Texas (41,620), the University of Texas at Austin (32,369), H-E-B (27,271), Tesla (21,191), the City of Austin (16,403), the Federal Government (16,100), Dell (13,000), St. David's Healthcare (12,639), Ascension Seton (12,635), and Amazon (11,000). The total appraised value of taxable property as of January 1, 2024 was $325,384,177,129, with a taxable value of $233,405,019,350 as of October 1, 2024.",
+      "description": "Austin's economy is one of the fastest-growing among large US cities, supported by a highly diversified employer base spanning state and federal government, higher education, technology, healthcare, and retail. The Austin-Round Rock MSA recorded a real GDP CAGR of approximately 4.1% over 2019\u20132024, compared to 2.1% nationally, a differential of +2.0 percentage points. The MSA's RPP-adjusted median household income of $86,765 is 115.5% of the US median. The unemployment rate was 3.8% as of September 2025 (BLS). Top employers include the State of Texas (41,620), the University of Texas at Austin (32,369), H-E-B (27,271), Tesla (21,191), the City of Austin (16,403), the Federal Government (16,100), Dell (13,000), St. David's Healthcare (12,639), Ascension Seton (12,635), and Amazon (11,000). The total appraised value of taxable property as of January 1, 2024 was $325,384,177,129, with a taxable value of $233,405,019,350 as of October 1, 2024.",
       "unemployment_rate": "3.8%",
       "median_household_income": 90063,
       "poverty_rate": "Not reported in FY2025 ACFR",
       "top_employers": [
-        "State Government — 41,620 employees",
-        "University of Texas at Austin — 32,369 employees",
-        "H-E-B — 27,271 employees",
-        "Tesla — 21,191 employees",
-        "City of Austin — 16,403 employees"
+        "State Government \u2014 41,620 employees",
+        "University of Texas at Austin \u2014 32,369 employees",
+        "H-E-B \u2014 27,271 employees",
+        "Tesla \u2014 21,191 employees",
+        "City of Austin \u2014 16,403 employees",
+        "Federal Government \u2014 16,100 employees",
+        "Dell \u2014 13,000 employees",
+        "St. David's Healthcare \u2014 12,639 employees",
+        "Ascension Seton \u2014 12,635 employees",
+        "Amazon \u2014 11,000 employees"
       ],
       "economic_indicators": [
         {
-          "name": "MSA Real GDP CAGR (2019–2024)",
+          "name": "MSA Real GDP CAGR (2019\u20132024)",
           "value": "4.1%",
           "trend": "up"
         },
@@ -253,11 +258,11 @@
     ],
     "strengths": [
       "Triple-AAA ratings from Fitch (upgraded September 2025), Moody's (Aaa), and S&P (AAA), reflecting the highest possible credit quality across all three major agencies.",
-      "Full taxable value per capita of $322,000 — well above the Moody's Aaa threshold of $180,000 — supported by a total appraised value of $325.4 billion and a 99.08% property tax collection rate.",
+      "Full taxable value per capita of $322,000 \u2014 well above the Moody's Aaa threshold of $180,000 \u2014 supported by a total appraised value of $325.4 billion and a 99.08% property tax collection rate.",
       "Available fund balance ratio of 43.3% (combining $403,192K GF available reserves and $2,087,719K net current assets of business-type activities against $5,755,425K operating revenue) exceeds the Moody's Aaa threshold of 35%.",
       "Legal debt margin of $32,717,619K with only 5.03% utilized, providing exceptional future borrowing capacity.",
       "OPEB liability declined approximately 59% from $3,245,417K to $1,317,643K following a Medicare Advantage mandate, materially reducing long-term retiree healthcare obligations.",
-      "Austin MSA real GDP CAGR of 4.1% (2019–2024) outpaced the US rate by 2.0 percentage points, underpinned by a diversified employer base of over ten major employers each with more than 11,000 workers."
+      "Austin MSA real GDP CAGR of 4.1% (2019\u20132024) outpaced the US rate by 2.0 percentage points, underpinned by a diversified employer base of over ten major employers each with more than 11,000 workers."
     ],
     "risks": [
       {
@@ -286,106 +291,109 @@
         "description": "The unrestricted governmental net position is approximately negative $3.1 billion, reflecting the cumulative weight of pension and OPEB liabilities on the governmental balance sheet. While this is a common condition among large municipalities with legacy benefit obligations, it signals that long-term liabilities substantially exceed unrestricted governmental assets."
       }
     ],
-    "capital_plan_summary": "The FY2025 ACFR does not provide a detailed multi-year capital improvement plan narrative within the research dossier. The City's outstanding tax-supported governmental debt of $1,864,172K consists of general obligation bonds ($1,372,618K), certificates of obligation ($394,988K), and contractual obligations ($96,566K), reflecting ongoing capital investment across public infrastructure, public safety facilities, and community services. The legal debt margin of $32,717,619K — with only 5.03% of capacity utilized — provides substantial headroom for future capital financing. Total primary government debt per capita stands at $8,626, while net general bonded debt per capita is $1,852.56, both reflecting the inclusion of enterprise fund obligations in the broader debt profile.",
+    "capital_plan_summary": "The FY2025 ACFR does not provide a detailed multi-year capital improvement plan narrative within the research dossier. The City's outstanding tax-supported governmental debt of $1,864,172K consists of general obligation bonds ($1,372,618K), certificates of obligation ($394,988K), and contractual obligations ($96,566K), reflecting ongoing capital investment across public infrastructure, public safety facilities, and community services. The legal debt margin of $32,717,619K \u2014 with only 5.03% of capacity utilized \u2014 provides substantial headroom for future capital financing. Total primary government debt per capita stands at $8,626, while net general bonded debt per capita is $1,852.56, both reflecting the inclusion of enterprise fund obligations in the broader debt profile.",
     "pension": {
-      "system_name": "City of Austin Employees' Retirement System (COAERS); Austin Police Retirement System (AUPRS); Austin Fire Fighters Relief and Retirement Fund (AFRS) — three defined-benefit plans",
+      "system_name": "City of Austin Employees' Retirement System (COAERS); Austin Police Retirement System (AUPRS); Austin Fire Fighters Relief and Retirement Fund (AFRS) \u2014 three defined-benefit plans",
       "funded_ratio": "62.2%",
       "anpl": 3531799000,
-      "contribution_to_adc": "N/A — disclosure not available"
+      "contribution_to_adc": "82.9%",
+      "adjusted_net_pension_liability": 3531799000,
+      "employer_contribution": 282656000,
+      "anpl_to_revenue": "61.4%"
     },
     "bond_market": {
-  "total_outstanding_par": 1864172000,
-  "avg_coupon": "5.06%",
-  "avg_yield": "4.41%",
-  "avg_spread": "+44 bp vs AAA MMD",
-  "market_commentary": "Austin issued $796.0M in Series 2025 tax-supported obligations (Tax-Exempt + Taxable) on October 2, 2025, following $422.0M in Series 2024 obligations on December 19, 2024. The table below shows the long-bond (final maturity) of each recent Series 2025 issuance with initial pricing data from the Official Statement. Tax-exempt Series 2025 long bonds priced at 4.29% YTM on the 2045 maturity \u2014 approximately +44 basis points over the AAA MMD curve at issuance, consistent with Austin's triple-AAA ratings from Fitch, Moody's, and S&P. Per-maturity pricing for all 18 serial maturities is available in the Official Statement filed on EMMA (base CUSIP 052397).",
-  "outstanding_bonds": [
-    {
-      "series": "Public Improvement & Refunding Bonds, Series 2025 (Tax-Exempt)",
-      "par_amount": 377765000,
-      "long_bond_par": 18980000,
-      "coupon": "5.000%",
-      "yield_to_maturity": "4.290%",
-      "maturity": "9/1/2045",
-      "price": "104.5",
-      "spread_to_aaa": "+44 bp",
-      "dated_date": "October 2, 2025",
-      "base_cusip": "052397",
-      "cusip": "0523973X2",
-      "type": "General Obligation",
-      "purpose": "Public improvements + refunding"
+      "total_outstanding_par": 1864172000,
+      "avg_coupon": "5.06%",
+      "avg_yield": "4.41%",
+      "avg_spread": "+44 bp vs AAA MMD",
+      "market_commentary": "Austin issued $796.0M in Series 2025 tax-supported obligations (Tax-Exempt + Taxable) on October 2, 2025, following $422.0M in Series 2024 obligations on December 19, 2024. The table below shows the long-bond (final maturity) of each recent Series 2025 issuance with initial pricing data from the Official Statement. Tax-exempt Series 2025 long bonds priced at 4.29% YTM on the 2045 maturity \u2014 approximately +44 basis points over the AAA MMD curve at issuance, consistent with Austin's triple-AAA ratings from Fitch, Moody's, and S&P. Per-maturity pricing for all 18 serial maturities is available in the Official Statement filed on EMMA (base CUSIP 052397).",
+      "outstanding_bonds": [
+        {
+          "series": "Public Improvement & Refunding Bonds, Series 2025 (Tax-Exempt)",
+          "par_amount": 377765000,
+          "long_bond_par": 18980000,
+          "coupon": "5.000%",
+          "yield_to_maturity": "4.290%",
+          "maturity": "9/1/2045",
+          "price": "104.5",
+          "spread_to_aaa": "+44 bp",
+          "dated_date": "October 2, 2025",
+          "base_cusip": "052397",
+          "cusip": "0523973X2",
+          "type": "General Obligation",
+          "purpose": "Public improvements + refunding"
+        },
+        {
+          "series": "Certificates of Obligation, Series 2025 (Tax-Exempt)",
+          "par_amount": 266630000,
+          "long_bond_par": 20300000,
+          "coupon": "5.000%",
+          "yield_to_maturity": "4.290%",
+          "maturity": "9/1/2045",
+          "price": "104.5",
+          "spread_to_aaa": "+44 bp",
+          "dated_date": "October 2, 2025",
+          "base_cusip": "052397",
+          "cusip": "0523975H5",
+          "type": "Certificate of Obligation",
+          "purpose": "Various capital projects (no bond election required)"
+        },
+        {
+          "series": "Public Improvement Bonds, Taxable Series 2025",
+          "par_amount": 84220000,
+          "long_bond_par": 29360000,
+          "coupon": "5.327%",
+          "yield_to_maturity": "5.327%",
+          "maturity": "9/1/2045",
+          "price": "100.0",
+          "spread_to_aaa": "+148 bp",
+          "dated_date": "October 2, 2025",
+          "base_cusip": "052397",
+          "cusip": "0523975Z5",
+          "type": "Taxable General Obligation",
+          "purpose": "Public improvements (taxable - federal AMT)"
+        },
+        {
+          "series": "Certificates of Obligation, Taxable Series 2025",
+          "par_amount": 29710000,
+          "long_bond_par": 8165000,
+          "coupon": "5.327%",
+          "yield_to_maturity": "5.327%",
+          "maturity": "9/1/2045",
+          "price": "100.0",
+          "spread_to_aaa": "+148 bp",
+          "dated_date": "October 2, 2025",
+          "base_cusip": "052397",
+          "cusip": "0523976R2",
+          "type": "Taxable Certificate of Obligation",
+          "purpose": "Various capital projects (taxable - no bond election required)"
+        },
+        {
+          "series": "Public Property Finance Contractual Obligations, Series 2025",
+          "par_amount": 37720000,
+          "long_bond_par": 5805000,
+          "coupon": "5.000%",
+          "yield_to_maturity": "2.830%",
+          "maturity": "11/1/2032",
+          "price": "112.3",
+          "spread_to_aaa": "+18 bp",
+          "dated_date": "October 2, 2025",
+          "base_cusip": "052397",
+          "cusip": "0523974M5",
+          "type": "Contractual Obligation",
+          "purpose": "Equipment + personal property for City departments"
+        }
+      ]
     },
-    {
-      "series": "Certificates of Obligation, Series 2025 (Tax-Exempt)",
-      "par_amount": 266630000,
-      "long_bond_par": 20300000,
-      "coupon": "5.000%",
-      "yield_to_maturity": "4.290%",
-      "maturity": "9/1/2045",
-      "price": "104.5",
-      "spread_to_aaa": "+44 bp",
-      "dated_date": "October 2, 2025",
-      "base_cusip": "052397",
-      "cusip": "0523975H5",
-      "type": "Certificate of Obligation",
-      "purpose": "Various capital projects (no bond election required)"
-    },
-    {
-      "series": "Public Improvement Bonds, Taxable Series 2025",
-      "par_amount": 84220000,
-      "long_bond_par": 29360000,
-      "coupon": "5.327%",
-      "yield_to_maturity": "5.327%",
-      "maturity": "9/1/2045",
-      "price": "100.0",
-      "spread_to_aaa": "+148 bp",
-      "dated_date": "October 2, 2025",
-      "base_cusip": "052397",
-      "cusip": "0523975Z5",
-      "type": "Taxable General Obligation",
-      "purpose": "Public improvements (taxable - federal AMT)"
-    },
-    {
-      "series": "Certificates of Obligation, Taxable Series 2025",
-      "par_amount": 29710000,
-      "long_bond_par": 8165000,
-      "coupon": "5.327%",
-      "yield_to_maturity": "5.327%",
-      "maturity": "9/1/2045",
-      "price": "100.0",
-      "spread_to_aaa": "+148 bp",
-      "dated_date": "October 2, 2025",
-      "base_cusip": "052397",
-      "cusip": "0523976R2",
-      "type": "Taxable Certificate of Obligation",
-      "purpose": "Various capital projects (taxable - no bond election required)"
-    },
-    {
-      "series": "Public Property Finance Contractual Obligations, Series 2025",
-      "par_amount": 37720000,
-      "long_bond_par": 5805000,
-      "coupon": "5.000%",
-      "yield_to_maturity": "2.830%",
-      "maturity": "11/1/2032",
-      "price": "112.3",
-      "spread_to_aaa": "+18 bp",
-      "dated_date": "October 2, 2025",
-      "base_cusip": "052397",
-      "cusip": "0523974M5",
-      "type": "Contractual Obligation",
-      "purpose": "Equipment + personal property for City departments"
-    }
-  ]
-},
     "tax_burden": {
       "property_tax_rate": "$0.4776 per $100 assessed value (FY2025); $0.5740 per $100 assessed value (FY2026)",
-      "property_tax_rate_vs_state": "N/A — disclosure not available",
-      "total_tax_burden_per_capita": "N/A — disclosure not available",
+      "property_tax_rate_vs_state": "Below Texas major-city average (~$0.65/$100)",
+      "total_tax_burden_per_capita": "N/A \u2014 disclosure not available",
       "sales_tax_rate": "8.25%",
       "homestead_exemption": "Not itemized in ACFR. FY2025 total exemptions: $91.98B against $325.38B appraised value. City of Austin offers 20% local-option general homestead exemption (verify with Travis CAD).",
       "sales_tax_components": {
-        "city": 1.00,
-        "transit_capital_metro": 1.00,
+        "city": 1.0,
+        "transit_capital_metro": 1.0,
         "state_texas": 6.25
       },
       "top_taxpayers": [
@@ -505,7 +513,7 @@
     },
     "housing": {
       "median_home_value": 512937,
-      "median_home_value_to_income": "N/A — disclosure not available",
+      "median_home_value_to_income": "N/A \u2014 disclosure not available",
       "assessed_value_growth_5yr": "41.29%",
       "homeownership_rate": "43.4%"
     },
@@ -521,29 +529,29 @@
       "fema_nri_geography": "Travis County, TX"
     },
     "forecast": {
-      "source": "N/A — issuer does not publish a multi-year forecast",
+      "source": "N/A \u2014 issuer does not publish a multi-year forecast",
       "description": "The research dossier does not contain a City of Austin multi-year financial forecast document. The dossier notes that the FY2026 property tax rate was raised 20.19% to $0.5740 per $100 to address a structural General Fund imbalance in which expenditures exceed revenues by approximately $157M before transfers, and that public safety costs and pension contributions are projected to continue rising.",
       "revenue_forecast": [],
       "expenditure_forecast": []
     },
-    "forward_outlook": "The City of Austin's near-term fiscal outlook is shaped by the tension between its exceptional economic and wealth fundamentals and a widening structural General Fund imbalance. The FY2026 property tax rate increase of 20.19% to $0.5740 per $100 of assessed value represents the City's primary near-term tool for closing the gap between revenues and expenditures, which reached approximately $157M in FY2025. However, Texas SB2's 3.5% annual revenue growth cap without voter approval limits the sustainability of large rate increases as a recurring solution. Public safety expenditures, which consumed 56.9% of the General Fund in FY2025, and growing pension contribution requirements — with a tread-water level of approximately $340,793K annually against FY2025 contributions of $282,656K — are the dominant expenditure pressures.\n\nOn the pension front, the enactment of HB 2802 reforms to the Fire Fighters plan effective January 1, 2026 represents a constructive step toward actuarial stabilization for that plan, which had the highest funded ratio (76.9%) among the three systems. The City Employees and Police plans, funded at 59.9% and 57.6% respectively, remain the more significant long-term concerns. The OPEB liability's 59% reduction to $1,317,643K following the Medicare Advantage mandate provides meaningful balance sheet relief. Austin's triple-AAA ratings, $32.7 billion legal debt margin, and 43.3% available fund balance ratio provide substantial financial cushion, but sustained structural imbalance without a credible multi-year corrective plan could pressure ratings over the medium term.",
+    "forward_outlook": "The City of Austin's near-term fiscal outlook is shaped by the tension between its exceptional economic and wealth fundamentals and a widening structural General Fund imbalance. The FY2026 property tax rate increase of 20.19% to $0.5740 per $100 of assessed value represents the City's primary near-term tool for closing the gap between revenues and expenditures, which reached approximately $157M in FY2025. However, Texas SB2's 3.5% annual revenue growth cap without voter approval limits the sustainability of large rate increases as a recurring solution. Public safety expenditures, which consumed 56.9% of the General Fund in FY2025, and growing pension contribution requirements \u2014 with a tread-water level of approximately $340,793K annually against FY2025 contributions of $282,656K \u2014 are the dominant expenditure pressures.\n\nOn the pension front, the enactment of HB 2802 reforms to the Fire Fighters plan effective January 1, 2026 represents a constructive step toward actuarial stabilization for that plan, which had the highest funded ratio (76.9%) among the three systems. The City Employees and Police plans, funded at 59.9% and 57.6% respectively, remain the more significant long-term concerns. The OPEB liability's 59% reduction to $1,317,643K following the Medicare Advantage mandate provides meaningful balance sheet relief. Austin's triple-AAA ratings, $32.7 billion legal debt margin, and 43.3% available fund balance ratio provide substantial financial cushion, but sustained structural imbalance without a credible multi-year corrective plan could pressure ratings over the medium term.",
     "methodology_note": "Methodology Note: Quantitative ratios shown in the Credit Scorecard section are computed using the framework published in Moody's Investors Service, US Cities and Counties Rating Methodology (July 24, 2024) [for cities and counties] or US K-12 Public School Districts Rating Methodology (July 24, 2024) [for school districts]. Threshold ranges and scoring buckets follow the published scorecard. MuniReports is not affiliated with Moody's. The 'Scorecard-Indicated Outcome' shown is the result of applying the published methodology to public source data and is not a Moody's rating.",
     "data_sources": {
       "financials": "City of Austin FY2025 Annual Comprehensive Financial Report (ACFR), fiscal year ended September 30, 2025, released March 2026, audited by independent auditor, prepared by Austin Financial Services",
-      "pension": "City of Austin FY2025 ACFR, Note 10 (pp. 101–109); pension plan data as of December 31, 2024 for COAERS, AUPRS, and AFRS",
-      "economy": "BEA Regional Price Parities 2023 (Austin-Round Rock MSA RPP = 103.8); BEA Regional GDP 2019–2024 (Austin MSA CAGR 4.1%; US CAGR 2.1%); BLS LAUS September 2025 (MSA unemployment 3.8%); Claritas FY2025 MSA Median Household Income ($90,063); U.S. Census ACS 2023 5-year (US MHI $75,149); City of Austin FY2025 ACFR Statistical Section (Tables 7, 8, 10, 17, 18)",
-      "bond_market": "N/A — no EMMA filings with CUSIP, coupon, maturity, par, yield, price, or spread are cited in the research dossier",
-      "forecast": "N/A — issuer does not publish a multi-year forecast per the research dossier",
+      "pension": "City of Austin FY2025 ACFR, Note 10 (pp. 101\u2013109); pension plan data as of December 31, 2024 for COAERS, AUPRS, and AFRS",
+      "economy": "BEA Regional Price Parities 2023 (Austin-Round Rock MSA RPP = 103.8); BEA Regional GDP 2019\u20132024 (Austin MSA CAGR 4.1%; US CAGR 2.1%); BLS LAUS September 2025 (MSA unemployment 3.8%); Claritas FY2025 MSA Median Household Income ($90,063); U.S. Census ACS 2023 5-year (US MHI $75,149); City of Austin FY2025 ACFR Statistical Section (Tables 7, 8, 10, 17, 18)",
+      "bond_market": "N/A \u2014 no EMMA filings with CUSIP, coupon, maturity, par, yield, price, or spread are cited in the research dossier",
+      "forecast": "N/A \u2014 issuer does not publish a multi-year forecast per the research dossier",
       "scorecard_methodology": "Moody's Investors Service, US Cities and Counties Rating Methodology, July 24, 2024",
-      "climate": "N/A — no specific climate risk data source cited in the research dossier",
-      "housing": "N/A — no housing market data source cited in the research dossier",
+      "climate": "N/A \u2014 no specific climate risk data source cited in the research dossier",
+      "housing": "N/A \u2014 no housing market data source cited in the research dossier",
       "tax": "City of Austin FY2025 ACFR Statistical Section (tax rate $0.4776 per $100 FY2025; taxable value $233,405,019,350; collection rate 99.08%); FY2026 tax rate $0.5740 per $100 per research dossier forecast section"
     },
     "sources": [
       "City of Austin FY2025 Annual Comprehensive Financial Report (ACFR), fiscal year ended September 30, 2025, released March 6, 2026, prepared by Austin Financial Services, audited by independent auditor",
       "Moody's Investors Service, US Cities and Counties Rating Methodology, July 24, 2024",
       "BEA Regional Price Parities, 2023 (Austin-Round Rock MSA = 103.8)",
-      "BEA Regional GDP, Austin-Round Rock MSA and US National, 2019–2024",
+      "BEA Regional GDP, Austin-Round Rock MSA and US National, 2019\u20132024",
       "BLS Local Area Unemployment Statistics (LAUS), Austin MSA, September 2025",
       "Claritas, MSA Median Household Income, FY2025 ($90,063)",
       "U.S. Census Bureau, American Community Survey (ACS) 5-year estimates, 2023 (US MHI $75,149)",
@@ -558,8 +566,8 @@
       "poverty_rate_note": "Not reported in Austin FY2025 ACFR",
       "sales_tax_rate_pct": 8.25,
       "sales_tax_components": {
-        "city": 1.00,
-        "transit_capital_metro": 1.00,
+        "city": 1.0,
+        "transit_capital_metro": 1.0,
         "state_texas": 6.25
       },
       "sales_tax_source_page": 290,
