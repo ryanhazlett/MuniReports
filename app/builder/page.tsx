@@ -46,6 +46,15 @@ function isNA(v: any): boolean {
 }
 const STAT_VALUE_NA_STYLE = { fontSize: ".82rem", fontWeight: 500, color: "var(--text3)", lineHeight: 1.35 };
 
+// Use monospace for tabular numeric-ish values; use sans for prose.
+function shouldMono(v: any): boolean {
+  if (v == null) return false;
+  const s = String(v).trim();
+  if (s.length > 40) return false;
+  if ((s.match(/\s/g) || []).length > 4) return false;
+  return true;
+}
+
 // Front-page Rating cell shows e.g. "AAA / Aaa / AAA" instead of the full
 // agency-tagged string. Split on ";", and within each part take the text
 // before the first "(" — that's the grade letters. Join with " / ".
@@ -1140,7 +1149,7 @@ export default function BuilderPage() {
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <tr key={i} style={{ borderBottom: "1px solid var(--line-soft)" }}>
                         <td style={{ padding: ".7rem 1rem", fontSize: ".88rem", color: "var(--text2)" }}>{label}</td>
-                        <td style={{ padding: ".7rem 1rem", fontFamily: "var(--mono)", fontSize: ".88rem", fontWeight: 600, textAlign: "right" }}>{value}</td>
+                        <td style={{ padding: ".7rem 1rem", fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontSize: ".88rem", fontWeight: 600, textAlign: "right" }}>{value}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1167,7 +1176,7 @@ export default function BuilderPage() {
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".86rem" }}>
                         <span style={{ color: "var(--text2)" }}>{label}</span>
-                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600, color: String(value).toLowerCase().includes("below") ? "var(--good)" : "var(--text)" }}>{value}</span>
+                        <span style={{ fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontWeight: 600, color: String(value).toLowerCase().includes("below") ? "var(--good)" : "var(--text)" }}>{value}</span>
                       </div>
                     ))}
                   </div>
@@ -1179,7 +1188,7 @@ export default function BuilderPage() {
                     ].filter(([,v]) => v).map(([label, value], i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".4rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".86rem" }}>
                         <span style={{ color: "var(--text2)" }}>{label}</span>
-                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{value}</span>
+                        <span style={{ fontFamily: shouldMono(value) ? "var(--mono)" : "var(--sans)", fontWeight: 600 }}>{value}</span>
                       </div>
                     ))}
                   </div>
