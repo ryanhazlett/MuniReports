@@ -18,6 +18,13 @@ export default function HomePage() {
     }
   };
 
+  const PILL_STYLES: Record<string, { background: string; color: string }> = {
+    Aaa: { background: "rgba(34, 197, 94, 0.15)", color: "rgb(21, 128, 61)" },
+    Aa:  { background: "rgba(132, 204, 22, 0.18)", color: "rgb(77, 124, 15)" },
+    A:   { background: "rgba(245, 158, 11, 0.18)", color: "rgb(146, 64, 14)" },
+    Baa: { background: "rgba(249, 115, 22, 0.20)", color: "rgb(154, 52, 18)" },
+  };
+
   return (
     <>
       {/* SECTION A — HERO */}
@@ -78,6 +85,36 @@ export default function HomePage() {
         `}</style>
       </section>
 
+      {/* SECTION A.5 — STAT STRIP (from Austin brief) */}
+      <section className="block" style={{ background: "var(--bg2)" }}>
+        <div className="container">
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <span style={{ fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em" }}>From the Austin brief · May 2026</span>
+            </div>
+            <div className="stat-strip">
+              {[
+                { label: "RATING", value: "AAA / Aaa / AAA", context: "Triple-AAA from Fitch, Moody's, and S&P" },
+                { label: "APPRAISED VALUE", value: "$325.4B", context: "Full taxable property value, January 2024" },
+                { label: "PENSION FUNDED", value: "62.2%", context: "Combined ratio across three plans, Dec 2024" },
+                { label: "MSA GROWTH", value: "4.1%", context: "5-year real GDP CAGR vs 2.1% nationally" },
+              ].map((s, i) => (
+                <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.5rem" }}>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".12em", marginBottom: ".6rem" }}>{s.label}</div>
+                  <div style={{ fontSize: "clamp(1.8rem, 3vw, 2.4rem)", fontWeight: 700, color: "var(--text)", lineHeight: 1.1, marginBottom: ".5rem" }}>{s.value}</div>
+                  <div style={{ fontSize: ".85rem", color: "var(--text2)", lineHeight: 1.45 }}>{s.context}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <style>{`
+          .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+          @media (max-width: 899px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
+          @media (max-width: 519px) { .stat-strip { grid-template-columns: 1fr; } }
+        `}</style>
+      </section>
+
       {/* SECTION B — THREE OFFERINGS */}
       <section className="block" style={{ background: "var(--bg2)" }}>
         <div className="container">
@@ -127,6 +164,59 @@ export default function HomePage() {
             <a href="/sample-austin.pdf" className="btn btn-accent">Download Austin brief — PDF</a>
           </div>
         </div>
+      </section>
+
+      {/* SECTION C.5 — SCORECARD PREVIEW (Austin Moody's outcome) */}
+      <section className="block">
+        <div className="container">
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em", marginBottom: ".8rem" }}>Scorecard-Indicated Outcome</div>
+              <h2 style={{ fontSize: "clamp(3rem,7vw,5rem)", fontWeight: 800, color: "var(--accent)", letterSpacing: "-.04em", lineHeight: 1, marginBottom: ".6rem" }}>Aaa.</h2>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".82rem", color: "var(--text3)", marginBottom: "1.2rem" }}>City of Austin · US Cities &amp; Counties methodology, July 24 2024</div>
+              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, maxWidth: "62ch", margin: "0 auto" }}>
+                The scorecard-indicated outcome is computed by applying Moody&apos;s published methodology to Austin&apos;s public financial data. Eight sub-factors, weighted, mapped to buckets — every input shown.
+              </p>
+            </div>
+
+            <div className="scorecard-grid">
+              {[
+                { name: "ECONOMIC GROWTH", value: "+2.0 pp", bucket: "Aaa" },
+                { name: "RESIDENT INCOME", value: "115.5%", bucket: "Aa" },
+                { name: "FULL VALUE PER CAPITA", value: "$322,000", bucket: "Aaa" },
+                { name: "LIQUIDITY RATIO", value: "35.9%", bucket: "Aa" },
+                { name: "FUND BALANCE RATIO", value: "43.3%", bucket: "Aaa" },
+                { name: "INSTITUTIONAL FRAMEWORK", value: "Aa", bucket: "Aa" },
+                { name: "FIXED-COSTS RATIO", value: "9.99%", bucket: "Aaa" },
+                { name: "LONG-TERM LIABILITIES RATIO", value: "93.1%", bucket: "Aaa" },
+              ].map((sf, i) => {
+                const pill = PILL_STYLES[sf.bucket];
+                return (
+                  <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.2rem", display: "flex", flexDirection: "column", gap: ".55rem" }}>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: ".66rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".1em", lineHeight: 1.3 }}>{sf.name}</div>
+                    <div style={{ fontSize: "1.3rem", fontWeight: 700, color: "var(--text)", lineHeight: 1.15 }}>{sf.value}</div>
+                    {sf.value !== sf.bucket && pill && (
+                      <span style={{ alignSelf: "flex-start", marginTop: "auto", fontFamily: "var(--mono)", fontSize: ".72rem", fontWeight: 600, padding: ".25rem .55rem", borderRadius: 100, background: pill.background, color: pill.color, letterSpacing: ".04em" }}>{sf.bucket}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <p style={{ marginTop: "2rem", fontFamily: "var(--mono)", fontSize: ".78rem", color: "var(--text3)", lineHeight: 1.55, maxWidth: "72ch", marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
+              MuniReports is not affiliated with Moody&apos;s. Scorecard-Indicated Outcome is the result of applying the published methodology to public source data and is not a Moody&apos;s rating.
+            </p>
+
+            <div style={{ textAlign: "center", marginTop: "1.8rem" }}>
+              <a href="/sample-austin.pdf" className="btn btn-out">See full calculation in the Austin brief →</a>
+            </div>
+          </div>
+        </div>
+        <style>{`
+          .scorecard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+          @media (max-width: 899px) { .scorecard-grid { grid-template-columns: repeat(2, 1fr); } }
+          @media (max-width: 519px) { .scorecard-grid { grid-template-columns: 1fr; } }
+        `}</style>
       </section>
 
       {/* SECTION D — WHY MUNIREPORTS */}
