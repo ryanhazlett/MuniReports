@@ -543,8 +543,8 @@
       "bond_market": "MSRB EMMA filings, City of Austin Public Improvement & Refunding Bonds and Certificates of Obligation Series 2025 Official Statement (base CUSIP 052397, issued October 2, 2025); Series 2024 Official Statement (issued December 19, 2024)",
       "forecast": "City of Austin FY2026-FY2030 Financial Forecast (presented to City Council, April 2025); FY2025-26 Proposed Budget Document",
       "scorecard_methodology": "Moody's Investors Service, US Cities and Counties Rating Methodology, July 24, 2024",
-      "climate": "N/A \u2014 no specific climate risk data source cited in the research dossier",
-      "housing": "N/A \u2014 no housing market data source cited in the research dossier",
+      "climate": "FEMA National Risk Index, Travis County, TX (2024 data release)",
+      "housing": "Zillow Home Value Index (ZHVI), Austin metro (May 2026 data release); U.S. Census Bureau ACS 2023 5-year estimates (homeownership rate); City of Austin FY2025 ACFR Statistical Section (10-year assessed value history)",
       "tax": "City of Austin FY2025 ACFR Statistical Section (tax rate $0.4776 per $100 FY2025; taxable value $233,405,019,350; collection rate 99.08%); FY2026 tax rate $0.5740 per $100 per research dossier forecast section"
     },
     "sources": [
