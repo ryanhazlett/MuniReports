@@ -166,6 +166,33 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* SECTION C.6 — FORWARD OUTLOOK EXCERPT (from Austin brief) */}
+      <section className="block">
+        <div className="container">
+          <div style={{
+            maxWidth: 860, margin: "0 auto",
+            background: "var(--bg2)",
+            borderLeft: "3px solid var(--accent)",
+            borderRadius: "var(--radius-lg)",
+            padding: "2rem",
+          }}>
+            <div style={{ fontFamily: "var(--mono)", fontSize: ".74rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em" }}>
+              Forward outlook · Austin, FY2026–FY2030
+            </div>
+            <h3 style={{ fontSize: "clamp(1.4rem, 2.5vw, 1.9rem)", fontWeight: 700, letterSpacing: "-.01em", marginTop: ".6rem", marginBottom: "1rem", color: "var(--text)" }}>
+              General Fund shortfall projected to widen from $33M (FY2026) to $77.9M (FY2030).
+            </h3>
+            <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.7, marginBottom: "1.2rem" }}>
+              Even after $20M in identified operating savings. Sales tax collections projected to decline 1.0% vs. FY2025; Hotel Occupancy Tax revenue forecast 1.5% below budget. Texas SB2&apos;s 3.5% annual revenue growth cap limits the repeatability of large rate increases.
+            </p>
+            <p style={{ fontFamily: "var(--mono)", fontSize: ".78rem", color: "var(--text3)", fontStyle: "italic", marginBottom: "1.5rem" }}>
+              Source: City of Austin FY2026–FY2030 Financial Forecast (April 2025)
+            </p>
+            <a href="/sample-austin.pdf" className="btn btn-out">See full forward outlook in the Austin brief →</a>
+          </div>
+        </div>
+      </section>
+
       {/* SECTION C.5 — SCORECARD PREVIEW (Austin Moody's outcome) */}
       <section className="block">
         <div className="container">
