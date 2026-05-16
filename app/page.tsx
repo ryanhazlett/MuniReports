@@ -23,36 +23,59 @@ export default function HomePage() {
       {/* SECTION A — HERO */}
       <section style={{ padding: "5.5rem 0 4rem" }}>
         <div className="container">
-          <div style={{ maxWidth: 880, margin: "0 auto", textAlign: "center" }}>
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: ".45rem",
-              background: "var(--accent-bg)", color: "var(--accent)",
-              border: "1px solid var(--accent-line)", fontSize: ".78rem",
-              fontWeight: 600, padding: ".38rem .85rem", borderRadius: 100,
-              marginBottom: "1.6rem"
-            }}>
-              <span style={{ width: 6, height: 6, background: "var(--accent)", borderRadius: "50%", boxShadow: "0 0 8px var(--accent)" }} />
-              Municipal credit research & ratings advisory
+          <div className="hero-grid">
+            <div>
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: ".45rem",
+                background: "var(--accent-bg)", color: "var(--accent)",
+                border: "1px solid var(--accent-line)", fontSize: ".78rem",
+                fontWeight: 600, padding: ".38rem .85rem", borderRadius: 100,
+                marginBottom: "1.6rem"
+              }}>
+                <span style={{ width: 6, height: 6, background: "var(--accent)", borderRadius: "50%", boxShadow: "0 0 8px var(--accent)" }} />
+                Municipal credit research & ratings advisory
+              </div>
+
+              <h1 style={{
+                fontFamily: "var(--sans)", fontSize: "clamp(2.2rem,5vw,3.6rem)",
+                fontWeight: 800, letterSpacing: "-.03em", lineHeight: 1.05,
+                marginBottom: "1.3rem", color: "var(--text)",
+              }}>
+                Municipal credit briefs and <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>ratings advisory.</em>
+              </h1>
+
+              <p style={{ fontSize: "1.1rem", color: "var(--text2)", maxWidth: "62ch", margin: "0 0 2rem", lineHeight: 1.6 }}>
+                Research-grade credit briefs and ratings advisory for U.S. municipal issuers. Built by analysts who&apos;ve sat on both sides of the rating call — formerly at Moody&apos;s Investors Service and Wells Fargo Government Banking.
+              </p>
+
+              <div style={{ display: "flex", gap: ".7rem", flexWrap: "wrap" }}>
+                <a href="/sample-austin.pdf" className="btn btn-accent btn-lg">Download Austin sample</a>
+                <a href="mailto:admin@munireports.com" className="btn btn-out btn-lg">Contact us</a>
+              </div>
             </div>
 
-            <h1 style={{
-              fontFamily: "var(--sans)", fontSize: "clamp(2.2rem,5vw,3.6rem)",
-              fontWeight: 800, letterSpacing: "-.03em", lineHeight: 1.05,
-              marginBottom: "1.3rem", color: "var(--text)",
-            }}>
-              Municipal credit briefs and <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>ratings advisory.</em>
-            </h1>
-
-            <p style={{ fontSize: "1.1rem", color: "var(--text2)", maxWidth: "62ch", margin: "0 auto 2rem", lineHeight: 1.6 }}>
-              Research-grade credit briefs and ratings advisory for U.S. municipal issuers. Built by analysts who&apos;ve sat on both sides of the rating call — formerly at Moody&apos;s Investors Service and Wells Fargo Government Banking.
-            </p>
-
-            <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap" }}>
-              <a href="/sample-austin.pdf" className="btn btn-accent btn-lg">Download Austin sample</a>
-              <a href="mailto:admin@munireports.com" className="btn btn-out btn-lg">Contact us</a>
+            <div>
+              <img
+                src="/preview-austin-cover.png"
+                alt="City of Austin sample credit brief — first page preview"
+                style={{ width: "100%", height: "auto", borderRadius: 8, transform: "rotate(-2deg)", boxShadow: "0 24px 48px rgba(15, 23, 42, 0.18), 0 4px 8px rgba(15, 23, 42, 0.06)" }}
+              />
             </div>
           </div>
         </div>
+        <style>{`
+          .hero-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 3rem;
+            align-items: center;
+          }
+          @media (max-width: 899px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+          }
+        `}</style>
       </section>
 
       {/* SECTION B — THREE OFFERINGS */}
