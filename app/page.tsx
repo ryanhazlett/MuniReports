@@ -2,11 +2,28 @@
 import Link from "next/link";
 
 export default function HomePage() {
+  const handleCheckout = async () => {
+    try {
+      const res = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceType: "single" }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+    }
+  };
+
   return (
     <>
-      <section style={{ padding: "5.5rem 0 3rem", textAlign: "center", position: "relative" }}>
+      {/* SECTION A — HERO */}
+      <section style={{ padding: "5.5rem 0 4rem" }}>
         <div className="container">
-          <div style={{ maxWidth: 960, margin: "0 auto" }}>
+          <div style={{ maxWidth: 880, margin: "0 auto", textAlign: "center" }}>
             <div style={{
               display: "inline-flex", alignItems: "center", gap: ".45rem",
               background: "var(--accent-bg)", color: "var(--accent)",
@@ -15,739 +32,109 @@ export default function HomePage() {
               marginBottom: "1.6rem"
             }}>
               <span style={{ width: 6, height: 6, background: "var(--accent)", borderRadius: "50%", boxShadow: "0 0 8px var(--accent)" }} />
-              AI-powered credit research for 22,400+ municipal issuers
+              Municipal credit research & ratings advisory
             </div>
 
             <h1 style={{
-              fontFamily: "var(--sans)", fontSize: "clamp(1.4rem, 2.2vw, 1.8rem)",
-              fontWeight: 700, textTransform: "uppercase", letterSpacing: ".18em",
-              color: "var(--text)", marginBottom: ".8rem",
+              fontFamily: "var(--sans)", fontSize: "clamp(2.2rem,5vw,3.6rem)",
+              fontWeight: 800, letterSpacing: "-.03em", lineHeight: 1.05,
+              marginBottom: "1.3rem", color: "var(--text)",
             }}>
-              AI-Assisted Municipal Credit Research
+              Municipal credit briefs and <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400, color: "var(--accent)" }}>ratings advisory.</em>
             </h1>
 
-            <h2 style={{
-              fontFamily: "var(--sans)", fontSize: "clamp(2.2rem,5vw,4rem)",
-              fontWeight: 800, letterSpacing: "-.04em", lineHeight: .95,
-              marginBottom: "1.5rem", color: "var(--text)",
-            }}>
-              Make{" "}
-              <span style={{
-                fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400,
-                background: "linear-gradient(135deg, var(--accent) 0%, #7c3aed 50%, #059669 100%)",
-                WebkitBackgroundClip: "text", backgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>informed decisions.</span>
-            </h2>
-
-            <p style={{
-              fontSize: "1.15rem", color: "var(--text2)", maxWidth: "58ch",
-              margin: "0 auto 2.5rem", lineHeight: 1.6
-            }}>
-              Search any issuer. AI compiles public financial data into a research brief — five-year trends, forward projections, and risk flags.
+            <p style={{ fontSize: "1.1rem", color: "var(--text2)", maxWidth: "62ch", margin: "0 auto 2rem", lineHeight: 1.6 }}>
+              Research-grade credit briefs and ratings advisory for U.S. municipal issuers. Built by analysts who&apos;ve sat on both sides of the rating call — formerly at Moody&apos;s Investors Service and Wells Fargo Government Banking.
             </p>
 
-            <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", marginBottom: ".8rem" }}>
-              <Link href="/builder" className="btn btn-accent btn-lg">Sign up to generate →</Link>
-              <Link href="/pricing" className="btn btn-out btn-lg">See plans</Link>
+            <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <a href="/sample-austin.pdf" className="btn btn-accent btn-lg">Download Austin sample</a>
+              <a href="mailto:admin@munireports.com" className="btn btn-out btn-lg">Contact us</a>
             </div>
-
-            <p style={{ fontSize: ".82rem", color: "var(--text3)", marginTop: "1.2rem" }}>
-              <strong style={{ color: "var(--text2)" }}>100% free to use.</strong> No account required.
-              1.3M bonds · 22,400 issuers · Create an account to save your reports.
-            </p>
-          </div>
-
-          {/* Stats row */}
-          <div style={{
-            display: "grid", gridTemplateColumns: "repeat(4,1fr)",
-            borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)",
-            margin: "3rem 0 0",
-          }}>
-            {[
-              ["1.3M", "Bonds Indexed"],
-              ["22.4K", "Issuers"],
-              ["< 5 min", "Research Generation"],
-              ["50", "States Covered"],
-            ].map(([num, label]) => (
-              <div key={label} style={{
-                padding: "1.8rem 1.2rem", textAlign: "center",
-                borderRight: "1px solid var(--line)", position: "relative",
-              }}>
-                <div style={{
-                  position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-                  width: 30, height: 2,
-                  background: "var(--accent)",
-                }} />
-                <div style={{
-                  fontSize: "2.4rem", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1, marginBottom: ".3rem",
-                  color: "var(--text)",
-                }}>{num}</div>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".1em" }}>{label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* SECTION B — THREE OFFERINGS */}
+      <section className="block" style={{ background: "var(--bg2)" }}>
+        <div className="container">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem", maxWidth: 1200, margin: "0 auto" }}>
+            {/* Card 1 — Advisory */}
+            <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.8rem", display: "flex", flexDirection: "column" }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em", marginBottom: ".8rem" }}>Ratings prep & advisory</div>
+              <h3 style={{ fontSize: "1.3rem", fontWeight: 700, letterSpacing: "-.01em", marginBottom: ".8rem" }}>Ratings preparation & advisory</h3>
+              <p style={{ fontSize: ".95rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: "1.5rem", flexGrow: 1 }}>
+                We work with issuer finance teams 60–120 days ahead of a Moody&apos;s, S&amp;P, or Fitch rating cycle — building the credit story, anticipating analyst questions, and coaching the prep. Engagements are scoped after a conversation.
+              </p>
+              <a href="mailto:admin@munireports.com" className="btn btn-out" style={{ width: "100%", justifyContent: "center" }}>Get in touch →</a>
+            </div>
+
+            {/* Card 2 — On-demand briefs */}
+            <div style={{ background: "var(--bg)", border: "2px solid var(--accent)", borderRadius: "var(--radius-lg)", padding: "1.8rem", display: "flex", flexDirection: "column", boxShadow: "0 4px 24px rgba(79,70,229,.12)" }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em", marginBottom: ".8rem" }}>On-demand briefs</div>
+              <h3 style={{ fontSize: "1.3rem", fontWeight: 700, letterSpacing: "-.01em", marginBottom: ".8rem" }}>Custom credit briefs — $199</h3>
+              <p style={{ fontSize: ".95rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: "1.5rem", flexGrow: 1 }}>
+                A polished, methodology-driven credit brief on any U.S. municipal issuer. Delivered within 5 business days. Useful for investor due diligence, refinancing analysis, treasury benchmarking, and board-level conversations.
+              </p>
+              <button onClick={handleCheckout} className="btn btn-accent" style={{ width: "100%", justifyContent: "center" }}>Order a brief — $199</button>
+            </div>
+
+            {/* Card 3 — Sample */}
+            <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.8rem", display: "flex", flexDirection: "column" }}>
+              <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em", marginBottom: ".8rem" }}>Sample</div>
+              <h3 style={{ fontSize: "1.3rem", fontWeight: 700, letterSpacing: "-.01em", marginBottom: ".8rem" }}>Sample brief — Austin, TX</h3>
+              <p style={{ fontSize: ".95rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: "1.5rem", flexGrow: 1 }}>
+                A 16-page credit research brief covering financials, pension obligations, the Moody&apos;s US Cities & Counties scorecard, capital plan, forward outlook, and bond market context. Free to download.
+              </p>
+              <a href="/sample-austin.pdf" className="btn btn-out" style={{ width: "100%", justifyContent: "center" }}>Download PDF</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION C — FEATURED BRIEF PREVIEW */}
       <section className="block">
         <div className="container">
-          <div className="block-head">
-            <div className="block-eyebrow">How it works</div>
-            <h2>Search. Analyze. <em>Report.</em></h2>
-            <p>Three steps from raw PDFs to structured credit research with citations, charts, and risk flags — generated by AI, grounded in public source documents.</p>
-          </div>
-
-          {/* Feature 1: Search */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
-            <div>
-              <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 1: Search</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Search any issuer — let AI <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>find the documents.</em></h3>
-              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Type an issuer name and MuniReports surfaces public filings from EMMA, state comptroller sites, and the issuer&apos;s own website to assemble credit research in minutes.</p>
-              <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
-                {["Search 22,400 issuers — AI finds public filings online", "Surfaces public filings from EMMA, state archives, city websites"].map(item => (
-                  <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
-                    <span style={{ color: "var(--accent)", fontWeight: 600 }}>✓</span> {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/builder" className="btn btn-out">Try it now →</Link>
-            </div>
-            {/* Demo: Search mockup */}
-            <div style={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.4rem", boxShadow: "var(--card-shadow)" }}>
-              <div style={{ background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: 10, padding: ".7rem .9rem", marginBottom: "1rem", display: "flex", alignItems: "center", gap: ".5rem" }}>
-                <span style={{ fontSize: "1rem" }}>🔎</span>
-                <span style={{ color: "var(--text2)", fontSize: ".92rem" }}>City of Austin, TX</span>
-              </div>
-              {[
-                { name: "City of Austin", meta: "City · Travis · TX · Pop. 978,908", rating: "AAA", color: "var(--accent)" },
-                { name: "Austin ISD", meta: "School District · Travis · TX · Enrollment 73,200", rating: "AA+", color: "#7c3aed" },
-                { name: "Austin Water Utility", meta: "Utility · Travis · TX", rating: "AA+", color: "#059669" },
-              ].map((r, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: ".6rem", padding: ".65rem .7rem", borderBottom: i < 2 ? "1px solid var(--line)" : "none" }}>
-                  <div style={{ width: 30, height: 30, borderRadius: 6, background: "var(--accent-bg)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--mono)", fontWeight: 700, color: r.color, fontSize: ".65rem" }}>
-                    {r.name.split(" ").filter(w => w.length > 2 && w !== "of").slice(0, 2).map(w => w[0]).join("")}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 600, fontSize: ".85rem" }}>{r.name}</div>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>{r.meta}</div>
-                  </div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".78rem", fontWeight: 700 }}>{r.rating}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Feature 2: Analysis with chart */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
-            {/* Demo: Financial chart mockup */}
-            <div style={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.4rem", boxShadow: "var(--card-shadow)" }}>
-              <div style={{ fontSize: ".85rem", fontWeight: 600, marginBottom: ".2rem" }}>Revenue vs. Expenditures</div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)", marginBottom: "1rem" }}>City of Austin · FY2020 – FY2025 · $M</div>
-              {/* SVG bar chart */}
-              <svg viewBox="0 0 400 200" style={{ width: "100%", height: "auto" }}>
-                {/* Grid lines */}
-                {[0, 1, 2, 3, 4].map(i => (
-                  <line key={i} x1="40" y1={30 + i * 40} x2="390" y2={30 + i * 40} stroke="var(--line)" strokeWidth="0.5" />
-                ))}
-                {/* Y-axis labels */}
-                <text x="35" y="34" fill="var(--text3)" fontSize="8" textAnchor="end" fontFamily="var(--mono)">$5B</text>
-                <text x="35" y="74" fill="var(--text3)" fontSize="8" textAnchor="end" fontFamily="var(--mono)">$4B</text>
-                <text x="35" y="114" fill="var(--text3)" fontSize="8" textAnchor="end" fontFamily="var(--mono)">$3B</text>
-                <text x="35" y="154" fill="var(--text3)" fontSize="8" textAnchor="end" fontFamily="var(--mono)">$2B</text>
-                {/* Revenue bars */}
-                {[
-                  { x: 55, h: 100, label: "FY20" },
-                  { x: 115, h: 112, label: "FY21" },
-                  { x: 175, h: 125, label: "FY22" },
-                  { x: 235, h: 132, label: "FY23" },
-                  { x: 295, h: 140, label: "FY24" },
-                  { x: 355, h: 148, label: "FY25" },
-                ].map((bar, i) => (
-                  <g key={i}>
-                    <rect x={bar.x} y={170 - bar.h} width="16" height={bar.h} fill="var(--accent)" rx="2" opacity="0.9" />
-                    <rect x={bar.x + 20} y={170 - bar.h + 8} width="16" height={bar.h - 8} fill="#7c3aed" rx="2" opacity="0.7" />
-                    <text x={bar.x + 18} y="185" fill="var(--text3)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">{bar.label}</text>
-                  </g>
-                ))}
-                {/* Legend */}
-                <rect x="50" y="195" width="8" height="4" fill="var(--accent)" rx="1" />
-                <text x="62" y="199" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Revenue</text>
-                <rect x="110" y="195" width="8" height="4" fill="#7c3aed" rx="1" />
-                <text x="122" y="199" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Expenditures</text>
-              </svg>
-              {/* KPI row */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: ".5rem", marginTop: ".8rem", paddingTop: ".8rem", borderTop: "1px solid var(--line)" }}>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase" }}>5Y CAGR</div>
-                  <div style={{ fontWeight: 700, fontSize: "1rem", color: "var(--good)" }}>+6.8%</div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase" }}>Op. Margin</div>
-                  <div style={{ fontWeight: 700, fontSize: "1rem" }}>4.3%</div>
-                </div>
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase" }}>Fund Bal.</div>
-                  <div style={{ fontWeight: 700, fontSize: "1rem" }}>18.4%</div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 2: AI Analysis</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Five-year history. Forward projections. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>Risk flags.</em></h3>
-              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>Once documents are parsed, MuniReports builds a financial overview: standardized 5-year statements, three-scenario forecast, CIP analysis, and a five-pillar credit sentiment score.</p>
-              <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
-                {["5-year revenue, expenditure & fund balance trends", "3-scenario forecast (baseline, optimistic, cautious)", "Capital plan with project roster & funding sources", "Sensitivity analysis on key inputs"].map(item => (
-                  <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
-                    <span style={{ color: "var(--accent)", fontWeight: 600 }}>✓</span> {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/builder" className="btn btn-out">Try it now →</Link>
-            </div>
-          </div>
-
-          {/* Feature 3: Report with sentiment mockup */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3.5rem", alignItems: "center", marginBottom: "5rem" }}>
-            <div>
-              <div style={{ fontSize: ".78rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".7rem" }}>Step 3: Credit Research</div>
-              <h3 style={{ fontSize: "1.9rem", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1, marginBottom: ".9rem" }}>Credit research. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>Citations provided.</em></h3>
-              <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.6, marginBottom: ".9rem" }}>MuniReports generates multi-section research: executive summary, financial analysis, capital plan review, debt profile, forward projections, and risk assessment.</p>
-              <ul style={{ listStyle: "none", margin: "1rem 0 1.5rem" }}>
-                {["12–25 page research with executive summary", "Charts auto-generated from public source data", "Citations provided for source documents", "Export PDF · Share link · Print-ready"].map(item => (
-                  <li key={item} style={{ padding: ".4rem 0", fontSize: ".94rem", color: "var(--text2)", display: "flex", gap: ".6rem" }}>
-                    <span style={{ color: "var(--accent)", fontWeight: 600 }}>✓</span> {item}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/builder" className="btn btn-accent">Generate a report →</Link>
-            </div>
-            {/* Demo: Report preview mockup */}
-            <div style={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", padding: "1.4rem", boxShadow: "var(--card-shadow)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: ".8rem", paddingBottom: ".8rem", borderBottom: "1px solid var(--line)" }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: ".95rem" }}>City of Austin, TX</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>General Obligation · AAA/Aaa</div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".64rem", color: "var(--text3)", textTransform: "uppercase" }}>Sentiment</div>
-                  <div style={{ fontWeight: 700, color: "var(--good)", fontSize: "1rem" }}>Positive</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>Score: 82/100</div>
-                </div>
-              </div>
-              {/* Pillar bars */}
-              <div style={{ marginBottom: ".8rem" }}>
-                {[
-                  { name: "Financial Health", score: 84, color: "var(--good)" },
-                  { name: "Revenue Stability", score: 88, color: "var(--good)" },
-                  { name: "Debt Profile", score: 76, color: "var(--accent)" },
-                  { name: "Liquidity", score: 72, color: "var(--warn)" },
-                  { name: "Economic Base", score: 91, color: "var(--good)" },
-                ].map((p, i) => (
-                  <div key={i} style={{ display: "grid", gridTemplateColumns: "100px 1fr 35px", gap: ".5rem", alignItems: "center", padding: ".35rem 0" }}>
-                    <span style={{ fontSize: ".8rem", color: "var(--text2)" }}>{p.name}</span>
-                    <div style={{ height: 5, background: "var(--line)", borderRadius: 3, overflow: "hidden" }}>
-                      <div style={{ height: "100%", width: `${p.score}%`, background: p.color, borderRadius: 3 }} />
-                    </div>
-                    <span style={{ fontFamily: "var(--mono)", fontSize: ".78rem", textAlign: "right", fontWeight: 600 }}>{p.score}</span>
-                  </div>
-                ))}
-              </div>
-              {/* Risk flags */}
-              <div style={{ borderTop: "1px solid var(--line)", paddingTop: ".7rem" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".4rem" }}>Risk Flags</div>
-                <div style={{ padding: ".5rem .6rem", background: "var(--warn-bg)", borderLeft: "3px solid var(--warn)", borderRadius: "0 6px 6px 0", marginBottom: ".4rem" }}>
-                  <div style={{ fontSize: ".8rem", fontWeight: 600, color: "var(--warn)" }}>⚠️ Rising Pension Obligations</div>
-                  <div style={{ fontSize: ".75rem", color: "var(--text2)" }}>TMRS funded ratio declined 2.3% YoY</div>
-                </div>
-                <div style={{ padding: ".5rem .6rem", background: "var(--bad-bg)", borderLeft: "3px solid var(--bad)", borderRadius: "0 6px 6px 0" }}>
-                  <div style={{ fontSize: ".8rem", fontWeight: 600, color: "var(--bad)" }}>🚩 Debt Capacity Pressure</div>
-                  <div style={{ fontSize: ".75rem", color: "var(--text2)" }}>CIP adds $1.2B in new issuance through FY2030</div>
-                </div>
-              </div>
-            </div>
+          <div style={{ maxWidth: 920, margin: "0 auto", padding: "2.5rem", background: "var(--accent-bg)", border: "1px solid var(--accent-line)", borderRadius: "var(--radius-lg)" }}>
+            <div style={{ fontFamily: "var(--mono)", fontSize: ".72rem", color: "var(--accent)", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".14em", marginBottom: ".8rem" }}>Featured this cycle</div>
+            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 700, letterSpacing: "-.02em", marginBottom: "1rem" }}>City of Austin, Texas — May 2026</h2>
+            <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.7, marginBottom: "1.5rem" }}>
+              A snapshot of one of the nation&apos;s strongest credits — triple-AAA across all three agencies, $325 billion in appraised value, and a meaningful structural fiscal challenge ahead. Covers the FY2025 ACFR, the FY2026 property tax rate increase, the three pension plans, the $4.4 billion FY26–30 capital improvement program, and the bond market context for the City&apos;s Series 2025 issuances.
+            </p>
+            <a href="/sample-austin.pdf" className="btn btn-accent">Download Austin brief — PDF</a>
           </div>
         </div>
       </section>
 
-      {/* ========= SAMPLE REPORT ========= */}
-      
-        {/* ============ EXAMPLE REPORTS SECTION ============ */}
-        <section id="example-reports-section" style={{ padding: "5rem 0", background: "var(--bg2)", borderTop: "1px solid var(--line)", borderBottom: "1px solid var(--line)" }}>
-          <div className="container">
-            <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-              <p style={{ fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--accent)", marginBottom: "0.75rem", fontWeight: 600 }}>
-                See real research
-              </p>
-              <h2 style={{ fontSize: "2.25rem", margin: "0 0 0.75rem 0" }}>Four examples across the credit spectrum</h2>
-              <p style={{ color: "var(--ink-mute)", maxWidth: "640px", margin: "0 auto", fontSize: "1.05rem" }}>
-                Download a sample to see exactly what you get — financials, peer comparison, pension analysis, climate risk, and bond market data.
-              </p>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.25rem", maxWidth: "1080px", margin: "0 auto" }}>
-              {[
-                { name: "City of Austin", state: "TX", type: "City", rating: "AAA", sentiment: "Positive", file: "austin.pdf" },
-                { name: "Round Rock ISD", state: "TX", type: "School District", rating: "AAA", sentiment: "Positive", file: "roundrockisd.pdf" },
-                { name: "City of Chicago", state: "IL", type: "City", rating: "BBB+", sentiment: "Negative", file: "chicago.pdf" },
-                { name: "Harris County MUD #6", state: "TX", type: "Special District", rating: "A", sentiment: "Neutral", file: "mud.pdf" },
-              ].map((sample) => (
-                <a
-                  key={sample.file}
-                  href={`/samples/${sample.file}`}
-                  download
-                  style={{
-                    display: "block",
-                    background: "var(--panel)",
-                    border: "1px solid var(--line)",
-                    borderRadius: "var(--radius-lg)",
-                    padding: "1.5rem",
-                    textDecoration: "none",
-                    color: "inherit",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--accent)";
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--line)";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                    <div style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 600,
-                      padding: "0.25rem 0.6rem",
-                      borderRadius: "100px",
-                      background: sample.sentiment === "Positive" ? "rgba(34,197,94,0.1)" : sample.sentiment === "Negative" ? "rgba(239,68,68,0.1)" : "rgba(234,179,8,0.1)",
-                      color: sample.sentiment === "Positive" ? "#16a34a" : sample.sentiment === "Negative" ? "#dc2626" : "#a16207",
-                    }}>
-                      {sample.sentiment}
-                    </div>
-                    <div style={{ fontFamily: "var(--mono, monospace)", fontSize: "0.75rem", color: "var(--ink-mute)" }}>
-                      {sample.rating}
-                    </div>
-                  </div>
-
-                  <h3 style={{ fontSize: "1.1rem", margin: "0 0 0.25rem 0", fontWeight: 600 }}>
-                    {sample.name}
-                  </h3>
-                  <p style={{ fontSize: "0.85rem", color: "var(--ink-mute)", margin: "0 0 1.25rem 0" }}>
-                    {sample.type} · {sample.state}
-                  </p>
-
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--accent)", fontSize: "0.88rem", fontWeight: 500 }}>
-                    <span>📄</span>
-                    <span>Download PDF</span>
-                  </div>
-                </a>
-              ))}
-            </div>
-
-            <div style={{ textAlign: "center", marginTop: "3rem" }}>
-              <p style={{ color: "var(--ink-mute)", marginBottom: "1.25rem" }}>
-                Ready to run your own?
-              </p>
-              <Link href="/signup" className="btn btn-accent btn-lg">Sign up to generate →</Link>
-            </div>
-          </div>
-        </section>
-
-        <section className="block" style={{ background: "var(--bg2)" }}>
+      {/* SECTION D — WHY MUNIREPORTS */}
+      <section className="block" style={{ background: "var(--bg2)" }}>
         <div className="container">
-          <div className="block-head">
-            <div className="block-eyebrow">Sample Research</div>
-            <h2>See what you&apos;ll get — <em>in seconds.</em></h2>
-            <p>Here&apos;s real AI-generated credit research. Every research brief follows this structure, with data sourced from public financial records.</p>
-          </div>
-
-          <div style={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: "var(--radius-lg)", overflow: "hidden", boxShadow: "var(--card-shadow)", maxWidth: 920, margin: "0 auto" }}>
-            {/* Report bar */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: ".75rem 1.2rem", background: "var(--bg2)", borderBottom: "1px solid var(--line)" }}>
-              <div style={{ fontSize: ".88rem", fontWeight: 600 }}>📊 City of Austin, TX</div>
-              <Link href="/builder" className="btn btn-accent btn-sm">Generate your own →</Link>
-            </div>
-
-            <div style={{ padding: "2rem 2.2rem", maxWidth: 860, margin: "0 auto" }}>
-              {/* Header */}
-              <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--accent)", textTransform: "uppercase", letterSpacing: ".16em", fontWeight: 600, marginBottom: ".5rem" }}>AI-Assisted Municipal Credit Research</div>
-              <h3 style={{ fontFamily: "var(--sans)", fontSize: "1.8rem", fontWeight: 400, marginBottom: ".3rem" }}>City of Austin, Texas</h3>
-              <div style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontSize: ".95rem", color: "var(--text2)", marginBottom: "1.2rem", paddingBottom: "1rem", borderBottom: "1px solid var(--line)" }}>General Obligation / Municipal Utility · TX · Rating: AAA / Aaa · Outlook: Stable</div>
-
-              {/* KPIs */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: ".5rem", margin: "1rem 0 1.5rem", padding: "1.2rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)" }}>
-                {[
-                  { label: "AI Sentiment", value: "Positive", sub: "Score: 82/100", color: "var(--good)" },
-                  { label: "Fund Balance", value: "18.4%", sub: "of expenditures", color: "var(--text)" },
-                  { label: "Op. Margin", value: "4.3%", sub: "net revenue", color: "var(--text)" },
-                  { label: "Debt/Revenue", value: "1.62×", sub: "leverage ratio", color: "var(--text)" },
-                  { label: "Rating", value: "AAA", sub: "agency rating shown", color: "var(--accent)" },
-                ].map((k, i) => (
-                  <div key={i} style={{ textAlign: "center" }}>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em", marginBottom: ".3rem" }}>{k.label}</div>
-                    <div style={{ fontSize: "1.15rem", fontWeight: 700, color: k.color }}>{k.value}</div>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>{k.sub}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Executive Summary */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
-                  <span>📋</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Executive Summary</h4>
-                </div>
-                <p style={{ fontSize: ".9rem", lineHeight: 1.7, color: "var(--text2)" }}>
-                  The City of Austin, Texas maintains an exceptionally strong credit profile underpinned by a diversified and rapidly expanding economic base, robust population growth, and prudent financial management. As the state capital and home to the University of Texas at Austin, the city benefits from a high concentration of technology, government, education, and healthcare employers that provide considerable revenue stability across economic cycles.
-                </p>
-                <p style={{ fontSize: ".9rem", lineHeight: 1.7, color: "var(--text2)", marginTop: ".6rem" }}>
-                  Austin&apos;s general fund reserves remain well above the GFOA recommended threshold, and the city has consistently demonstrated the fiscal discipline necessary to maintain structural budget balance. However, rapid growth is straining infrastructure capacity, and the city faces rising pension obligations that warrant monitoring.
-                </p>
-              </div>
-
-              {/* Charts row: Revenue bar chart + Sentiment gauge */}
-              <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "1rem", marginBottom: "1.8rem" }}>
-                {/* Revenue vs Expenditure chart */}
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
-                  <div style={{ fontSize: ".85rem", fontWeight: 600, marginBottom: ".15rem" }}>Revenue vs. Expenditures</div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", marginBottom: ".8rem" }}>FY2020 – FY2025 · $M</div>
-                  <svg viewBox="0 0 400 160" style={{ width: "100%", height: "auto" }}>
-                    {[0,1,2,3].map(i => <line key={i} x1="40" y1={15+i*35} x2="390" y2={15+i*35} stroke="var(--line)" strokeWidth="0.5" />)}
-                    {[
-                      { x: 55, r: 92, e: 88, l: "'20" },
-                      { x: 115, r: 100, e: 95, l: "'21" },
-                      { x: 175, r: 112, e: 107, l: "'22" },
-                      { x: 235, r: 120, e: 114, l: "'23" },
-                      { x: 295, r: 128, e: 121, l: "'24" },
-                      { x: 355, r: 135, e: 128, l: "'25" },
-                    ].map((b, i) => (
-                      <g key={i}>
-                        <rect x={b.x} y={140-b.r} width="14" height={b.r} fill="#1e3a5f" rx="2" />
-                        <rect x={b.x+17} y={140-b.e} width="14" height={b.e} fill="#7c3aed" rx="2" opacity="0.6" />
-                        <text x={b.x+15} y="153" fill="var(--text3)" fontSize="7" textAnchor="middle" fontFamily="var(--mono)">{b.l}</text>
-                      </g>
-                    ))}
-                    <rect x="50" y="158" width="8" height="4" fill="#1e3a5f" rx="1" /><text x="62" y="162" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Revenue</text>
-                    <rect x="110" y="158" width="8" height="4" fill="#7c3aed" rx="1" opacity="0.6" /><text x="122" y="162" fill="var(--text2)" fontSize="7" fontFamily="var(--mono)">Expenditures</text>
-                  </svg>
-                </div>
-                {/* Sentiment gauge */}
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", textAlign: "center" }}>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".5rem" }}>AI Credit Score</div>
-                  <svg viewBox="0 0 200 120" style={{ width: 150, height: "auto", display: "block", margin: "0 auto" }}>
-                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="var(--line)" strokeWidth="12" strokeLinecap="round" />
-                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#059669" strokeWidth="12" strokeLinecap="round" strokeDasharray="205.7 251" />
-                    <text x="100" y="85" textAnchor="middle" fontSize="28" fontWeight="700" fill="var(--text)" fontFamily="var(--sans)">82</text>
-                    <text x="100" y="102" textAnchor="middle" fontSize="10" fill="var(--text3)" fontFamily="var(--mono)">/ 100</text>
-                  </svg>
-                  <div style={{ fontWeight: 700, color: "var(--good)", fontSize: "1rem" }}>Positive</div>
-                </div>
-              </div>
-
-              {/* Credit Scorecard */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
-                  <span>📊</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Credit Scorecard</h4>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem" }}>
-                  {[
-                    { title: "🏙️ Economy & Tax Base", score: "Aaa", items: [["Tax Base Size", "$198.4B", "Aaa"], ["Full Value Per Capita", "$197,200", "Aa1"], ["Median Family Income", "$89,600", "Aa2"]] },
-                    { title: "💵 Financial Performance", score: "Aa1", items: [["Fund Balance / Revenue", "18.4%", "Aa2"], ["5-Year Revenue CAGR", "+6.8%", "Aa1"], ["Operating Margin", "4.3%", "Aa3"]] },
-                    { title: "🏛️ Management", score: "Aa2", items: [["Institutional Framework", "Strong", "Aa1"], ["Operating History", "8 consec. surpluses", "Aaa"], ["Budget Flexibility", "Moderate", "Aa3"]] },
-                    { title: "📉 Debt & Pensions", score: "Aa3", items: [["Debt to Revenue", "1.62×", "Aa3"], ["Debt Per Capita", "$4,820", "A1"], ["Pension Funded Ratio", "73.2%", "A2"]] },
-                  ].map((card, i) => (
-                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden" }}>
-                      <div style={{ padding: ".6rem .8rem", borderBottom: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg2)" }}>
-                        <span style={{ fontWeight: 600, fontSize: ".85rem" }}>{card.title}</span>
-                        <span style={{ fontFamily: "var(--mono)", fontSize: ".8rem", fontWeight: 700, color: "var(--accent)", background: "var(--accent-bg)", padding: ".15rem .45rem", borderRadius: 3 }}>{card.score}</span>
-                      </div>
-                      {card.items.map(([name, val, score], j) => (
-                        <div key={j} style={{ padding: ".45rem .8rem", borderBottom: "1px solid var(--line-soft)", display: "flex", justifyContent: "space-between", fontSize: ".82rem" }}>
-                          <span style={{ color: "var(--text2)" }}>{name}</span>
-                          <div style={{ display: "flex", gap: ".4rem", alignItems: "center" }}>
-                            <span style={{ fontFamily: "var(--mono)", fontSize: ".8rem" }}>{val}</span>
-                            <span style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--accent)", background: "var(--accent-bg)", padding: ".08rem .3rem", borderRadius: 2 }}>{score}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Revenue & Expenditure Composition */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.8rem" }}>
-                {[
-                  { title: "Revenue Sources", total: "$4.8B", items: [["Property Tax", "38.2%", "#1e3a5f"], ["Sales Tax", "22.1%", "#2b5278"], ["Charges for Services", "18.4%", "#7c3aed"], ["Utility Revenue", "12.8%", "#059669"], ["Other", "8.5%", "#d97706"]] },
-                  { title: "Expenditure Breakdown", total: "$4.6B", items: [["Public Safety", "34.1%", "#dc2626"], ["General Government", "18.6%", "#1e3a5f"], ["Utilities & Public Works", "21.2%", "#7c3aed"], ["Culture & Recreation", "8.4%", "#059669"], ["Debt Service", "10.2%", "#d97706"], ["Other", "7.5%", "#9ca3af"]] },
-                ].map((chart, ci) => (
-                  <div key={ci} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem" }}>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".6rem" }}>{chart.title}</div>
-                    <svg viewBox="0 0 200 200" style={{ width: 130, height: 130, display: "block", margin: "0 auto .6rem" }}>
-                      {(() => { let off = 0; return chart.items.map(([, pct, color], i) => { const p = parseFloat(pct); const d = (p/100)*314; const el = <circle key={i} cx="100" cy="100" r="50" fill="none" stroke={color} strokeWidth="28" strokeDasharray={`${d} ${314-d}`} strokeDashoffset={-off} transform="rotate(-90 100 100)" />; off += d; return el; }); })()}
-                      <circle cx="100" cy="100" r="36" fill="var(--panel)" />
-                      <text x="100" y="104" textAnchor="middle" fontSize="10" fontWeight="600" fill="var(--text)" fontFamily="var(--mono)">{chart.total}</text>
-                    </svg>
-                    {chart.items.map(([name, pct, color], i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".25rem 0", fontSize: ".78rem" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: ".35rem", color: "var(--text2)" }}>
-                          <span style={{ width: 7, height: 7, borderRadius: 2, background: color, flexShrink: 0 }} />{name}
-                        </div>
-                        <span style={{ fontFamily: "var(--mono)", fontWeight: 500 }}>{pct}</span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-
-              {/* Peer Comparison */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
-                  <span>🏆</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Peer Comparison</h4>
-                </div>
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", fontSize: ".82rem" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.5fr .7fr .5fr .7fr .7fr .7fr", padding: ".6rem .8rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)", textTransform: "uppercase" }}>
-                    <div>Municipality</div><div style={{textAlign:"right"}}>Pop.</div><div style={{textAlign:"right"}}>Rating</div><div style={{textAlign:"right"}}>Fund Bal.</div><div style={{textAlign:"right"}}>Debt/Cap</div><div style={{textAlign:"right"}}>Margin</div>
-                  </div>
-                  {[
-                    { name: "Austin, TX ←", pop: "979K", rat: "AAA", fb: "18.4%", dc: "$4,820", mg: "4.3%", hl: true },
-                    { name: "San Antonio, TX", pop: "1.4M", rat: "AAA", fb: "21.2%", dc: "$3,940", mg: "5.1%", hl: false },
-                    { name: "Dallas, TX", pop: "1.3M", rat: "AA+", fb: "16.8%", dc: "$5,120", mg: "3.8%", hl: false },
-                    { name: "Denver, CO", pop: "713K", rat: "AAA", fb: "19.6%", dc: "$4,280", mg: "4.7%", hl: false },
-                    { name: "Nashville, TN", pop: "684K", rat: "AA+", fb: "15.4%", dc: "$5,680", mg: "3.2%", hl: false },
-                  ].map((row, i) => (
-                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.5fr .7fr .5fr .7fr .7fr .7fr", padding: ".55rem .8rem", borderBottom: "1px solid var(--line-soft)", background: row.hl ? "var(--accent-bg)" : "transparent" }}>
-                      <div style={{ fontWeight: row.hl ? 700 : 500, color: row.hl ? "var(--accent)" : "var(--text)" }}>{row.name}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.pop}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{row.rat}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.fb}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.dc}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--text2)" }}>{row.mg}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Risk flags */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
-                  <span>⚠️</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Risk Assessment</h4>
-                </div>
-                {[
-                  { icon: "🚩", title: "Infrastructure Strain from Rapid Growth", sev: "high", desc: "Population grew 21% over 5 years, straining water, wastewater, and transportation capacity. CIP commits $7.8B through FY2030 but unfunded needs remain significant." },
-                  { icon: "⚠️", title: "Pension Funded Ratio Declining", sev: "medium", desc: "COAERS pension funded ratio declined from 78.1% to 73.2% over three years. The city's annual pension contribution now represents 14.2% of general fund revenue." },
-                  { icon: "⚠️", title: "Sales Tax Revenue Concentration", sev: "medium", desc: "Sales tax represents 22.1% of revenue and is cyclically sensitive. A moderate recession could produce a 10-15% decline in this revenue line." },
-                ].map((r, i) => (
-                  <div key={i} style={{ margin: ".5rem 0", padding: ".8rem 1rem", borderLeft: `3px solid ${r.sev === "high" ? "var(--bad)" : "var(--warn)"}`, background: r.sev === "high" ? "var(--bad-bg)" : "var(--warn-bg)", borderRadius: "0 var(--radius) var(--radius) 0" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".2rem" }}>
-                      <span style={{ fontSize: ".85rem", fontWeight: 600, color: r.sev === "high" ? "var(--bad)" : "var(--warn)" }}>{r.icon} {r.title}</span>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", textTransform: "uppercase", padding: ".15rem .4rem", borderRadius: 3, fontWeight: 600, background: r.sev === "high" ? "var(--bad)" : "var(--warn)", color: "#fff" }}>{r.sev}</span>
-                    </div>
-                    <p style={{ fontSize: ".82rem", color: "var(--text2)", margin: 0, lineHeight: 1.5 }}>{r.desc}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pension Analysis */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "1px solid var(--line)" }}>
-                  <span>🏦</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Pension & OPEB Analysis</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", marginLeft: "auto" }}>Adjusted basis</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".6rem", marginBottom: ".8rem" }}>
-                  {[
-                    { label: "Funded Ratio", value: "73.2%", color: "var(--warn)" },
-                    { label: "ANPL / Revenue", value: "89.4%", color: "var(--good)" },
-                    { label: "Contribution to ADC", value: "100%", color: "var(--good)" },
-                  ].map((m, i) => (
-                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem", textAlign: "center" }}>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".3rem" }}>{m.label}</div>
-                      <div style={{ fontSize: "1.2rem", fontWeight: 700, color: m.color }}>{m.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", fontSize: ".82rem" }}>
-                  {[["Pension System", "COAERS"], ["Adjusted Net Pension Liability", "$2.8B"], ["Annual Employer Contribution", "$198.4M"]].map(([l,v], i) => (
-                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".5rem .8rem", borderBottom: "1px solid var(--line-soft)" }}>
-                      <span style={{ color: "var(--text2)" }}>{l}</span>
-                      <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{v}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tax Burden - Exclusive */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
-                  <span>💲</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Tax Burden Analysis</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
-                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem" }}>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".4rem" }}>Property Tax</div>
-                    {[["Tax Rate", "$0.4431 / $100"], ["vs. State Average", "Below Average"], ["Homestead Exemption", "$110,000"]].map(([l,v], i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".3rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".78rem" }}>
-                        <span style={{ color: "var(--text2)" }}>{l}</span>
-                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600, color: String(v).includes("Below") ? "var(--good)" : "var(--text)" }}>{v}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".8rem" }}>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".4rem" }}>Overall Burden</div>
-                    {[["Tax Burden Per Capita", "$2,840"], ["Sales Tax Rate", "8.25%"]].map(([l,v], i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: ".3rem 0", borderBottom: "1px solid var(--line-soft)", fontSize: ".78rem" }}>
-                        <span style={{ color: "var(--text2)" }}>{l}</span>
-                        <span style={{ fontFamily: "var(--mono)", fontWeight: 600 }}>{v}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Housing - Exclusive */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
-                  <span>🏠</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Housing & Tax Base Stability</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem" }}>
-                  {[
-                    { label: "Median Home", value: "$485K" },
-                    { label: "Price/Income", value: "4.8×", color: "var(--good)" },
-                    { label: "5Y AV Growth", value: "+38.2%" },
-                    { label: "Ownership", value: "52.4%" },
-                  ].map((m, i) => (
-                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".7rem", textAlign: "center" }}>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".25rem" }}>{m.label}</div>
-                      <div style={{ fontSize: "1.1rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: ".5rem", padding: ".6rem .8rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", display: "flex", justifyContent: "space-between", fontSize: ".82rem" }}>
-                  <span style={{ color: "var(--text2)" }}>Full Value Per Capita <span style={{ fontFamily: "var(--mono)", fontSize: ".68rem", color: "var(--text3)" }}>(industry-standard metric)</span></span>
-                  <span style={{ fontFamily: "var(--mono)", fontWeight: 700, fontSize: ".95rem" }}>$197,200</span>
-                </div>
-              </div>
-
-              {/* Climate Risk - Exclusive */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
-                  <span>🌍</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Climate & Natural Hazard Risk</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".6rem" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".5rem" }}>
-                    {[
-                      { label: "Flood", value: "Moderate", icon: "🌊", color: "var(--warn)" },
-                      { label: "Wildfire", value: "Low", icon: "🔥", color: "var(--good)" },
-                      { label: "Hurricane", value: "Low", icon: "🌀", color: "var(--good)" },
-                      { label: "Heat", value: "High", icon: "🌡️", color: "var(--bad)" },
-                    ].map((r, i) => (
-                      <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".6rem", textAlign: "center" }}>
-                        <div style={{ fontSize: "1rem", marginBottom: ".2rem" }}>{r.icon}</div>
-                        <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".2rem" }}>{r.label}</div>
-                        <div style={{ fontWeight: 700, fontSize: ".82rem", color: r.color }}>{r.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: "1rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                    <div style={{ fontFamily: "var(--mono)", fontSize: ".65rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".4rem" }}>Overall Climate Risk</div>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: ".3rem", marginBottom: ".5rem" }}>
-                      <span style={{ fontSize: "2rem", fontWeight: 700, color: "var(--warn)" }}>4</span>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: ".8rem", color: "var(--text3)" }}>/ 10</span>
-                    </div>
-                    <div style={{ height: 6, background: "var(--line)", borderRadius: 3, overflow: "hidden", marginBottom: ".5rem" }}>
-                      <div style={{ height: "100%", width: "40%", background: "var(--warn)", borderRadius: 3 }} />
-                    </div>
-                    <p style={{ fontSize: ".78rem", color: "var(--text2)", margin: 0, lineHeight: 1.4 }}>Austin faces moderate flood risk from flash flooding in Hill Country watersheds and elevated heat stress. Wildfire and hurricane exposure are minimal.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bond Market Performance - Exclusive */}
-              <div style={{ marginBottom: "1.8rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem", paddingBottom: ".5rem", borderBottom: "2px solid #059669" }}>
-                  <span>📈</span><h4 style={{ fontSize: "1rem", fontWeight: 700 }}>Bond Market Performance</h4>
-                  <span style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "#fff", background: "#059669", padding: ".12rem .4rem", borderRadius: 3, marginLeft: "auto" }}>MuniReports Analysis</span>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: ".5rem", marginBottom: ".8rem" }}>
-                  {[
-                    { label: "Outstanding", value: "$4.2B" },
-                    { label: "Avg Coupon", value: "4.12%" },
-                    { label: "Avg Yield", value: "3.45%" },
-                    { label: "Spread to AAA", value: "8 bps", color: "var(--good)" },
-                  ].map((m, i) => (
-                    <div key={i} style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", padding: ".7rem", textAlign: "center" }}>
-                      <div style={{ fontFamily: "var(--mono)", fontSize: ".6rem", color: "var(--text3)", textTransform: "uppercase", marginBottom: ".25rem" }}>{m.label}</div>
-                      <div style={{ fontSize: "1.1rem", fontWeight: 700, color: m.color || "var(--text)" }}>{m.value}</div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", overflow: "hidden", fontSize: ".78rem" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1.8fr .8fr .6fr .5fr .5fr .6fr .6fr", padding: ".5rem .6rem", borderBottom: "1px solid var(--line)", fontFamily: "var(--mono)", fontSize: ".62rem", color: "var(--text3)", textTransform: "uppercase" }}>
-                    <div>Issue</div><div style={{textAlign:"right"}}>Par</div><div style={{textAlign:"right"}}>Coupon</div><div style={{textAlign:"right"}}>Mat.</div><div style={{textAlign:"right"}}>YTM</div><div style={{textAlign:"right"}}>Price</div><div style={{textAlign:"right"}}>Spread</div>
-                  </div>
-                  {[
-                    { desc: "GO Bonds Series 2022A", par: "$158.8M", coupon: "5.00%", mat: "2042", ytm: "3.42%", price: "$112.45", spread: "6 bps" },
-                    { desc: "Water & Wastewater Rev 2021", par: "$245.0M", coupon: "4.25%", mat: "2046", ytm: "3.58%", price: "$108.20", spread: "12 bps" },
-                    { desc: "GO Refunding 2020", par: "$89.5M", coupon: "3.50%", mat: "2035", ytm: "3.18%", price: "$103.80", spread: "4 bps" },
-                  ].map((b, i) => (
-                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1.8fr .8fr .6fr .5fr .5fr .6fr .6fr", padding: ".45rem .6rem", borderBottom: "1px solid var(--line-soft)", alignItems: "center" }}>
-                      <div style={{ fontWeight: 500 }}>{b.desc}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.par}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.coupon}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.mat}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{b.ytm}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", fontWeight: 600 }}>{b.price}</div>
-                      <div style={{ textAlign: "right", fontFamily: "var(--mono)", color: "var(--good)" }}>{b.spread}</div>
-                    </div>
-                  ))}
-                </div>
-                <p style={{ fontSize: ".78rem", color: "var(--text2)", margin: 0, marginTop: ".5rem", padding: ".5rem .7rem", background: "var(--bg)", border: "1px solid var(--line)", borderRadius: "var(--radius)", lineHeight: 1.4 }}>
-                  <span style={{ fontWeight: 600, color: "var(--text)" }}>Market Commentary: </span>
-                  Austin GO bonds trade at tight spreads reflecting strong investor demand and AAA credit quality. Recent secondary market activity shows stable pricing with yields declining 15 bps over the past quarter amid favorable municipal market conditions.
-                </p>
-              </div>
-
-              <p style={{ fontSize: ".72rem", fontStyle: "italic", color: "var(--text3)", marginTop: "1rem", marginBottom: ".5rem", lineHeight: 1.5 }}>
-                Sample shown. AI-generated research compiled from public sources. Verify figures against original filings.
-              </p>
-
-              {/* Sources */}
-              <div style={{ paddingTop: "1rem", borderTop: "1px solid var(--line)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
-                  Sources: ACFR FY2025 · Adopted Budget FY2026 · CIP 2026-2030 · EMMA · U.S. Census
-                </div>
-                <Link href="/builder" className="btn btn-accent btn-sm">Generate your own →</Link>
-              </div>
-            </div>
+          <div style={{ maxWidth: 820, margin: "0 auto" }}>
+            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.15, marginBottom: "1.5rem" }}>
+              We sit at the intersection of agency methodology and issuer reality.
+            </h2>
+            <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.75, marginBottom: "1.2rem" }}>
+              Most municipal credit research is built for one audience or the other — academic analyses that ignore the operational pressures issuers actually face, or quick-turn ratings memos that miss how the methodology really works under the hood. We&apos;ve sat on both sides. Our briefs apply the Moody&apos;s published US Cities & Counties scorecard and US K-12 Public School Districts methodology against real ACFR and EMMA data, with every figure sourced and every scorecard sub-factor showing its inputs. They&apos;re decision-quality research, not summaries.
+            </p>
+            <p style={{ fontSize: "1rem", color: "var(--text2)", lineHeight: 1.75 }}>
+              For issuer finance teams preparing for a rating cycle, we bring the same analytical rigor to the table — anticipating the questions analysts will ask, surfacing the weaknesses before agencies do, and shaping the credit narrative around what actually moves a rating. Practical preparation, drawn from years inside both a rating agency and a major government banking practice.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <div className="container">
-        <div style={{
-          background: "var(--accent)", color: "#fff",
-          padding: "5rem 2rem",
-          textAlign: "center", borderRadius: 20, maxWidth: 1200, margin: "4rem auto",
-          position: "relative", overflow: "hidden"
-        }}>
-          <div style={{ position: "absolute", top: -200, right: -200, width: 500, height: 500, background: "radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 70%)", pointerEvents: "none" }} />
-          <h2 style={{ fontSize: "clamp(1.9rem,4vw,3.2rem)", fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05, marginBottom: "1rem", position: "relative" }}>
-            Credit research. <em style={{ fontFamily: "var(--sans)", fontStyle: "italic", fontWeight: 400 }}>Right now.</em>
-          </h2>
-          <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,.8)", maxWidth: "48ch", margin: "0 auto 2rem", position: "relative" }}>
-            No account needed to start. Search any issuer and generate a research brief in minutes.
-          </p>
-          <div style={{ display: "flex", gap: ".7rem", justifyContent: "center", flexWrap: "wrap", position: "relative" }}>
-            <Link href="/builder" className="btn btn-lg" style={{ background: "#fff", color: "var(--accent)", fontWeight: 700, border: "none" }}>Start analyzing — free →</Link>
-            <Link href="/pricing" className="btn btn-out btn-lg" style={{ color: "#fff", borderColor: "rgba(255,255,255,.4)" }}>See plans</Link>
+      {/* SECTION E — CONTACT */}
+      <section className="block">
+        <div className="container">
+          <div style={{ maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
+            <h2 style={{ fontSize: "clamp(1.6rem,3vw,2.2rem)", fontWeight: 700, letterSpacing: "-.02em", marginBottom: "1rem" }}>Get in touch.</h2>
+            <p style={{ fontSize: "1.05rem", color: "var(--text2)", lineHeight: 1.65, marginBottom: "1.8rem" }}>
+              Tell us what you need — a single brief, a rating-cycle engagement, or a quick scoping call. We respond within one business day.
+            </p>
+            <a href="mailto:admin@munireports.com" className="btn btn-accent btn-lg">Email admin@munireports.com</a>
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }

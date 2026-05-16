@@ -3,8 +3,8 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 
 export const metadata = {
-  title: "MuniReports — AI-Assisted Municipal Credit Research & Bond Analysis",
-  description: "AI-assisted municipal credit research. Search any issuer, compile public financial data into a structured research brief in minutes. Not a credit rating.",
+  title: "MuniReports — Municipal Credit Briefs & Ratings Advisory",
+  description: "Research-grade credit briefs and ratings advisory for U.S. municipal issuers.",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,10 +21,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <span>Muni<em>Reports</em></span>
             </Link>
             <div className="nav-links">
-              <Link href="/">Product</Link>
-              <Link href="/builder">Report Builder</Link>
-              {user && <Link href="/dashboard">My Reports</Link>}
-              <Link href="/pricing">Free + Pro</Link>
+              <a href="/sample-austin.pdf">Sample brief</a>
             </div>
             <div className="nav-cta">
               {user ? (
@@ -39,12 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   </form>
                 </>
               ) : (
-                <>
-                  <Link href="/login" className="btn btn-ghost btn-sm">Sign in</Link>
-                  <Link href="/builder" className="btn btn-accent btn-sm">
-                    Start analyzing — free →
-                  </Link>
-                </>
+                <a href="mailto:admin@munireports.com" className="btn btn-accent btn-sm">Contact us</a>
               )}
             </div>
           </div>
