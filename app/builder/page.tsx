@@ -1529,62 +1529,6 @@ export default function BuilderPage() {
           </div>
         </div>
       )}
-      {/* ===== PAYWALL MODAL ===== */}
-      {showPaywall && (
-        <div style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,.6)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          zIndex: 1000, backdropFilter: "blur(4px)",
-        }} onClick={() => setShowPaywall(false)}>
-          <div onClick={e => e.stopPropagation()} style={{
-            background: "var(--panel)", border: "1px solid var(--line)",
-            borderRadius: "var(--radius-lg)", padding: "2.5rem",
-            maxWidth: 520, width: "90%", textAlign: "center",
-            boxShadow: "0 20px 60px rgba(0,0,0,.3)",
-          }}>
-            <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>📊</div>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: ".5rem", letterSpacing: "-.02em" }}>
-              You&apos;ve used your free report
-            </h2>
-            <p style={{ color: "var(--text2)", fontSize: ".95rem", lineHeight: 1.6, marginBottom: "1.5rem" }}>
-              Get research briefs with the data you need: pension analysis, bond pricing, climate risk, and coverage of issuers Moody&apos;s and S&amp;P don&apos;t rate.
-            </p>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem", marginBottom: "1.5rem" }}>
-              <button onClick={async () => {
-                const res = await fetch("/api/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceType: "single" }) });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              }} style={{
-                padding: "1.2rem", background: "var(--accent)", color: "#fff", border: "none",
-                borderRadius: "var(--radius)", cursor: "pointer", fontFamily: "var(--sans)",
-              }}>
-                <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>$4.99</div>
-                <div style={{ fontSize: ".85rem", opacity: .9 }}>Single Report</div>
-              </button>
-              <button onClick={async () => {
-                const res = await fetch("/api/create-checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ priceType: "5pack" }) });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-              }} style={{
-                padding: "1.2rem", background: "var(--bg)", color: "var(--text)", border: "2px solid var(--accent)",
-                borderRadius: "var(--radius)", cursor: "pointer", fontFamily: "var(--sans)",
-              }}>
-                <div style={{ fontSize: "1.5rem", fontWeight: 700 }}>$19.99</div>
-                <div style={{ fontSize: ".85rem", color: "var(--text2)" }}>5-Pack <span style={{ color: "var(--good)", fontWeight: 600 }}>Save 20%</span></div>
-              </button>
-            </div>
-
-            <div style={{ fontSize: ".82rem", color: "var(--text2)", marginBottom: "1rem" }}>
-              Need unlimited reports? <a href="mailto:admin@munireports.com?subject=Unlimited%20Pricing" style={{ color: "var(--accent)", textDecoration: "none", fontWeight: 600 }}>Contact us</a>
-            </div>
-
-            <button onClick={() => setShowPaywall(false)} style={{ background: "none", border: "none", color: "var(--text3)", fontSize: ".85rem", cursor: "pointer", fontFamily: "var(--sans)" }}>
-              Maybe later
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

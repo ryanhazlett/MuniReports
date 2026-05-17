@@ -82,8 +82,7 @@ export default function TermsPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2>8. Payments</h2>
         <p>
-          Paid features are billed through Stripe. Reports are sold as one-time purchases ($4.99 single, $19.99 5-pack) or
-          via custom unlimited plans. By purchasing, you authorize us to charge your payment method.
+          Paid features are billed through Stripe. Credit briefs are sold as one-time purchases at $199 per brief. Ratings advisory engagements are scoped and invoiced separately. By purchasing, you authorize us to charge your payment method.
         </p>
         <p>
           <strong>Refunds.</strong> If a report fails to generate or is materially defective, contact{" "}

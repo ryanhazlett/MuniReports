@@ -52,19 +52,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <span>Muni<em>Reports</em></span>
               </div>
               <p style={{ color: "var(--text2)", fontSize: "0.88rem", lineHeight: 1.55, maxWidth: "36ch", marginTop: "0.7rem" }}>
-                AI-assisted municipal credit research. Search any issuer to generate a research brief from public financial data.
+                Research-grade credit briefs and ratings advisory for U.S. municipal issuers.
               </p>
             </div>
             <div>
               <h6>Product</h6>
               <Link href="/">Overview</Link>
-              <Link href="/builder">Report Builder</Link>
-              <Link href="/pricing">Free + Pro</Link>
+              <Link href="/pricing">Engagement options</Link>
             </div>
             <div>
               <h6>Resources</h6>
               <Link href="/methodology">Methodology</Link>
-              <Link href="/faq">FAQ</Link>
               <Link href="/status">Status</Link>
             </div>
             <div>
@@ -77,7 +75,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
           <div className="footer-bottom">
             <span>© 2026 MuniReports</span>
-            <span>Not a credit rating agency. AI sentiment is research, not an NRSRO rating.</span>
+            <span>Not a credit rating agency. Briefs are research output, not NRSRO ratings.</span>
           </div>
         </footer>
       </body>

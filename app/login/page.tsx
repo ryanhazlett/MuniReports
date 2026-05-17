@@ -1,6 +1,5 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -39,9 +38,6 @@ export default function LoginPage() {
           {loading ? "Signing in..." : "Sign in"}
         </button>
       </form>
-      <div className="auth-footer">
-        Don&apos;t have an account? <Link href="/signup">Create one free</Link>
-      </div>
     </div>
   );
 }

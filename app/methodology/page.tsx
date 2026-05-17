@@ -1,25 +1,23 @@
-import Link from "next/link";
-
 export const metadata = {
   title: "Methodology — MuniReports",
-  description: "How MuniReports generates AI-assisted municipal credit research.",
+  description: "How MuniReports researches and produces municipal credit briefs.",
 };
 
 export default function MethodologyPage() {
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "4rem 1.5rem" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>Methodology</h1>
-      <p style={{ color: "var(--ink-mute)", fontSize: "1.05rem", marginBottom: "2.5rem" }}>
-        How we generate municipal credit research briefs.
+      <p style={{ color: "var(--text2)", fontSize: "1.05rem", marginBottom: "2.5rem" }}>
+        How we research and produce municipal credit briefs.
       </p>
 
       <section style={{ marginBottom: "2.5rem" }}>
         <h2>How it works</h2>
         <p>
-          MuniReports generates credit research using a large language model (Anthropic&apos;s Claude) combined with web search
-          across public data sources at the time of your request. When you request a report, our system searches for the issuer&apos;s most recent
-          Annual Comprehensive Financial Report (ACFR), adopted budget, capital improvement plan, bond disclosures on EMMA, and
-          related public records, then synthesizes that information into a structured credit profile.
+          Each MuniReports brief is produced through a structured analyst workflow. We begin with dossier compilation — assembling the issuer&apos;s most recent Annual Comprehensive Financial Report (ACFR), adopted budget, capital improvement plan, EMMA bond disclosures, and related public records. From there, our analysts review the source documents, apply the relevant published rating-agency methodology, draft the brief, and route it through internal review before delivery.
+        </p>
+        <p>
+          For cities and counties we apply the Moody&apos;s US Cities and Counties Rating Methodology (July 24, 2024); for K-12 school districts we apply the Moody&apos;s US K-12 Public School Districts Rating Methodology (July 24, 2024). Every scorecard sub-factor in a brief shows its inputs and the bucket assignment derived from those inputs.
         </p>
       </section>
 
@@ -38,52 +36,37 @@ export default function MethodologyPage() {
       </section>
 
       <section style={{ marginBottom: "2.5rem" }}>
-        <h2>What&apos;s in a report</h2>
-        <p>Each report includes:</p>
+        <h2>What&apos;s in a brief</h2>
+        <p>Each brief includes:</p>
         <ul>
-          <li><strong>Executive summary</strong> with sentiment scoring (Positive / Neutral / Negative)</li>
+          <li><strong>Executive summary</strong> — key findings and credit narrative</li>
           <li><strong>Economic overview</strong> — employment, demographics, top employers, MSA growth</li>
           <li><strong>Five-year financial trends</strong> — revenue, expenditures, fund balance</li>
           <li><strong>Revenue and expenditure composition</strong></li>
           <li><strong>Pension &amp; OPEB analysis</strong> — funded ratios, ANPL, contributions</li>
+          <li><strong>Moody&apos;s scorecard application</strong> — eight sub-factors with measured inputs and bucket assignments</li>
           <li><strong>Bond market data</strong> — outstanding par, coupons, yields, spreads</li>
           <li><strong>Tax burden &amp; housing</strong> — affordability and tax base stability</li>
           <li><strong>Climate &amp; natural hazard risk</strong> — flood, fire, hurricane, heat exposure</li>
-          <li><strong>Forward outlook</strong> — five-year forecast with scenario analysis</li>
-          <li><strong>Peer comparison</strong> — comparable issuers benchmarked side-by-side</li>
+          <li><strong>Capital plan and forward outlook</strong> — multi-year financial forecast and CIP context</li>
+          <li><strong>Sources and references</strong> — every figure tied to its primary source</li>
         </ul>
-      </section>
-
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Sentiment scoring</h2>
-        <p>
-          Reports include a sentiment score from 0–100 reflecting the AI&apos;s synthesis of financial health, revenue stability,
-          debt burden, management track record, and economic fundamentals. Scores above 70 typically reflect Positive sentiment,
-          40–70 Neutral, and below 40 Negative. This score is research output, not a credit rating.
-        </p>
       </section>
 
       <section style={{ marginBottom: "2.5rem" }}>
         <h2>Important limitations</h2>
         <p>
-          MuniReports is a research and information tool. We are not an NRSRO (Nationally Recognized Statistical Rating
-          Organization). Our sentiment scores are not credit ratings and should not be treated as substitutes for ratings issued
-          by Moody&apos;s, S&amp;P, Fitch, or KBRA.
+          MuniReports is not an NRSRO (Nationally Recognized Statistical Rating Organization). Our briefs are research output, not credit ratings, and should not be treated as substitutes for ratings issued by Moody&apos;s, S&amp;P, Fitch, or KBRA.
         </p>
         <p>
-          AI-generated reports may contain errors, omissions, or outdated information. Data may not reflect the most recently
-          completed fiscal year if disclosures have not yet been published. Users should verify any data point against primary
-          source documents before making investment decisions. Reports are for informational purposes only and do not constitute
-          investment, legal, or tax advice.
+          Our analysts review and verify all content before delivery. Briefs reflect the most recent ACFR and EMMA disclosures available at the time of delivery; subsequent disclosures or material events after delivery are not retroactively incorporated. Briefs are for informational purposes only and do not constitute investment, legal, or tax advice. Users should verify any data point against primary source documents before making investment decisions.
         </p>
       </section>
 
       <section style={{ marginBottom: "2.5rem" }}>
         <h2>Updates &amp; freshness</h2>
         <p>
-          Each report is generated fresh at the time of request. There is no static database of pre-built reports. This means
-          analysis reflects the most current public information available at generation time, but it also means two reports run
-          minutes apart may differ slightly as web search results update.
+          Briefs reflect the most recent ACFR and EMMA disclosures available at delivery. We do not maintain a static catalog of pre-built briefs; each is researched at the time of order against the most current public information.
         </p>
       </section>
 
@@ -94,7 +77,7 @@ export default function MethodologyPage() {
       </div>
 
       <div style={{ marginTop: "2rem" }}>
-        <Link href="/builder" className="btn btn-accent">Generate a report →</Link>
+        <a href="/sample-austin.pdf" className="btn btn-accent">See methodology in action — download the Austin sample brief →</a>
       </div>
     </main>
   );

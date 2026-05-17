@@ -26,8 +26,7 @@ export default function PrivacyPage() {
         <h2>2. Information we collect</h2>
         <p><strong>Account information.</strong> When you create an account, we collect your email address and a hashed password via our authentication provider, Supabase.</p>
         <p><strong>Payment information.</strong> Payments are processed by Stripe. We do not store credit card numbers or full payment details on our servers. Stripe provides us with a transaction reference and the last four digits of the card used.</p>
-        <p><strong>Usage information.</strong> We log basic usage data, including which issuers you search for and which reports you generate, to operate and improve the Service.</p>
-        <p><strong>Saved reports.</strong> Reports you generate while logged in are saved to your account and stored in our database.</p>
+        <p><strong>Usage information.</strong> We log basic operational data including request logs and order references to operate and improve the Service.</p>
         <p><strong>Technical information.</strong> Like most websites, we automatically collect IP address, browser type, device type, and similar technical data.</p>
       </section>
 
@@ -59,9 +58,7 @@ export default function PrivacyPage() {
       <section style={{ marginBottom: "2rem" }}>
         <h2>5. AI processing</h2>
         <p>
-          Report content is generated using Anthropic&apos;s Claude API. When you request a report, the issuer name and state
-          are sent to Anthropic for processing. We do not send your account information, payment details, or other personal
-          data to the AI provider as part of report generation.
+          We use AI internally as part of our research workflow, including Anthropic&apos;s Claude API, to draft initial content from ACFR data and other public sources. All AI-assisted output is reviewed, verified, and finalized by MuniReports analysts before delivery to customers. AI does not directly produce customer-facing deliverables.
         </p>
       </section>
 

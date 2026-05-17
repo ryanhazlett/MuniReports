@@ -2,64 +2,55 @@ import Link from "next/link";
 
 export const metadata = {
   title: "About — MuniReports",
-  description: "About MuniReports — AI-assisted municipal credit research.",
+  description: "About MuniReports — research-grade credit briefs and ratings advisory for U.S. municipal issuers.",
 };
 
 export default function AboutPage() {
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "4rem 1.5rem" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>About MuniReports</h1>
-      <p style={{ color: "var(--ink-mute)", fontSize: "1.05rem", marginBottom: "2.5rem" }}>
-        Fast, structured credit research for the U.S. municipal bond market.
+      <p style={{ color: "var(--text2)", fontSize: "1.05rem", marginBottom: "2.5rem" }}>
+        MuniReports produces research-grade credit briefs and provides ratings advisory for U.S. municipal issuers. We were founded on the conviction that municipal credit research has a quality problem — academic analyses that ignore operational pressures, or quick-turn ratings memos that miss the methodology under the hood.
       </p>
 
       <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Why we built this</h2>
+        <h2>Built by analysts who&apos;ve sat on both sides.</h2>
         <p>
-          The U.S. municipal bond market is enormous — over $4 trillion outstanding across more than 50,000 issuers — but
-          credit research hasn&apos;t kept up. Traditional rating agency reports cost hundreds of dollars and arrive months
-          after the underlying disclosures are published. Smaller investors, community banks, and individual analysts have
-          historically been priced out of subscription-based research.
-        </p>
-        <p>
-          MuniReports offers an alternative starting point. We use AI to compile public disclosures into a structured research brief in under two minutes — research access at a price point professional services can&apos;t match.
+          MuniReports was founded by a former Moody&apos;s Investors Service public finance analyst and a 10-year veteran of Wells Fargo&apos;s Government Banking practice. Our approach combines rating-agency methodology with the practical experience of advising public-sector finance teams through real rating cycles, debt issuances, and credit transitions.
         </p>
       </section>
 
       <section style={{ marginBottom: "2.5rem" }}>
-        <h2>What makes us different</h2>
-        <ul>
-          <li><strong>Speed.</strong> Research briefs generate in 60–90 seconds.</li>
-          <li><strong>Price.</strong> $4.99 per research brief.</li>
-          <li><strong>Coverage.</strong> Any U.S. municipal issuer, on demand.</li>
-          <li>
-            <strong>Differentiated data.</strong> We surface tax burden, housing affordability, climate risk, and bond market
-            performance — public data points that aren&apos;t easy to assemble across sources.
-          </li>
-          <li><strong>Transparency.</strong> Each report lists its sources.</li>
-        </ul>
-      </section>
+        <h2>What we do.</h2>
 
-      <section style={{ marginBottom: "2.5rem" }}>
-        <h2>What we are not</h2>
+        <h3>Credit briefs.</h3>
         <p>
-          MuniReports is not a credit rating agency. We are not registered as an NRSRO with the SEC. Our sentiment scores are
-          research output meant to inform analysis, not replace ratings from Moody&apos;s, S&amp;P, Fitch, or KBRA. Reports are
-          for informational purposes and do not constitute investment, legal, or tax advice.
+          Polished, methodology-driven credit briefs on any U.S. municipal issuer. We apply the published Moody&apos;s US Cities &amp; Counties and US K-12 Public School Districts methodologies to ACFR and EMMA data. Every figure sourced. Every scorecard sub-factor shows its inputs. Delivered within 5 business days. $199 per brief.
+        </p>
+
+        <h3>Ratings preparation.</h3>
+        <p>
+          For issuer finance teams preparing for a Moody&apos;s, S&amp;P, or Fitch rating cycle. We work with you 60–120 days ahead of the call — building the credit story, anticipating analyst questions, and coaching the prep. Engagements are scoped after a conversation.
+        </p>
+
+        <h3>Advisory.</h3>
+        <p>
+          Ongoing credit advisory, investor relations support, and credit narrative work for issuers navigating refinancing, refunding, or credit transitions.
         </p>
       </section>
 
       <section style={{ marginBottom: "2.5rem" }}>
-        <h2>Get in touch</h2>
+        <h2>Not a credit rating agency.</h2>
         <p>
-          Questions, feedback, or interested in unlimited access? Reach us at{" "}
-          <a href="mailto:admin@munireports.com">admin@munireports.com</a>.
+          MuniReports is not a Nationally Recognized Statistical Rating Organization (NRSRO). Our briefs are research output, not credit ratings, and should not be used as substitutes for ratings issued by Moody&apos;s Investors Service, S&amp;P Global Ratings, Fitch Ratings, KBRA, or other registered rating agencies. See <Link href="/terms">Terms</Link> for full disclosures.
         </p>
       </section>
 
-      <div style={{ marginTop: "3rem" }}>
-        <Link href="/builder" className="btn btn-accent">Try it →</Link>
-      </div>
+      <section style={{ marginBottom: "2.5rem" }}>
+        <p>
+          Contact us at <a href="mailto:admin@munireports.com">admin@munireports.com</a> to discuss a brief or scope a consulting engagement.
+        </p>
+      </section>
     </main>
   );
 }
