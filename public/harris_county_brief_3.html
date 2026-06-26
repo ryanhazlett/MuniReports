@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Harris County, Texas — MuniReports AI-Assisted Municipal Issuer Brief</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --accent: #4f46e5;
+    --accent-light: #eef2ff;
+    --accent-line: #c7d2fe;
+    --text: #0f172a;
+    --text2: #475569;
+    --text3: #94a3b8;
+    --bg: #ffffff;
+    --bg2: #f8fafc;
+    --line: #e2e8f0;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --blue: #2563eb;
+    --blue-bg: #eff6ff;
+    --sans: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--text);
+    background: var(--bg);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ── PRINT ── */
+  @page { size: letter; margin: 0.5in; }
+  @media print {
+    body { font-size: 10pt; }
+    nav, .no-print { display: none !important; }
+    .cover { padding: 1.5rem 2rem; }
+    section { padding: 0.9rem 0; }
+    h2, h3 { orphans: 3; widows: 3; }
+    .kpi-row { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; }
+    .scorecard-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 6px; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+
+  /* ── NAV ── */
+  nav {
+    border-bottom: 1px solid var(--line);
+    padding: .75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+  .brand { display: flex; align-items: center; gap: .5rem; font-weight: 700; font-size: 1.05rem; text-decoration: none; color: var(--text); }
+  .brand-dot { width: 28px; height: 28px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: .7rem; font-weight: 800; }
+  .brand em { font-style: italic; font-weight: 400; }
+  .nav-meta { font-family: var(--mono); font-size: .7rem; color: var(--text3); }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+    color: #fff;
+    padding: 2.5rem 2rem 2rem;
+    display: flex;
+    align-items: flex-end;
+  }
+  .cover-inner { max-width: 900px; margin: 0 auto; width: 100%; }
+  .cover-label {
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: #a5b4fc;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    margin-bottom: 1rem;
+  }
+  .cover-title {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    margin-bottom: .5rem;
+    color: #fff;
+  }
+  .cover-sub {
+    font-size: 1rem;
+    color: #c7d2fe;
+    margin-bottom: 2rem;
+    font-weight: 400;
+  }
+  .cover-ratings {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .rating-chip {
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 100px;
+    padding: .3rem .9rem;
+    font-size: .78rem;
+    color: #e0e7ff;
+  }
+  .rating-chip strong { color: #fff; font-weight: 700; }
+  .cover-disclaimer {
+    font-size: .72rem;
+    color: #818cf8;
+    line-height: 1.55;
+    border-top: 1px solid rgba(255,255,255,.12);
+    padding-top: 1rem;
+    max-width: 72ch;
+  }
+
+  /* ── STAT STRIP ── */
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat-cell {
+    padding: 1.4rem 1.2rem;
+    border-right: 1px solid var(--line);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-label { font-family: var(--mono); font-size: .65rem; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .4rem; }
+  .stat-val { font-size: 1.5rem; font-weight: 700; color: var(--text); line-height: 1.1; margin-bottom: .25rem; }
+  .stat-sub { font-size: .75rem; color: var(--text2); }
+  .pos { color: #16a34a; }
+  .neg { color: #dc2626; }
+
+  /* ── SECTIONS ── */
+  section { padding: 2rem 0; border-bottom: 1px solid var(--line); }
+  section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: .7rem;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    margin-bottom: .6rem;
+  }
+  h2 {
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    margin-bottom: .75rem;
+    color: var(--text);
+  }
+  p { color: var(--text2); line-height: 1.75; margin-bottom: .75rem; }
+  p:last-child { margin-bottom: 0; }
+  p strong { color: var(--text); font-weight: 600; }
+
+  /* ── SCORE GRID ── */
+  .scorecard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .85rem;
+    margin-top: 1.5rem;
+  }
+  @media (max-width: 700px) { .scorecard-grid { grid-template-columns: repeat(2,1fr); } }
+  .sc-card {
+    background: var(--bg2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+  }
+  .sc-factor { font-family: var(--mono); font-size: .62rem; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; line-height: 1.3; }
+  .sc-val { font-size: 1.2rem; font-weight: 700; color: var(--text); line-height: 1.15; }
+  .sc-badge {
+    align-self: flex-start;
+    margin-top: auto;
+    font-family: var(--mono);
+    font-size: .68rem;
+    font-weight: 600;
+    padding: .22rem .55rem;
+    border-radius: 100px;
+    letter-spacing: .04em;
+  }
+  .badge-aaa { background: rgba(22,163,74,.14); color: #15803d; }
+  .badge-aa  { background: rgba(132,204,22,.16); color: #4d7c0f; }
+  .badge-a   { background: rgba(234,179,8,.18); color: #854d0e; }
+
+  /* ── OUTCOME BOX ── */
+  .outcome-hero {
+    background: #0f172a;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .outcome-hero-label { font-family: var(--mono); font-size: .72rem; color: #818cf8; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .5rem; }
+  .outcome-hero-val { font-size: 5rem; font-weight: 800; color: var(--accent); letter-spacing: -.04em; line-height: 1; margin-bottom: .4rem; }
+  .outcome-hero-issuer { font-family: var(--mono); font-size: .78rem; color: #94a3b8; }
+  .outcome-note { font-size: .88rem; color: var(--text2); line-height: 1.6; background: var(--bg2); border-left: 3px solid var(--accent); padding: .9rem 1.1rem; border-radius: 0 var(--radius) var(--radius) 0; }
+
+  /* ── DATA TABLES ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 1rem 0; }
+  .data-table th { text-align: left; font-family: var(--mono); font-size: .65rem; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; padding: .5rem .75rem; border-bottom: 1px solid var(--line); }
+  .data-table td { padding: .6rem .75rem; border-bottom: 1px solid var(--line); color: var(--text); }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .82rem; }
+  .data-table .rank { color: var(--text3); font-size: .8rem; }
+  .data-table .pct { color: var(--text2); }
+
+  /* ── KPI CARDS ── */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: .85rem; margin: 1.25rem 0; }
+  @media (max-width: 700px) { .kpi-row { grid-template-columns: repeat(2,1fr); } }
+  .kpi-card { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.1rem 1.2rem; }
+  .kpi-label { font-family: var(--mono); font-size: .65rem; color: var(--text3); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .4rem; }
+  .kpi-val { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+  .kpi-sub { font-size: .76rem; color: var(--text2); margin-top: .2rem; }
+
+  /* ── RISK CARDS ── */
+  .risk-card { border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem; border: 1px solid var(--line); }
+  .risk-header { display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; }
+  .risk-high .risk-header { background: var(--red-bg); }
+  .risk-med .risk-header  { background: var(--amber-bg); }
+  .risk-low .risk-header  { background: var(--blue-bg); }
+  .risk-title { font-size: .9rem; font-weight: 600; flex: 1; }
+  .risk-high .risk-title { color: var(--red); }
+  .risk-med  .risk-title { color: var(--amber); }
+  .risk-low  .risk-title { color: var(--blue); }
+  .risk-pill { font-family: var(--mono); font-size: .65rem; font-weight: 700; padding: .2rem .65rem; border-radius: 100px; }
+  .risk-high .risk-pill { background: var(--red); color: #fff; }
+  .risk-med  .risk-pill { background: var(--amber); color: #fff; }
+  .risk-low  .risk-pill { background: var(--blue); color: #fff; }
+  .risk-body { padding: .85rem 1rem; font-size: .88rem; color: var(--text2); line-height: 1.65; }
+
+  /* ── STRENGTHS ── */
+  .strength-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin-top: 1rem; }
+  @media (max-width: 600px) { .strength-grid { grid-template-columns: 1fr; } }
+  .strength-card { background: var(--green-bg); border-left: 3px solid var(--green); border-radius: 0 var(--radius) var(--radius) 0; padding: .85rem 1rem; font-size: .88rem; color: #166534; line-height: 1.55; }
+  .strength-card strong { display: block; font-weight: 700; margin-bottom: .25rem; color: #14532d; }
+
+  /* ── TREND TABLE ── */
+  .trend-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  .trend-table th { font-family: var(--mono); font-size: .63rem; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; padding: .5rem .6rem; border-bottom: 2px solid var(--line); text-align: right; }
+  .trend-table th:first-child { text-align: left; }
+  .trend-table td { padding: .55rem .6rem; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .82rem; }
+  .trend-table td:first-child { text-align: left; font-family: var(--sans); font-size: .86rem; font-weight: 500; }
+  .trend-table tr:last-child td { border-bottom: none; }
+
+  /* ── BOND TABLE ── */
+  .bond-table-wrap { overflow-x: auto; }
+
+  /* ── FORWARD BOX ── */
+  .forward-box { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1rem; font-size: .9rem; color: var(--text2); line-height: 1.7; }
+  .forward-box strong { color: var(--text); }
+
+  /* ── WATCHPOINTS ── */
+  .watchpoint { display: flex; gap: .75rem; align-items: flex-start; padding: .75rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
+  .watchpoint:last-child { border-bottom: none; }
+  .wp-num { font-family: var(--mono); font-size: .8rem; color: var(--accent); font-weight: 700; min-width: 20px; margin-top: .1rem; }
+  .wp-text { color: var(--text2); line-height: 1.6; }
+  .wp-text strong { color: var(--text); }
+
+  /* ── SOURCES ── */
+  .sources { font-size: .78rem; color: var(--text3); line-height: 1.65; }
+  .sources strong { color: var(--text2); font-weight: 500; }
+
+  /* ── DISCLAIMER BOX ── */
+  .disclaimer-box { background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; font-size: .78rem; color: var(--text3); line-height: 1.6; margin-top: 1.5rem; font-style: italic; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .8rem;
+    color: var(--text3);
+    font-family: var(--mono);
+  }
+
+  /* ── TWO COL ── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── PULL QUOTE ── */
+  .pull-quote { border-left: 3px solid var(--accent); padding: .85rem 1.1rem; background: var(--accent-light); border-radius: 0 var(--radius) var(--radius) 0; margin: 1.25rem 0; font-size: .92rem; color: #3730a3; font-weight: 500; line-height: 1.55; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="no-print" style="">
+  <a class="brand" href="#">
+    <div class="brand-dot">MR</div>
+    <span>Muni<em>Reports</em></span>
+  </a>
+  <span class="nav-meta">AI-Assisted Municipal Issuer Brief · June 26, 2026</span>
+</nav>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-label">MuniReports · AI-Assisted Municipal Issuer Brief · June 26, 2026 · munireports.com</div>
+    <div class="cover-title">Harris County, Texas</div>
+    <div class="cover-sub">Political subdivision of the State of Texas · General-purpose county government · TX</div>
+    <div class="cover-ratings">
+      <span class="rating-chip"><strong>Aaa</strong> Moody's (Stable) — affirmed July 2025</span>
+      <span class="rating-chip"><strong>AAA</strong> Fitch (Stable) — affirmed July 2025</span>
+      <span class="rating-chip"><strong>AAA</strong> KBRA (Stable) — affirmed July 2025</span>
+    </div>
+    <div class="cover-disclaimer">Snapshot dated June 26, 2026. This report is AI-generated preliminary research compiled from primary source documents: the Harris County FY2025 Annual Comprehensive Financial Report (fiscal year ended September 30, 2025, released April 7, 2026), the Harris County FY2026 Adopted Budget, and the FY2026 Budget Volume II. Figures are drawn directly from audited financials and official budget documents. Verify all figures against primary source documents (ACFR, EMMA filings, official statements) before any investment, lending, or financial decision. Not a credit rating. Not investment advice.</div>
+  </div>
+</div>
+
+<!-- STAT STRIP -->
+<div class="stat-strip">
+  <div class="stat-cell">
+    <div class="stat-label">AI Sentiment</div>
+    <div class="stat-val pos">Positive</div>
+    <div class="stat-sub">Score: 81/100</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">General Fund Balance</div>
+    <div class="stat-val">$1,330.4M</div>
+    <div class="stat-sub">total, Sep 30, 2025</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">Net Pension Liability</div>
+    <div class="stat-val pos">$138.3M</div>
+    <div class="stat-sub">GASB basis, TCDRS</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">Debt Per Capita</div>
+    <div class="stat-val">$1,474</div>
+    <div class="stat-sub">total primary govt.</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-label">Rating</div>
+    <div class="stat-val">Aaa / AAA</div>
+    <div class="stat-sub">Moody's / Fitch / KBRA</div>
+  </div>
+</div>
+
+<!-- EXECUTIVE SUMMARY -->
+<section>
+  <div class="container">
+    <div class="section-label">📋 Executive Summary</div>
+    <h2>A massive, globally important economy with ample reserves and a manageable pension — but growing fiscal pressure and sizable OPEB obligations.</h2>
+    <p>Primary financial data is drawn from the Harris County FY2025 Annual Comprehensive Financial Report (fiscal year ended September 30, 2025, released April 7, 2026), audited by Deloitte &amp; Touche LLP and prepared by County Auditor Michael Post, CPA, CIA. Forward-looking data is from the Harris County FY2026 Adopted Budget. Harris County holds <strong>Aaa ratings from Moody's</strong> (affirmed July 2025), <strong>AAA from Fitch</strong> (affirmed July 2025), and <strong>AAA from KBRA</strong> (affirmed July 2025), all with Stable outlooks — representing the highest possible ratings from all three agencies.</p>
+    <p>Harris County is the third most populous county in the United States, with an estimated population of <strong>5,009,302</strong> as of 2025 — 38% growth since 2004. The county is the primary service provider for an unincorporated area population exceeding 2.5 million residents. The Houston-The Woodlands-Sugar Land MSA generates an estimated GDP of approximately <strong>$697 billion</strong>, representing roughly 25% of the entire Texas economy and making it one of the largest metro economies in the world. Twenty-six Fortune 500 companies are headquartered in the Houston area.</p>
+    <p>For the fiscal year ended September 30, 2025, the primary government reported total revenues of <strong>$5,586,577,220</strong> and total expenses of $5,240,998,999, with net position increasing by $345,578,221 to $11,303,437,747. The General Fund ended FY2025 with total fund balance of <strong>$1,330,413,087</strong>, including $461,801,894 in unassigned balance. The County's GAAP net pension liability at September 30, 2025 was a remarkably low <strong>$138,292,915</strong> through the Texas County and District Retirement System (TCDRS). By contrast, the Total OPEB liability stood at <strong>$2,552,736,244</strong> — the primary long-term balance sheet concern — funded on a pay-as-you-go basis. Total primary government debt outstanding is $7,207,608,000 per the FY2025 statistical section, comprising governmental and business-type bonded debt, commercial paper, leases, and SBITAs.</p>
+    <p>The FY2026 Adopted Budget projects General Fund revenue of <strong>$2,768.6 million</strong> against appropriations of <strong>$2,769 million</strong> — a structurally near-balanced position maintained by ongoing cost management efforts, $16.6M in identified five-year financial plan savings, and strong property tax collections. Key budget pressures include jail costs and inmate housing outsourcing, indigent defense, healthcare cost inflation, and law enforcement pay parity implementation. The 3.5% annual property tax revenue cap under Texas SB2 constrains revenue flexibility going forward.</p>
+  </div>
+</section>
+
+<!-- ECONOMIC PROFILE -->
+<section>
+  <div class="container">
+    <div class="section-label">🏙 Economic Profile</div>
+    <h2>A regionally and globally dominant economy — the engine of Texas.</h2>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Population (2025)</div>
+        <div class="kpi-val">5,009,302</div>
+        <div class="kpi-sub">▲ 38% growth since 2004</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Unemployment (2025)</div>
+        <div class="kpi-val">4.8%</div>
+        <div class="kpi-sub">vs. 4.4% national avg.</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Per Capita Personal Income</div>
+        <div class="kpi-val">$71,293</div>
+        <div class="kpi-sub">2025 est. (BEA)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">MSA GDP</div>
+        <div class="kpi-val">~$697B</div>
+        <div class="kpi-sub">~25% of Texas economy</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div>
+        <p>Harris County's economy is one of the largest and most globally connected in the United States. The Houston MSA's GDP of approximately $697 billion ranks among the world's largest metropolitan economies. Total county employment was an estimated <strong>3,733,300</strong> in 2025 per the ACFR Statistical Section — up from 3,006,012 in 2016, a gain of more than 700,000 jobs in a decade. No single industry dominates employment; the region spans energy, healthcare and life sciences, logistics and trade, aerospace, government, and financial services.</p>
+        <p>The economy has diversified meaningfully since the oil price shocks of 2014–2016. Houston area occupancy rates remained relatively stable through and post the pandemic, reducing risk that work-from-home patterns will materially impair property tax receipts — the county's largest revenue source. The taxable assessed value grew at a compound annual rate of <strong>6.1%</strong> through tax year 2025, well above the 1.8% urban CPI growth rate over the same period. The total 2024 taxable assessed valuation was <strong>$656,738,013,000</strong>, up from $643,583,023,000 in the prior fiscal year.</p>
+        <p>WTI crude oil prices of approximately $63/barrel as of September 2025 represent a decline from the prior year, introducing a modest headwind for energy-sector employment. However, the region's diversification — anchored by the Texas Medical Center (the world's largest medical complex), Port Houston, and the Houston Airport System serving 62.4 million passengers in the twelve months ending October 2025 — substantially reduces commodity-cycle sensitivity.</p>
+      </div>
+      <div>
+        <h3>Principal Corporate Employers (2025)</h3>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Employer</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>Amazon</td></tr>
+            <tr><td class="rank">2</td><td>Baylor College of Medicine</td></tr>
+            <tr><td class="rank">3</td><td>Chevron</td></tr>
+            <tr><td class="rank">4</td><td>CHI St. Luke's Health</td></tr>
+            <tr><td class="rank">5</td><td>City of Houston</td></tr>
+            <tr><td class="rank">6</td><td>Daikin</td></tr>
+            <tr><td class="rank">7</td><td>ExxonMobil</td></tr>
+            <tr><td class="rank">8</td><td>Harris County</td></tr>
+            <tr><td class="rank">9</td><td>Harris Health System</td></tr>
+            <tr><td class="rank">10</td><td>H-E-B</td></tr>
+            <tr><td class="rank">11</td><td>Houston Methodist</td></tr>
+            <tr><td class="rank">12</td><td>Kroger</td></tr>
+            <tr><td class="rank">13</td><td>Memorial Hermann</td></tr>
+            <tr><td class="rank">14</td><td>Shell USA Inc.</td></tr>
+            <tr><td class="rank">15</td><td>United Airlines</td></tr>
+            <tr><td class="rank">16</td><td>UT MD Anderson Cancer Center</td></tr>
+            <tr><td class="rank">17</td><td>UTHealth Houston</td></tr>
+            <tr><td class="rank">18</td><td>Walmart</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.76rem;color:var(--text3);margin-top:.5rem;">Source: Harris County ACFR FY2025 Statistical Section, Table 18. Total county employment 3,733,300 (2025).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINANCIAL OVERVIEW -->
+<section>
+  <div class="container">
+    <div class="section-label">💰 Financial Overview</div>
+    <h2>Exceptional reserves and liquidity; OPEB is the primary balance sheet concern.</h2>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Revenues (FY2025)</div><div class="kpi-val">$5,586.6M</div><div class="kpi-sub">primary government</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Expenses (FY2025)</div><div class="kpi-val">$5,241.0M</div><div class="kpi-sub">primary government</div></div>
+      <div class="kpi-card"><div class="kpi-label">Change in Net Position</div><div class="kpi-val pos">+$345.6M</div><div class="kpi-sub">FY2025</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Net Position</div><div class="kpi-val">$11,303.4M</div><div class="kpi-sub">Sep 30, 2025</div></div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">GF Total Fund Balance</div><div class="kpi-val">$1,330.4M</div><div class="kpi-sub">Sep 30, 2025</div></div>
+      <div class="kpi-card"><div class="kpi-label">GF Unassigned Balance</div><div class="kpi-val">$461.8M</div><div class="kpi-sub">available for operations</div></div>
+      <div class="kpi-card"><div class="kpi-label">Net Pension Liability</div><div class="kpi-val pos">$138.3M</div><div class="kpi-sub">TCDRS, Sep 30, 2025</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total OPEB Liability</div><div class="kpi-val neg">$2,552.7M</div><div class="kpi-sub">Sep 30, 2025</div></div>
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Revenue &amp; Expenditure Trends — Primary Government · FY2021–FY2025 ($ thousands)</h3>
+    <div style="overflow-x:auto;">
+      <table class="trend-table">
+        <thead>
+          <tr>
+            <th style="text-align:left;">Category</th>
+            <th>FY2021</th>
+            <th>FY2022</th>
+            <th>FY2023</th>
+            <th>FY2024</th>
+            <th>FY2025</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Total Revenues</td><td>$4,059,598</td><td>$5,626,633</td><td>$4,674,201</td><td>$5,310,887</td><td>$5,586,577</td></tr>
+          <tr><td>Total Expenses</td><td>$4,496,693</td><td>$4,551,098</td><td>$4,944,059</td><td>$5,113,576</td><td>$5,240,999</td></tr>
+          <tr><td>Change in Net Position</td><td>$(336,809)</td><td>$671,977</td><td>$197,311 (est.)</td><td>$197,311</td><td>$345,578</td></tr>
+          <tr><td>Property &amp; HOT Taxes</td><td>$2,085,228</td><td>$2,148,792</td><td>$2,237,428</td><td>$2,431,938</td><td>$2,734,653</td></tr>
+          <tr><td>Taxable Assessed Value</td><td>$580,139,657</td><td>$606,314,651</td><td>$676,223,909</td><td>$643,583,023</td><td>$656,738,013</td></tr>
+          <tr><td>GF Total Fund Balance</td><td>$2,407,003</td><td>$2,215,808</td><td>$971,404</td><td>$1,180,492</td><td>$1,330,413</td></tr>
+          <tr><td>Total Debt Outstanding</td><td>$5,218,248</td><td>$5,448,574</td><td>$5,914,975</td><td>$7,285,759</td><td>$7,207,608</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.75rem;color:var(--text3);margin-top:.5rem;">Source: Harris County FY2025 ACFR, Statistical Section Tables 2, 3, 4, 5, and 12; Moody's July 2025 credit opinion key indicators. FY2022 total revenues elevated by one-time litigation settlement revenue. GF fund balance reflects FY2021–FY2022 peak years of ARPA/federal aid inflows and subsequent normalization. Taxable AV shown as real property per Statistical Section Table 5.</p>
+
+    <h3 style="margin-top:1.5rem;">Revenue Sources — Primary Government (FY2025)</h3>
+    <div class="two-col">
+      <table class="data-table">
+        <thead><tr><th>Revenue Source</th><th class="num">Amount ($K)</th><th class="num">% Total</th></tr></thead>
+        <tbody>
+          <tr><td>Property &amp; Hotel Occupancy Taxes</td><td class="num">$2,734,653</td><td class="num pct">49%</td></tr>
+          <tr><td>Charges for Services</td><td class="num">$1,505,692</td><td class="num pct">27%</td></tr>
+          <tr><td>Operating Grants &amp; Contributions</td><td class="num">$736,714</td><td class="num pct">13%</td></tr>
+          <tr><td>Investment Earnings</td><td class="num">$262,037</td><td class="num pct">5%</td></tr>
+          <tr><td>Capital Grants &amp; Contributions</td><td class="num">$189,614</td><td class="num pct">4%</td></tr>
+          <tr><td>Other</td><td class="num">$157,867</td><td class="num pct">2%</td></tr>
+          <tr><td><strong>Total</strong></td><td class="num"><strong>$5,586,577</strong></td><td class="num pct"><strong>100%</strong></td></tr>
+        </tbody>
+      </table>
+      <table class="data-table">
+        <thead><tr><th>Expense Function</th><th class="num">Amount ($K)</th><th class="num">% Total</th></tr></thead>
+        <tbody>
+          <tr><td>Administration of Justice</td><td class="num">$1,847,284</td><td class="num pct">35%</td></tr>
+          <tr><td>County Administration</td><td class="num">$1,144,425</td><td class="num pct">22%</td></tr>
+          <tr><td>Toll Road (business-type)</td><td class="num">$668,491</td><td class="num pct">13%</td></tr>
+          <tr><td>Health &amp; Human Services</td><td class="num">$514,943</td><td class="num pct">10%</td></tr>
+          <tr><td>Roads and Bridges</td><td class="num">$510,650</td><td class="num pct">10%</td></tr>
+          <tr><td>Flood Control</td><td class="num">$254,125</td><td class="num pct">5%</td></tr>
+          <tr><td>Other</td><td class="num">$301,081</td><td class="num pct">6%</td></tr>
+          <tr><td><strong>Total</strong></td><td class="num"><strong>$5,240,999</strong></td><td class="num pct"><strong>100%</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIT SCORECARD -->
+<section>
+  <div class="container">
+    <div class="section-label">📊 Credit Scorecard — US Cities and Counties</div>
+
+    <div class="outcome-hero">
+      <div class="outcome-hero-label">Scorecard-Indicated Outcome</div>
+      <div class="outcome-hero-val">Aa2</div>
+      <div class="outcome-hero-issuer">Harris County, Texas · US Cities &amp; Counties methodology, July 24, 2024</div>
+    </div>
+    <div class="outcome-note" style="margin-bottom:1.5rem;">
+      The Moody's-assigned rating of <strong>Aaa</strong> is two notches above the scorecard-indicated outcome of <strong>Aa2</strong>. Moody's July 2025 credit opinion explicitly states that the final rating exceeds the scorecard because the scorecard does not fully capture the magnitude of the county's available reserves — a large portion of governmental fund balances are classified as restricted for roads, bridges, flood control, and mobility programs in the audit, but these funds are genuinely available for county purposes. The strength of the economy and proven management practices also support the override.
+    </div>
+
+    <div class="scorecard-grid">
+      <div class="sc-card">
+        <div class="sc-factor">Resident Income Ratio</div>
+        <div class="sc-val">~92.9%</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">RPP-adjusted MHI as % of US median. Below Aaa threshold (≥120%) and Aa threshold (100–120%).</div>
+        <span class="sc-badge badge-a">A</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Full Value Per Capita</div>
+        <div class="sc-val">~$138,593</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Above Aa threshold; approaching Aaa. 30%+ growth in full value over five years drives continued improvement.</div>
+        <span class="sc-badge badge-aa">Aa</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Economic Growth Metric</div>
+        <div class="sc-val">~0.0 pp</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Houston MSA 5-yr real GDP CAGR roughly in line with national rate. Average 3.6% annual growth past four years.</div>
+        <span class="sc-badge badge-aa">Aa</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Available Fund Balance Ratio</div>
+        <div class="sc-val">38.4%</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Above the Aaa threshold of 35%. Moody's notes this materially understates true reserves due to restriction classifications.</div>
+        <span class="sc-badge badge-aaa">Aaa</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Liquidity Ratio</div>
+        <div class="sc-val">93.5%</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Net unrestricted cash substantially above the Aaa median of 79.5%. No short-term borrowing for cash flow needs.</div>
+        <span class="sc-badge badge-aaa">Aaa</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Institutional Framework</div>
+        <div class="sc-val">Aa</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Texas home rule counties operate under a strong framework. SB2's 3.5% annual property tax revenue cap constrains flexibility, placing Texas in the Aa tier.</div>
+        <span class="sc-badge badge-aa">Aa</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Long-Term Liabilities Ratio</div>
+        <div class="sc-val">271.9%</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Driven primarily by Moody's adjusted OPEB liabilities of ~$3.1B. Above the Aa threshold (~175%) due to OPEB, not debt.</div>
+        <span class="sc-badge badge-a">A</span>
+      </div>
+      <div class="sc-card">
+        <div class="sc-factor">Fixed-Costs Ratio</div>
+        <div class="sc-val">12.3%</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.5;">Implied debt service + pension tread-water + OPEB contributions. Above Aaa threshold (≤10%) but comfortably within Aa range.</div>
+        <span class="sc-badge badge-aa">Aa</span>
+      </div>
+    </div>
+
+    <p style="margin-top:1.25rem;font-size:.8rem;color:var(--text3);line-height:1.55;">Scorecard-Indicated Outcome is the result of applying the Moody's Investors Service US Cities and Counties Rating Methodology (July 24, 2024) to public source data. It is not a Moody's rating. MuniReports is not affiliated with, endorsed by, or sponsored by Moody's Investors Service. Moody's® and Aaa® are registered trademarks of Moody's Investors Service, Inc.</p>
+  </div>
+</section>
+
+<!-- CREDIT HEALTH -->
+<section>
+  <div class="container">
+    <div class="section-label">🎯 Credit Health Dashboard</div>
+    <div class="two-col">
+      <div>
+        <h3>AI Credit Sentiment</h3>
+        <div style="font-size:4rem;font-weight:800;color:var(--green);letter-spacing:-.04em;line-height:1;">81</div>
+        <div style="font-size:1.1rem;font-weight:600;color:var(--green);margin-bottom:.5rem;">Positive / 100</div>
+        <p>Harris County's exceptional reserve position, robust liquidity, manageable TCDRS pension, and globally important economic base drive a strongly positive sentiment score. The score reflects deductions for the sizeable unfunded OPEB liability, elevated long-term liabilities ratio, hurricane and flood event exposure, and SB2 revenue constraints.</p>
+      </div>
+      <div>
+        <h3>Key Indicators</h3>
+        <table class="data-table">
+          <thead><tr><th>Metric</th><th class="num">Value</th><th class="num">Score</th></tr></thead>
+          <tbody>
+            <tr><td>Available Fund Balance Ratio</td><td class="num">38.4%</td><td class="num"><span class="sc-badge badge-aaa">Aaa</span></td></tr>
+            <tr><td>Liquidity Ratio</td><td class="num">93.5%</td><td class="num"><span class="sc-badge badge-aaa">Aaa</span></td></tr>
+            <tr><td>Fixed-Costs Ratio</td><td class="num">12.3%</td><td class="num"><span class="sc-badge badge-aa">Aa</span></td></tr>
+            <tr><td>Full Value Per Capita</td><td class="num">~$138,593</td><td class="num"><span class="sc-badge badge-aa">Aa</span></td></tr>
+            <tr><td>Economic Growth Metric</td><td class="num">~0.0 pp</td><td class="num"><span class="sc-badge badge-aa">Aa</span></td></tr>
+            <tr><td>Resident Income Ratio</td><td class="num">~92.9%</td><td class="num"><span class="sc-badge badge-a">A</span></td></tr>
+            <tr><td>Long-Term Liabilities Ratio</td><td class="num">271.9%</td><td class="num"><span class="sc-badge badge-a">A</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDIT STRENGTHS -->
+<section>
+  <div class="container">
+    <div class="section-label">✅ Credit Strengths</div>
+    <h2>Triple-AAA consensus, global economic scale, and exceptional financial management.</h2>
+    <div class="strength-grid">
+      <div class="strength-card"><strong>Triple-AAA from all three rating agencies</strong>Aaa (Moody's, stable), AAA (Fitch, stable), AAA (KBRA, stable) — affirmed July 2025, reflecting the highest possible credit quality across all three major agencies and the county's consistent operating track record.</div>
+      <div class="strength-card"><strong>Globally important, diversified economy</strong>Houston MSA GDP of approximately $697 billion — roughly 25% of Texas's economy — with 26 Fortune 500 headquarters and no single dominant industry. Employment grew from 3.0M (2016) to 3.7M (2025).</div>
+      <div class="strength-card"><strong>Exceptional liquidity and reserve position</strong>Liquidity ratio of 93.5% of revenue; available fund balance ratio of 38.4% — both Aaa-rated. Moody's notes actual reserves are substantially larger than the reported figure because large restricted funds are available for county purposes.</div>
+      <div class="strength-card"><strong>Low, well-structured pension liability (TCDRS)</strong>GAAP net pension liability of only $138,292,915 at September 30, 2025 — exceptionally low for a government of this scale — through full actuarial funding under TCDRS. Employer contributions required at 100% of actuarial requirement annually.</div>
+      <div class="strength-card"><strong>Rapid, sustained tax base growth</strong>Taxable assessed value grew at a CAGR of 6.1% through tax year 2025, reaching $656.7 billion, well above the 1.8% urban CPI growth rate. Full value per capita has grown over 30% in five years.</div>
+      <div class="strength-card"><strong>HCTRA toll road strength and HOT coverage</strong>Toll Road gross revenues of $1,027,573,000 in FY2025 provided 4.64x coverage of debt service. HCTRA transferred $398.6M in surplus toll revenue to the Mobility Fund, supplementing county capital capacity.</div>
+      <div class="strength-card"><strong>World-class infrastructure assets</strong>Port Houston, the Houston Airport System (62.4M passengers), and over 6,000 miles of roads and bridges provide irreplaceable anchors for regional trade, logistics, and connectivity.</div>
+      <div class="strength-card"><strong>51 consecutive GFOA Excellence awards</strong>Harris County has received GFOA Certificates of Achievement for Excellence in Financial Reporting for 51 consecutive years — among the longest streaks nationally — reflecting exceptional governance and disclosure practices.</div>
+    </div>
+  </div>
+</section>
+
+<!-- RISK ASSESSMENT -->
+<section>
+  <div class="container">
+    <div class="section-label">⚠️ Risk Assessment</div>
+    <h2>Hurricane exposure and OPEB obligations are the two headline credit concerns.</h2>
+
+    <div class="risk-card risk-high">
+      <div class="risk-header">
+        <span class="risk-title">Hurricane and flood event exposure — structural and recurring</span>
+        <span class="risk-pill">HIGH</span>
+      </div>
+      <div class="risk-body">Harris County's Gulf Coast location creates ongoing exposure to significant storm events. Hurricane Harvey (2017) caused catastrophic damage and was one of the costliest natural disasters in US history; Hurricane Beryl (July 2024) caused additional operational disruptions. The county's Moody's ESG credit impact score is CIS-2, with an E-3 environmental profile score reflecting elevated physical climate risk. The county is investing substantially in resilience: the 2018 Flood Control Bond Program (voter-approved) employs a "worst-first" mitigation strategy, and the FY2026–FY2030 CIP includes over $5 billion in flood control capital. Nevertheless, storm events represent a recurring, difficult-to-quantify financial risk that is partially mitigated — not eliminated — by infrastructure investment and federal partnerships including CDBG-MIT grant funding.</div>
+    </div>
+
+    <div class="risk-card risk-high">
+      <div class="risk-header">
+        <span class="risk-title">Sizable unfunded OPEB obligations — pay-as-you-go structure</span>
+        <span class="risk-pill">HIGH</span>
+      </div>
+      <div class="risk-body">The Total OPEB liability was <strong>$2,552,736,244</strong> at September 30, 2025, measured as of September 30, 2025, with an actuarial valuation as of September 30, 2024. There was a decrease in the Total OPEB liability during FY2025 mainly due to changes in assumptions. Moody's adjusts the OPEB discount rate to a standardized level, producing an adjusted net OPEB liability of approximately $3.1 billion — the primary driver of the 271.9% long-term liabilities ratio and the A-rated scorecard result for that factor. Unlike the pension (TCDRS), the OPEB plan is not pre-funded; contributions are pay-as-you-go, creating ongoing structural pressure and sensitivity to healthcare cost inflation. The FY2026 budget increases the county's healthcare contribution by $19.6M (5.5% per employee), reflecting ongoing medical cost inflation.</div>
+    </div>
+
+    <div class="risk-card risk-med">
+      <div class="risk-header">
+        <span class="risk-title">Large capital investment pipeline — execution and leverage risk</span>
+        <span class="risk-pill">MEDIUM</span>
+      </div>
+      <div class="risk-body">During the fiscal year ended September 30, 2025, the county issued $581.0M in commercial paper, $631.6M in bonds, and $35.6M in Hotel Occupancy Tax bonds — significant new capital activity. Moody's five-year capital needs estimate totals approximately $8.8 billion, with over $5 billion for flood control and $3.8 billion for transportation. Moody's has indicated that additional debt absent offsetting revenue growth that drives leverage beyond 350% of revenue would be a factor that could lead to a downgrade. The Hardy Downtown Connector, Ship Channel Bridge replacement (the largest single CIP investment in county history), and Sam Houston Tollway widening are all active major projects. As of September 30, 2025, commercial paper outstanding was $305.18M against a $2.5 billion program authorization.</div>
+    </div>
+
+    <div class="risk-card risk-med">
+      <div class="risk-header">
+        <span class="risk-title">SB2 property tax revenue cap constrains structural balance</span>
+        <span class="risk-pill">MEDIUM</span>
+      </div>
+      <div class="risk-body">Texas Senate Bill 2 (2019) limits annual property tax revenue increases to 3.5% on existing property values without voter approval. The FY2026 budget raises more property tax revenue than the prior year by only $37,778,611 — a 1.5% increase — constrained by the SB2 cap and a modest 1.7% growth in existing property values for tax year 2025. The Budget Director's FY2026 message explicitly identifies SB2 revenue caps as a source of "substantial fiscal pressure" combined with rising expenditures. The five-year financial plan projects spending will exceed available resources within five years absent management action. KBRA cited SB2 as a long-term budgetary balance risk.</div>
+    </div>
+
+    <div class="risk-card risk-med">
+      <div class="risk-header">
+        <span class="risk-title">Jail costs, indigent defense, and inmate housing outsourcing</span>
+        <span class="risk-pill">MEDIUM</span>
+      </div>
+      <div class="risk-body">Harris County Sheriff's Office lost use of 580 variance jail beds beginning December 2023, requiring continued inmate outsourcing through FY2025 and into FY2026. The county continues to face elevated costs for outsourcing inmates to meet minimum jail standards. The FY2026 budget identifies jail costs and indigent defense as key budget drivers, with the District Attorney's Office undergoing its largest expansion in recent memory. Law enforcement pay parity with Houston Police Department adds $27.5M in FY2026 costs not covered by current contract patrol rates. These represent recurring structural expenditure pressures in the Administration of Justice function, which already accounts for 35% of primary government expenses.</div>
+    </div>
+
+    <div class="risk-card risk-low" style="margin-bottom:0;">
+      <div class="risk-header">
+        <span class="risk-title">Energy sector sensitivity — partially mitigated by diversification</span>
+        <span class="risk-pill">LOW</span>
+      </div>
+      <div class="risk-body">WTI crude prices of approximately $63/barrel in September 2025 represent a year-over-year decline. The Houston economy's diversification — anchored by healthcare, logistics, aerospace, and government — has substantially reduced sensitivity to commodity cycles. Principal taxpayers CenterPoint Energy, ExxonMobil, and Chevron Chemical remain among the top three assessed-value contributors, creating some concentration in energy and petrochemical real property. A sustained low-price environment could dampen commercial property values and energy-sector employment, but Moody's characterizes the overall economic diversification as a credit strength.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PENSION & OPEB -->
+<section>
+  <div class="container">
+    <div class="section-label">🏦 Pension &amp; OPEB Analysis — Adjusted Basis</div>
+    <h2>TCDRS pension is a credit strength; OPEB is the dominant long-term liability.</h2>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Net Pension Liability</div><div class="kpi-val pos">$138.3M</div><div class="kpi-sub">GASB basis, Sep 30, 2025</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total OPEB Liability</div><div class="kpi-val neg">$2,552.7M</div><div class="kpi-sub">Sep 30, 2025</div></div>
+      <div class="kpi-card"><div class="kpi-label">Moody's Adj. OPEB</div><div class="kpi-val">~$3,126M</div><div class="kpi-sub">standardized discount rate</div></div>
+      <div class="kpi-card"><div class="kpi-label">TCDRS Discount Rate</div><div class="kpi-val">7.60%</div><div class="kpi-sub">actual; Moody's adjusts down</div></div>
+    </div>
+    <div class="two-col">
+      <div>
+        <h3>Pension — TCDRS Structure</h3>
+        <p>Harris County participates in the <strong>Texas County and District Retirement System (TCDRS)</strong>, a statewide agent multiple-employer savings-based defined-benefit system established in 1967 serving over 831 Texas counties and districts. Under TCDRS, employers are required to pay 100% of their actuarially required contribution annually — a structurally sound requirement that prevents the contribution shortfalls common in other public pension systems.</p>
+        <p>The county's GAAP-reported net pension liability of <strong>$138,292,915</strong> at September 30, 2025, is remarkably low for a government of this size — representing roughly 2.5% of FY2025 primary government revenues. The pension liability is measured using a TCDRS discount rate of 7.60%. Moody's notes the county's high 7.6% discount rate makes it vulnerable to higher contributions if the rate is reduced, but projects contributions will remain a manageable portion of the budget.</p>
+        <p>At the 7.60% current rate, total pension liability is $9,231,521,000 and fiduciary net position is $9,089,363,000, producing the $142,158,000 net pension liability at the TCDRS measurement date. A 1% decrease in the discount rate to 6.60% would increase the net pension liability to $1,356,750,000 — a sensitivity to monitor.</p>
+      </div>
+      <div>
+        <h3>OPEB — Key Metrics</h3>
+        <table class="data-table">
+          <tbody>
+            <tr><td>Plan type</td><td class="num">Agent multiple-employer DB healthcare</td></tr>
+            <tr><td>Benefits provided</td><td class="num">Medical, dental, vision, basic life</td></tr>
+            <tr><td>Measurement date</td><td class="num">September 30, 2025</td></tr>
+            <tr><td>Total OPEB liability</td><td class="num">$2,552,736,244</td></tr>
+            <tr><td>Prior year OPEB liability</td><td class="num">$3,910,434,867</td></tr>
+            <tr><td>Change in OPEB liability</td><td class="num">↓ (changes of assumptions)</td></tr>
+            <tr><td>Funding method</td><td class="num">Pay-as-you-go (not pre-funded)</td></tr>
+            <tr><td>Employers in plan</td><td class="num">Harris County, Flood Control, Toll Road, Juvenile Board, CS, 911</td></tr>
+            <tr><td>Pension expense (FY2025)</td><td class="num">$128,052,581</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.8rem;color:var(--text3);margin-top:.5rem;">The decline in Total OPEB liability from $3.91B to $2.55B was driven by changes of assumptions during the measurement period. Source: Note 10, ACFR FY2025.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TAX BURDEN -->
+<section>
+  <div class="container">
+    <div class="section-label">💲 Tax Burden Analysis — MuniReports Analysis</div>
+    <div class="two-col">
+      <div>
+        <h3>Property Tax Rates (FY2025 / FY2026)</h3>
+        <table class="data-table">
+          <thead><tr><th>Entity</th><th class="num">M&amp;O</th><th class="num">Debt Svc</th><th class="num">Total</th></tr></thead>
+          <tbody>
+            <tr><td>Harris County (FY2025)</td><td class="num">$0.33454</td><td class="num">$0.05075</td><td class="num">$0.38529</td></tr>
+            <tr><td>Harris County (FY2026 NNR)</td><td class="num">$0.33483</td><td class="num">$0.04676</td><td class="num">$0.38159</td></tr>
+            <tr><td>Flood Control (FY2025)</td><td class="num">$0.03774</td><td class="num">$0.01123</td><td class="num">$0.04897</td></tr>
+            <tr><td>Flood Control (FY2026)</td><td class="num">$0.03826</td><td class="num">$0.01140</td><td class="num">$0.04966</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.8rem;color:var(--text3);margin-top:.5rem;">Constitutional tax rate limit: $0.80/$100. FY2026 Harris County rate shown is the No New Revenue rate per adopted budget; Commissioners Court rate not yet adopted as of report date. Total debt secured by property taxes: $2,618,434,736 (per adopted budget).</p>
+        <p>Property tax revenue in FY2025 was $2,734,653,396 — a $302,715,131 increase from FY2024 — reflecting both taxable value growth and the disaster rate applied in the fiscal year. The taxable assessed value grew to $656,738,013,000 from $643,583,023,000 in the prior year.</p>
+      </div>
+      <div>
+        <h3>Top 10 Property Taxpayers (2024 AV, from ACFR)</h3>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Taxpayer</th><th class="num">2024 AV ($K)</th><th class="num">% Total</th></tr></thead>
+          <tbody>
+            <tr><td class="rank">1</td><td>CenterPoint Energy Inc</td><td class="num">$6,700,954</td><td class="num pct">1.02%</td></tr>
+            <tr><td class="rank">2</td><td>Exxon Mobil Corp</td><td class="num">$5,060,027</td><td class="num pct">0.77%</td></tr>
+            <tr><td class="rank">3</td><td>Chevron Chemical Company</td><td class="num">$3,273,605</td><td class="num pct">0.50%</td></tr>
+            <tr><td class="rank">4</td><td>Equistar Chemicals LP</td><td class="num">$1,762,942</td><td class="num pct">0.27%</td></tr>
+            <tr><td class="rank">5</td><td>Paile LLC</td><td class="num">$1,458,134</td><td class="num pct">0.22%</td></tr>
+            <tr><td class="rank">6</td><td>LYB Channelview POTBA LLC</td><td class="num">$1,456,177</td><td class="num pct">0.22%</td></tr>
+            <tr><td class="rank">7</td><td>Enterprise Crude Pipeline</td><td class="num">$1,255,116</td><td class="num pct">0.19%</td></tr>
+            <tr><td class="rank">8</td><td>HEB Grocery Co LP</td><td class="num">$1,183,717</td><td class="num pct">0.18%</td></tr>
+            <tr><td class="rank">9</td><td>Walmart</td><td class="num">$1,137,321</td><td class="num pct">0.17%</td></tr>
+            <tr><td class="rank">10</td><td>Shell Oil Co</td><td class="num">$1,127,736</td><td class="num pct">0.17%</td></tr>
+            <tr><td></td><td><strong>Top 15 Total</strong></td><td class="num"><strong>$29,742,525</strong></td><td class="num pct"><strong>4.53%</strong></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:.75rem;color:var(--text3);margin-top:.5rem;">Source: ACFR FY2025, Statistical Section Table 9. AV shown is 2024 taxable valuations as of the FY2025 report date. Concentration is modest — top 15 taxpayers represent only 4.53% of total taxable value, reflecting the broad and diversified tax base.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOUSING & TAX BASE -->
+<section>
+  <div class="container">
+    <div class="section-label">🏠 Housing &amp; Tax Base Stability — MuniReports Analysis</div>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Taxable AV (FY2025)</div><div class="kpi-val">$656.7B</div><div class="kpi-sub">▲ from $643.6B in FY2024</div></div>
+      <div class="kpi-card"><div class="kpi-label">AV CAGR (2015–2025)</div><div class="kpi-val">6.1%</div><div class="kpi-sub">vs. 1.8% urban CPI</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tax Collection Rate</div><div class="kpi-val">~99%+</div><div class="kpi-sub">consistent historical performance</div></div>
+      <div class="kpi-card"><div class="kpi-label">Debt Limit Utilization</div><div class="kpi-val">~3%</div><div class="kpi-sub">vs. 25% AV constitutional limit</div></div>
+    </div>
+    <p>Harris County's property tax base is one of the largest, most diversified, and fastest-growing among major US counties. The total taxable assessed value reached $656.7 billion in tax year 2024 (FY2025 levy year), driven by energy and industrial property, commercial real estate, and residential growth. Real property accounts for approximately 90% of the county's tax base, with personal property comprising the remainder. Homestead residential properties are subject to a 10% annual appraisal cap, providing taxpayer protection while commercial and industrial values accrue at market rates.</p>
+    <p>The Greater Houston housing market showed stabilization in FY2025. Inventory expanded from 4.4 to 5.4 months — the highest since September 2012 — and single-family home sales increased 3.8% in September 2025 versus September 2024. New construction added $48,037,598 to the property tax rolls for FY2026, per the adopted budget.</p>
+  </div>
+</section>
+
+<!-- CLIMATE RISK -->
+<section>
+  <div class="container">
+    <div class="section-label">🌍 Climate &amp; Natural Hazard Risk — MuniReports Analysis</div>
+    <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);">
+      <div class="kpi-card"><div class="kpi-label">Overall Climate Risk</div><div class="kpi-val neg">High</div><div class="kpi-sub">Gulf Coast hurricane exposure</div></div>
+      <div class="kpi-card"><div class="kpi-label">Moody's E Score</div><div class="kpi-val" style="color:var(--amber);">E-3</div><div class="kpi-sub">Elevated physical climate risk</div></div>
+      <div class="kpi-card"><div class="kpi-label">ESG Credit Impact</div><div class="kpi-val" style="color:var(--blue);">CIS-2</div><div class="kpi-sub">Partially mitigated by investment</div></div>
+    </div>
+    <p>Harris County's Gulf Coast location creates meaningful recurring exposure to hurricane and flood events. Hurricane Harvey (2017) remains one of the costliest natural disasters in US history. Hurricane Beryl (July 2024) caused significant additional disruptions. Moody's E issuer profile score of E-3 reflects elevated physical climate risks — including heat, flooding, and hurricane exposure — partially offset by carbon transition exposure inherent in the region's global energy leadership role.</p>
+    <p>The county's ESG Credit Impact Score of CIS-2 reflects that environmental risks are mitigated in part by extensive infrastructure development and planning, the 2018 Flood Control Bond Program's "worst-first" prioritization, CDBG-MIT grant funding for flood control projects, and policies governing building codes and development standards. Moody's notes that absent these mitigating initiatives, the E IPS score would weaken. The Flood Control District's ongoing capital program — with over $5 billion planned over the next five years — is the primary mechanism for improving long-term resilience. Governance is strong (G-1 score), reflecting monthly financial reporting, long-range capital planning, and a consistent history of favorable budget outcomes versus expectations.</p>
+  </div>
+</section>
+
+<!-- BOND MARKET -->
+<section>
+  <div class="container">
+    <div class="section-label">📈 Bond Market Performance — MuniReports Analysis</div>
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Debt Outstanding</div><div class="kpi-val">$7,207.6M</div><div class="kpi-sub">primary government, FY2025</div></div>
+      <div class="kpi-card"><div class="kpi-label">Govt. Bonded Debt</div><div class="kpi-val">$3,779.1M</div><div class="kpi-sub">general obligation bonds</div></div>
+      <div class="kpi-card"><div class="kpi-label">Business-Type Debt</div><div class="kpi-val">$2,988.1M</div><div class="kpi-sub">HCTRA rev. bonds + tax bonds</div></div>
+      <div class="kpi-card"><div class="kpi-label">Commercial Paper</div><div class="kpi-val">$305.2M</div><div class="kpi-sub">outstanding, Sep 30, 2025</div></div>
+    </div>
+    <div class="bond-table-wrap">
+      <h3 style="margin-bottom:.75rem;">Long-Term Debt Maturity Profile (Governmental Activities, as of Sep 30, 2025)</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fiscal Year</th>
+            <th class="num">Principal ($K)</th>
+            <th class="num">Capital Appreciation at Maturity</th>
+            <th class="num">Interest ($K)</th>
+            <th class="num">Total ($K)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2026</td><td class="num">$228,820</td><td class="num">$240,040</td><td class="num">$161,959</td><td class="num">$401,999</td></tr>
+          <tr><td>2027</td><td class="num">$213,940</td><td class="num">$213,940</td><td class="num">$149,528</td><td class="num">$363,468</td></tr>
+          <tr><td>2028</td><td class="num">$185,260</td><td class="num">$185,260</td><td class="num">$153,287</td><td class="num">$338,547</td></tr>
+          <tr><td>2029</td><td class="num">$190,890</td><td class="num">$190,890</td><td class="num">$130,194</td><td class="num">$321,084</td></tr>
+          <tr><td>2030</td><td class="num">$161,155</td><td class="num">$161,155</td><td class="num">$121,095</td><td class="num">$282,250</td></tr>
+          <tr><td>2031–2035</td><td class="num">$627,260</td><td class="num">$627,260</td><td class="num">$497,727</td><td class="num">$1,124,987</td></tr>
+          <tr><td>2036–2040</td><td class="num">$605,965</td><td class="num">$605,965</td><td class="num">$359,074</td><td class="num">$965,039</td></tr>
+          <tr><td>2041–2045</td><td class="num">$612,205</td><td class="num">$612,205</td><td class="num">$227,408</td><td class="num">$839,613</td></tr>
+          <tr><td>2046–2050</td><td class="num">$451,175</td><td class="num">$451,175</td><td class="num">$100,489</td><td class="num">$551,664</td></tr>
+          <tr><td>2051–2055</td><td class="num">$212,270</td><td class="num">$212,270</td><td class="num">$29,591</td><td class="num">$241,861</td></tr>
+          <tr><td><strong>Total</strong></td><td class="num"><strong>$3,488,940</strong></td><td class="num"><strong>$3,500,160</strong></td><td class="num"><strong>$1,930,353</strong></td><td class="num"><strong>$5,430,513</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pull-quote">
+      HCTRA Toll Road Revenue Bond Coverage: 4.64x in FY2025 on gross revenues of $1,027,573,000 vs. debt service of $221,309,000 — well above the required 1.25x covenant. HOT bonds are additionally supported by hotel occupancy tax collections.
+    </div>
+    <p>Harris County's commercial paper program consists of twelve series totaling $2.5 billion — $2.15 billion payable from ad valorem taxes and $350 million payable from Toll Road revenues — backed by P-1 rated bank facilities with staggered expiration dates. All general obligation debt is fixed-rate. The county's Series 2025A Permanent Improvement Refunding Bonds and Unlimited Tax Road Refunding Bonds were assigned AAA ratings by KBRA in July 2025 at issuance. Tax-supported bonds issued in FY2025 totaled $499,585,000 per the Texas Bond Review Board.</p>
+  </div>
+</section>
+
+<!-- CAPITAL PLAN & FORWARD OUTLOOK -->
+<section>
+  <div class="container">
+    <div class="section-label">🏗 Capital Plan &amp; Forward Outlook</div>
+    <h2>An $8.8 billion capital pipeline, SB2 constraints, and an identified path to fiscal balance.</h2>
+
+    <div class="forward-box">
+      <strong>FY2026 Adopted Budget: $2,769M General Fund</strong> — The FY2026 Adopted General Fund appropriation is $2,769M in projected total revenue with $2,769M in appropriations. Flood Control District revenue is estimated at $251M (at the Voter Approval rate). HCTRA budget is $755M in expenditures and $180M in transfers to the Mobility Fund. The Harris County Hospital District (Harris Health) has its own budget of $2,839M. The county lived within its General Fund budget in FY2025, with actual budgetary basis revenues of $4.2B versus appropriations, with $0.1B in savings.
+    </div>
+
+    <div class="forward-box">
+      <strong>Five-Year Financial Plan warning:</strong> OMB commissioned a five-year financial plan study (completed May 2024) that found planned spending for FY2026 exceeds new revenue and, unless action is taken, General Fund spending will exceed total available resources within the next five years. The primary drivers are jail costs, indigent defense, healthcare cost inflation, contract patrol, and federal aid wind-down. For FY2026, the county has identified $15.8M in revenue enhancements and expense reductions (engineering permit fees, constable fees, parking fees, grant indirect recovery, and laptop standardization) plus an additional $16.6M in five-year plan options embedded in the budget. OMB also recommends diverting $20M in planned ARPA investments to cover part of the FY2026 budget shortfall.
+    </div>
+
+    <div class="forward-box">
+      <strong>Capital Improvement Program:</strong> Harris County's CIP encompasses approximately $8.8 billion in capital needs over five years — over $5 billion for flood control and $3.8 billion for transportation. Major active projects include the Hardy Downtown Connector (extending the Hardy Toll Road to downtown Houston), the Ship Channel Bridge replacement (the largest single CIP investment in county history), Sam Houston Tollway widening, the Riverside Health and Safety Complex, and Adult Detention Facility renovations. The 2018 Flood Control Bond Program's "worst-first" construction program using CDBG-MIT grant funds is well underway. Most precinct road and park projects funded with voted debt authorization are not reflected in the OMB CIP section. As of September 30, 2025, capital assets net of depreciation totaled $17,247,477,265 — an increase of $311,143,372 from the prior year.
+    </div>
+
+    <div class="forward-box">
+      <strong>Revenue outlook:</strong> FY2026 M&amp;O tax revenue is projected at $2,216.7M under the No New Revenue rate, including $48.0M from new property added to the rolls. General Fund revenue growth has averaged 5.2% since 2020 versus 6.2% in the pre-SB2 period (2015–2020), reflecting the reduced cap. The adopted budget raises more property tax revenue than the prior year by $37,778,611 (1.5%), well below historical growth rates. Non-tax revenue is projected at $547.4M, supported by charges for services, motor vehicle taxes, and the Contract Patrol program. ARPA funds are fully obligated with the period of performance extending through 2026; federal aid wind-down represents a structural revenue headwind.
+    </div>
+
+    <h3 style="margin-top:1.5rem;">Credit Watchpoints — Medium Term</h3>
+    <div class="watchpoint">
+      <span class="wp-num">1.</span>
+      <span class="wp-text"><strong>Leverage trajectory:</strong> Moody's has identified additional debt absent offsetting revenue growth driving leverage beyond 350% as a potential downgrade trigger. Current leverage of ~272% provides headroom, but the $8.8B CIP pipeline requires careful monitoring of new issuance against revenue growth.</span>
+    </div>
+    <div class="watchpoint">
+      <span class="wp-num">2.</span>
+      <span class="wp-text"><strong>Five-year structural gap:</strong> The OMB-commissioned financial plan identifies a structural imbalance that will require sustained management action — fee increases, cost reductions, and efficiency measures — to prevent fund balance erosion within the planning horizon.</span>
+    </div>
+    <div class="watchpoint">
+      <span class="wp-num">3.</span>
+      <span class="wp-text"><strong>OPEB trajectory:</strong> The pay-as-you-go OPEB structure creates ongoing vulnerability to healthcare cost inflation. The FY2025 OPEB liability decline from $3.91B to $2.55B due to assumption changes is meaningful balance sheet relief, but the $2.55B obligation remains substantial and unfunded.</span>
+    </div>
+    <div class="watchpoint">
+      <span class="wp-num">4.</span>
+      <span class="wp-text"><strong>Flood/hurricane recurrence:</strong> A major storm event before the flood control CIP investment is substantially complete would test the county's financial resilience and FEMA reimbursement timing, as demonstrated by the multi-year COVID, Derecho, and Beryl reimbursement processes still ongoing.</span>
+    </div>
+    <div class="watchpoint">
+      <span class="wp-num">5.</span>
+      <span class="wp-text"><strong>Jail facility compliance:</strong> The 580 variance beds offline since December 2023 require continued inmate outsourcing and create elevated recurring costs. Detention facility renovation is a CIP priority, but restoration of compliance and elimination of outsourcing costs is a key budget normalization requirement.</span>
+    </div>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section>
+  <div class="container">
+    <div class="section-label">Sources &amp; References</div>
+    <div class="sources">
+      <strong>Harris County FY2025 Annual Comprehensive Financial Report</strong>, fiscal year ended September 30, 2025, released April 7, 2026, prepared by Michael Post CPA CIA, County Auditor, audited by Deloitte &amp; Touche LLP. &nbsp;·&nbsp;
+      <strong>Harris County FY2026 Adopted Annual Budget, Volume I</strong>, Office of Management and Budget, Daniel Ramos, Budget Director, adopted September 18–19, 2025. &nbsp;·&nbsp;
+      <strong>Harris County FY2026 Adopted Annual Budget, Volume II</strong>, Department Detail. &nbsp;·&nbsp;
+      <strong>Moody's Investors Service</strong>, Harris County TX: Update to Credit Analysis, July 14, 2025 (Grayson Nichols VP-Senior Analyst; Adebola Kushimo Associate Managing Director). &nbsp;·&nbsp;
+      <strong>Fitch Ratings</strong>, Harris County TX IDR, LT, and ULT Bonds affirmed AAA, Outlook Stable, July 25, 2025. &nbsp;·&nbsp;
+      <strong>KBRA</strong>, Harris County TX Permanent Improvement Refunding Bonds Series 2025A and Unlimited Tax Road Refunding Bonds Series 2025A rated AAA; related ratings affirmed, July 9, 2025. &nbsp;·&nbsp;
+      <strong>Texas Bond Review Board Data Center</strong>, Harris County Debt Outstanding, Fiscal Year 2025. &nbsp;·&nbsp;
+      <strong>US Bureau of Economic Analysis</strong>, Houston-The Woodlands-Sugar Land MSA Real GDP; Regional Price Parities. &nbsp;·&nbsp;
+      <strong>BLS Local Area Unemployment Statistics</strong>, Houston MSA, September 2025. &nbsp;·&nbsp;
+      <strong>Houston Association of Realtors MLS</strong>, September 2025 market data.
+    </div>
+    <div class="disclaimer-box">
+      Quantitative ratios shown in the Credit Scorecard section are computed using the framework published in Moody's Investors Service, US Cities and Counties Rating Methodology (July 24, 2024). Threshold ranges and scoring buckets follow the published scorecard. Moody's® and Aaa® are registered trademarks of Moody's Investors Service, Inc. MuniReports is not affiliated with, endorsed by, or sponsored by Moody's Investors Service. The "Scorecard-Indicated Outcome" shown is the result of applying the published methodology to public source data and is not a Moody's rating. This report is AI-generated research. All figures are drawn from primary source documents (FY2025 ACFR, FY2026 Adopted Budget) and should be verified before any investment, lending, or financial decision. Not a credit rating. Not investment advice.
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="brand" style="text-decoration:none;">
+    <div class="brand-dot" style="width:22px;height:22px;font-size:.6rem;">MR</div>
+    <span>Muni<em>Reports</em></span>
+  </div>
+  <span>Generated by MuniReports AI · June 26, 2026 · munireports.com</span>
+  <span>Not a credit rating agency. Not investment advice.</span>
+</footer>
+
+</body>
+</html>
