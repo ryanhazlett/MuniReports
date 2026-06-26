@@ -57,6 +57,7 @@ export default function HomePage() {
 
               <div style={{ display: "flex", gap: ".7rem", flexWrap: "wrap" }}>
                 <a href="/sample-austin.pdf" className="btn btn-accent btn-lg">Download Austin sample</a>
+                <a href="/harris-county-brief.pdf" className="btn btn-out btn-lg">Download Harris County brief — PDF</a>
                 <a href="mailto:admin@munireports.com" className="btn btn-out btn-lg">Contact us</a>
               </div>
             </div>
